@@ -184,7 +184,7 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
             <li>📋 Use the "Paste from Clipboard" button</li>
             <li>📁 Click "Upload File" to select a file</li>
             <li>📄 Drag & drop a file directly onto the text area</li>
-            <li>⏭️ Click "Skip" if you already have CONLLU data</li>
+            <li>⏭️ Click "Skip" if you already have CoNLL-U data</li>
           </ul>
           <p>
             <strong>Supported file types:</strong> .txt, .md, .html, .xml, .json

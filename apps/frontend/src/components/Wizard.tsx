@@ -9,7 +9,7 @@ import InputText from './steps/InputText';
 
 const steps: Step[] = [
   { id: 1, title: 'Input Text', component: InputText },
-  { id: 2, title: 'Input CONLLU', component: InputConllu },
+  { id: 2, title: 'Input CoNLL-U', component: InputConllu },
   { id: 3, title: 'Input Linking', component: InputLinking },
   { id: 4, title: 'Export TTL', component: ExportTTL },
 ];
@@ -84,7 +84,7 @@ const Wizard: React.FC = () => {
     } catch (error) {
       console.error('Prelinker API error:', error);
       throw new Error(
-        `Failed to prelink CONLLU data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to prelink CoNLL-U data: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   };
@@ -180,7 +180,7 @@ const Wizard: React.FC = () => {
             {currentStep === 1
               ? 'Tokenizing text...'
               : currentStep === 2
-                ? 'Prelinking CONLLU data...'
+                ? 'Prelinking CoNLL-U data...'
                 : 'Processing...'}
           </div>
         </div>

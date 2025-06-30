@@ -100,9 +100,9 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
   return (
     <div className="step-container">
       <div className="step-header">
-        <h3>Step 2: Input CONLLU</h3>
+        <h3>Step 2: Input CoNLL-U</h3>
         <p>
-          Enter the CONLLU format data for morphological and syntactic
+          Enter the CoNLL-U format data for morphological and syntactic
           annotation.
         </p>
       </div>
@@ -133,7 +133,7 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="conllu-input">CONLLU Data</label>
+          <label htmlFor="conllu-input">CoNLL-U Data</label>
           <div
             className={`text-input-container ${isDragOver ? 'drag-over' : ''}`}
             onDragOver={handleDragOver}
@@ -148,8 +148,8 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
               onKeyDown={handlePasteEvent}
               placeholder={
                 isDragOver
-                  ? 'Drop your CONLLU file here...'
-                  : 'Enter CONLLU format data here or drag & drop a file...'
+                  ? 'Drop your CoNLL-U file here...'
+                  : 'Enter CoNLL-U format data here or drag & drop a file...'
               }
               rows={10}
               className="form-control"
@@ -158,7 +158,7 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
             {isDragOver && (
               <div className="drag-overlay">
                 <div className="drag-message">
-                  📄 Drop CONLLU file here to load its content
+                  📄 Drop CoNLL-U file here to load its content
                 </div>
               </div>
             )}
@@ -176,13 +176,13 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
             <strong>Input Methods:</strong>
           </p>
           <ul className="input-methods">
-            <li>📝 Type or paste CONLLU data directly (Ctrl+V)</li>
+            <li>📝 Type or paste CoNLL-U data directly (Ctrl+V)</li>
             <li>📋 Use the "Paste from Clipboard" button</li>
-            <li>📁 Click "Upload File" to select a CONLLU file</li>
-            <li>📄 Drag & drop a CONLLU file directly onto the text area</li>
+            <li>📁 Click "Upload File" to select a CoNLL-U file</li>
+            <li>📄 Drag & drop a CoNLL-U file directly onto the text area</li>
           </ul>
           <p>
-            <strong>CONLLU Format:</strong> Each line represents a token with
+            <strong>CoNLL-U Format:</strong> Each line represents a token with
             tab-separated fields: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD,
             DEPREL, DEPS, MISC
           </p>

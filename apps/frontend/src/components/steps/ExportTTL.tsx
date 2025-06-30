@@ -27,9 +27,9 @@ text:main rdf:type lila:Text ;
 
 `;
 
-    // Add CONLLU data if available
+    // Add CoNLL-U data if available
     if (data.conllu) {
-      ttl += `# CONLLU annotations
+      ttl += `# CoNLL-U annotations
 ${data.conllu
   .split('\n')
   .filter((line) => line.trim())

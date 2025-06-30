@@ -41,7 +41,7 @@ const InputLinking: React.FC<StepProps> = ({ data, onDataChange }) => {
         <div className="text-info">
           <p>
             <strong>Automatic Linking:</strong> The prelinker service has
-            automatically generated linking data from your CONLLU input.
+            automatically generated linking data from your CoNLL-U input.
           </p>
           <p>
             <strong>Manual Editing:</strong> You can review and edit the linking
