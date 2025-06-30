@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Step.css';
 import type { StepProps } from '../../types';
 
@@ -13,7 +14,9 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
     onDataChange({ text: data.text || '' });
   }, []);
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+  const handleTextChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ): void => {
     onDataChange({ text: e.target.value });
   };
 
@@ -77,14 +80,16 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       handleFileUpload(files[0]);
     }
   };
 
-  const handlePasteEvent = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+  const handlePasteEvent = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ): void => {
     // Handle Ctrl+V paste events
     if (e.ctrlKey && e.key === 'v') {
       // The default paste behavior will handle this
@@ -98,24 +103,24 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
         <h3>Step 1: Input Text</h3>
         <p>Enter the text you want to annotate with linguistic data.</p>
       </div>
-      
+
       <div className="step-content">
         <div className="input-actions">
-          <button 
+          <button
             className="btn btn-secondary"
             onClick={handlePaste}
             disabled={isLoading}
           >
             📋 Paste from Clipboard
           </button>
-          <button 
+          <button
             className="btn btn-secondary"
             onClick={() => fileInputRef.current?.click()}
             disabled={isLoading}
           >
             📁 Upload File
           </button>
-          <button 
+          <button
             className="btn btn-skip"
             onClick={() => onDataChange({ skipTextStep: true })}
             disabled={isLoading}
@@ -133,7 +138,7 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
 
         <div className="form-group">
           <label htmlFor="text-input">Text Content</label>
-          <div 
+          <div
             className={`text-input-container ${isDragOver ? 'drag-over' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -145,7 +150,11 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
               value={data.text || ''}
               onChange={handleTextChange}
               onKeyDown={handlePasteEvent}
-              placeholder={isDragOver ? "Drop your file here..." : "Enter your text here or drag & drop a file..."}
+              placeholder={
+                isDragOver
+                  ? 'Drop your file here...'
+                  : 'Enter your text here or drag & drop a file...'
+              }
               rows={8}
               className="form-control"
               disabled={isLoading}
@@ -165,9 +174,11 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
             )}
           </div>
         </div>
-        
+
         <div className="text-info">
-          <p><strong>Input Methods:</strong></p>
+          <p>
+            <strong>Input Methods:</strong>
+          </p>
           <ul className="input-methods">
             <li>📝 Type or paste text directly (Ctrl+V)</li>
             <li>📋 Use the "Paste from Clipboard" button</li>
@@ -175,11 +186,13 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
             <li>📄 Drag & drop a file directly onto the text area</li>
             <li>⏭️ Click "Skip" if you already have CONLLU data</li>
           </ul>
-          <p><strong>Supported file types:</strong> .txt, .md, .html, .xml, .json</p>
+          <p>
+            <strong>Supported file types:</strong> .txt, .md, .html, .xml, .json
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default InputText; 
+export default InputText;

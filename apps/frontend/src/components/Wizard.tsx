@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import './Wizard.css';
-import InputText from './steps/InputText';
+import type { APIResponse, FormData, Step, StepData } from '../types';
+import ExportTTL from './steps/ExportTTL';
 import InputConllu from './steps/InputConllu';
 import InputLinking from './steps/InputLinking';
-import ExportTTL from './steps/ExportTTL';
-import type { FormData, StepData, Step, APIResponse } from '../types';
+import InputText from './steps/InputText';
 
 const steps: Step[] = [
   { id: 1, title: 'Input Text', component: InputText },
@@ -33,8 +34,8 @@ const Wizard: React.FC = () => {
         },
         body: JSON.stringify({
           source: text,
-          format: 'plain'
-        })
+          format: 'plain',
+        }),
       });
 
       if (!response.ok) {
@@ -42,7 +43,7 @@ const Wizard: React.FC = () => {
       }
 
       const data: APIResponse = await response.json();
-      
+
       if (data.format !== 'conllu') {
         throw new Error('Unexpected response format from tokenization API');
       }
@@ -50,7 +51,9 @@ const Wizard: React.FC = () => {
       return data.target;
     } catch (error) {
       console.error('Tokenization API error:', error);
-      throw new Error(`Failed to tokenize text: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to tokenize text: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   };
 
@@ -63,8 +66,8 @@ const Wizard: React.FC = () => {
         },
         body: JSON.stringify({
           source: conlluData,
-          format: 'conllu'
-        })
+          format: 'conllu',
+        }),
       });
 
       if (!response.ok) {
@@ -72,7 +75,7 @@ const Wizard: React.FC = () => {
       }
 
       const data: APIResponse = await response.json();
-      
+
       if (data.format !== 'conllu') {
         throw new Error('Unexpected response format from prelinker API');
       }
@@ -80,7 +83,9 @@ const Wizard: React.FC = () => {
       return data.target;
     } catch (error) {
       console.error('Prelinker API error:', error);
-      throw new Error(`Failed to prelink CONLLU data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to prelink CONLLU data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   };
 
@@ -88,41 +93,45 @@ const Wizard: React.FC = () => {
     if (currentStep === 1 && formData.text.trim() && !formData.skipTextStep) {
       // Show loading state for tokenization
       setIsLoading(true);
-      
+
       try {
         // Call the real tokenization API
         const conlluData = await callTokenizationAPI(formData.text);
-        setFormData(prev => ({ ...prev, conllu: conlluData }));
+        setFormData((prev) => ({ ...prev, conllu: conlluData }));
       } catch (error) {
         console.error('Tokenization failed:', error);
         // Show error message to user and don't proceed
-        alert(`Tokenization failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the tokenization service is running at http://0.0.0.0:8000/tokenizer`);
+        alert(
+          `Tokenization failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the tokenization service is running at http://0.0.0.0:8000/tokenizer`,
+        );
         setIsLoading(false);
         return; // Don't proceed to next step
       }
-      
+
       setIsLoading(false);
     }
 
     if (currentStep === 2 && formData.conllu.trim()) {
       // Show loading state for prelinking
       setIsLoading(true);
-      
+
       try {
         // Call the real prelinker API
         const linkedConlluData = await callPrelinkerAPI(formData.conllu);
-        setFormData(prev => ({ ...prev, linking: linkedConlluData }));
+        setFormData((prev) => ({ ...prev, linking: linkedConlluData }));
       } catch (error) {
         console.error('Prelinking failed:', error);
         // Show error message to user and don't proceed
-        alert(`Prelinking failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the prelinker service is running at http://0.0.0.0:8000/prelinker`);
+        alert(
+          `Prelinking failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the prelinker service is running at http://0.0.0.0:8000/prelinker`,
+        );
         setIsLoading(false);
         return; // Don't proceed to next step
       }
-      
+
       setIsLoading(false);
     }
-    
+
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
@@ -135,12 +144,12 @@ const Wizard: React.FC = () => {
   };
 
   const handleDataChange = (stepData: StepData): void => {
-    setFormData(prev => ({ ...prev, ...stepData }));
-    
+    setFormData((prev) => ({ ...prev, ...stepData }));
+
     // Handle skip functionality
     if (stepData.skipTextStep && currentStep === 1) {
       // Clear the skip flag and move to next step
-      setFormData(prev => ({ ...prev, skipTextStep: false }));
+      setFormData((prev) => ({ ...prev, skipTextStep: false }));
       setCurrentStep(2);
     }
   };
@@ -168,16 +177,17 @@ const Wizard: React.FC = () => {
         <div className="wizard-loading">
           <div className="loading-spinner"></div>
           <div className="loading-message">
-            {currentStep === 1 ? 'Tokenizing text...' : currentStep === 2 ? 'Prelinking CONLLU data...' : 'Processing...'}
+            {currentStep === 1
+              ? 'Tokenizing text...'
+              : currentStep === 2
+                ? 'Prelinking CONLLU data...'
+                : 'Processing...'}
           </div>
         </div>
       )}
 
       <div className={`wizard-content ${isLoading ? 'loading' : ''}`}>
-        <CurrentStepComponent
-          data={formData}
-          onDataChange={handleDataChange}
-        />
+        <CurrentStepComponent data={formData} onDataChange={handleDataChange} />
       </div>
 
       <div className="wizard-footer">
@@ -191,7 +201,13 @@ const Wizard: React.FC = () => {
         <button
           className="btn btn-primary"
           onClick={handleNext}
-          disabled={currentStep === steps.length || isLoading || (currentStep === 1 && !formData.text.trim() && !formData.skipTextStep)}
+          disabled={
+            currentStep === steps.length ||
+            isLoading ||
+            (currentStep === 1 &&
+              !formData.text.trim() &&
+              !formData.skipTextStep)
+          }
         >
           {currentStep === steps.length ? 'Finish' : 'Next'}
         </button>
@@ -200,4 +216,4 @@ const Wizard: React.FC = () => {
   );
 };
 
-export default Wizard; 
+export default Wizard;

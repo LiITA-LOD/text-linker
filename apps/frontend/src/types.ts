@@ -24,4 +24,4 @@ export interface StepProps {
 export interface APIResponse {
   format: string;
   target: string;
-} 
+}

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Step.css';
 import type { StepProps } from '../../types';
 
@@ -13,7 +14,9 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
     onDataChange({ conllu: data.conllu || '' });
   }, []);
 
-  const handleConlluChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+  const handleConlluChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ): void => {
     onDataChange({ conllu: e.target.value });
   };
 
@@ -77,14 +80,16 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       handleFileUpload(files[0]);
     }
   };
 
-  const handlePasteEvent = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+  const handlePasteEvent = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ): void => {
     // Handle Ctrl+V paste events
     if (e.ctrlKey && e.key === 'v') {
       // The default paste behavior will handle this
@@ -96,19 +101,22 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
     <div className="step-container">
       <div className="step-header">
         <h3>Step 2: Input CONLLU</h3>
-        <p>Enter the CONLLU format data for morphological and syntactic annotation.</p>
+        <p>
+          Enter the CONLLU format data for morphological and syntactic
+          annotation.
+        </p>
       </div>
-      
+
       <div className="step-content">
         <div className="input-actions">
-          <button 
+          <button
             className="btn btn-secondary"
             onClick={handlePaste}
             disabled={isLoading}
           >
             📋 Paste from Clipboard
           </button>
-          <button 
+          <button
             className="btn btn-secondary"
             onClick={() => fileInputRef.current?.click()}
             disabled={isLoading}
@@ -126,7 +134,7 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
 
         <div className="form-group">
           <label htmlFor="conllu-input">CONLLU Data</label>
-          <div 
+          <div
             className={`text-input-container ${isDragOver ? 'drag-over' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -138,7 +146,11 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
               value={data.conllu || ''}
               onChange={handleConlluChange}
               onKeyDown={handlePasteEvent}
-              placeholder={isDragOver ? "Drop your CONLLU file here..." : "Enter CONLLU format data here or drag & drop a file..."}
+              placeholder={
+                isDragOver
+                  ? 'Drop your CONLLU file here...'
+                  : 'Enter CONLLU format data here or drag & drop a file...'
+              }
               rows={10}
               className="form-control"
               disabled={isLoading}
@@ -158,20 +170,30 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
             )}
           </div>
         </div>
-        
+
         <div className="text-info">
-          <p><strong>Input Methods:</strong></p>
+          <p>
+            <strong>Input Methods:</strong>
+          </p>
           <ul className="input-methods">
             <li>📝 Type or paste CONLLU data directly (Ctrl+V)</li>
             <li>📋 Use the "Paste from Clipboard" button</li>
             <li>📁 Click "Upload File" to select a CONLLU file</li>
             <li>📄 Drag & drop a CONLLU file directly onto the text area</li>
           </ul>
-          <p><strong>CONLLU Format:</strong> Each line represents a token with tab-separated fields: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC</p>
-          <p><strong>Supported file types:</strong> .conllu, .txt, .tsv</p>
-          <p><strong>Example:</strong></p>
+          <p>
+            <strong>CONLLU Format:</strong> Each line represents a token with
+            tab-separated fields: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD,
+            DEPREL, DEPS, MISC
+          </p>
+          <p>
+            <strong>Supported file types:</strong> .conllu, .txt, .tsv
+          </p>
+          <p>
+            <strong>Example:</strong>
+          </p>
           <pre className="code-example">
-{`1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	_
+            {`1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	_
 2	cat	cat	NOUN	NN	Number=Sing	3	nsubj	_	_
 3	sat	sit	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_`}
           </pre>
@@ -181,4 +203,4 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
   );
 };
 
-export default InputConllu; 
+export default InputConllu;

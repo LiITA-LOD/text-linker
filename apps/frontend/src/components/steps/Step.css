@@ -91,7 +91,7 @@
   border-radius: 8px;
   padding: 0.75rem;
   color: #fff;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.85rem;
   line-height: 1.4;
   resize: vertical;
@@ -174,8 +174,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .text-info {
@@ -221,7 +225,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   padding: 0.75rem;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.75rem;
   color: #e5e7eb;
   overflow-x: auto;
@@ -243,29 +247,29 @@
   .step-container {
     padding: 0;
   }
-  
+
   .input-actions {
     flex-direction: column;
   }
-  
+
   .input-actions .btn {
     min-width: auto;
   }
-  
+
   .input-actions .btn-skip {
     min-width: auto;
   }
-  
+
   .form-control {
     font-size: 0.8rem;
   }
-  
+
   .code-example {
     font-size: 0.7rem;
   }
-  
+
   .drag-message {
     font-size: 0.9rem;
     padding: 0.75rem 1rem;
   }
-} 
+}

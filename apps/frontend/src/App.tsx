@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import './App.css';
 import Wizard from './components/Wizard';
 
@@ -16,4 +16,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App; 
+export default App;

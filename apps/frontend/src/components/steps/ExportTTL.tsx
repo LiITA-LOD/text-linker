@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import './Step.css';
 import type { StepProps } from '../../types';
 
@@ -29,10 +30,13 @@ text:main rdf:type lila:Text ;
     // Add CONLLU data if available
     if (data.conllu) {
       ttl += `# CONLLU annotations
-${data.conllu.split('\n').filter(line => line.trim()).map((line) => {
-  const parts = line.split('\t');
-  if (parts.length >= 8) {
-    return `token:${parts[0]} rdf:type lila:Token ;
+${data.conllu
+  .split('\n')
+  .filter((line) => line.trim())
+  .map((line) => {
+    const parts = line.split('\t');
+    if (parts.length >= 8) {
+      return `token:${parts[0]} rdf:type lila:Token ;
     lila:hasForm "${parts[1]}" ;
     lila:hasLemma "${parts[2]}" ;
     lila:hasUPOS "${parts[3]}" ;
@@ -40,25 +44,30 @@ ${data.conllu.split('\n').filter(line => line.trim()).map((line) => {
     lila:hasFeatures "${parts[5]}" ;
     lila:hasHead "${parts[6]}" ;
     lila:hasDepRel "${parts[7]}" .`;
-  }
-  return '';
-}).join('\n')}
+    }
+    return '';
+  })
+  .join('\n')}
 `;
     }
 
     // Add linking data if available
     if (data.linking) {
       ttl += `# Linking data
-${data.linking.split('\n').filter(line => line.trim()).map(line => {
-  const parts = line.split(' -> ');
-  if (parts.length >= 3) {
-    const tokenId = parts[0].split(':')[1];
-    const resource = parts[1].split(':')[1];
-    const resourceId = parts[2].split(':')[1];
-    return `token:${tokenId} lila:linksTo <http://lila-erc.eu/resource/${resource}/${resourceId}> .`;
-  }
-  return '';
-}).join('\n')}
+${data.linking
+  .split('\n')
+  .filter((line) => line.trim())
+  .map((line) => {
+    const parts = line.split(' -> ');
+    if (parts.length >= 3) {
+      const tokenId = parts[0].split(':')[1];
+      const resource = parts[1].split(':')[1];
+      const resourceId = parts[2].split(':')[1];
+      return `token:${tokenId} lila:linksTo <http://lila-erc.eu/resource/${resource}/${resourceId}> .`;
+    }
+    return '';
+  })
+  .join('\n')}
 `;
     }
 
@@ -90,7 +99,7 @@ ${data.linking.split('\n').filter(line => line.trim()).map(line => {
         <h3>Step 4: Export TTL</h3>
         <p>Review and export the generated TTL (Turtle) format data.</p>
       </div>
-      
+
       <div className="step-content">
         <div className="form-group">
           <label htmlFor="ttl-output">Generated TTL</label>
@@ -104,9 +113,9 @@ ${data.linking.split('\n').filter(line => line.trim()).map(line => {
             readOnly={false}
           />
         </div>
-        
+
         <div className="step-actions">
-          <button 
+          <button
             className="btn btn-primary"
             onClick={handleDownload}
             disabled={!generatedTTL.trim()}
@@ -114,13 +123,17 @@ ${data.linking.split('\n').filter(line => line.trim()).map(line => {
             Download TTL File
           </button>
         </div>
-        
+
         <div className="text-info">
-          <p><strong>TTL Format:</strong> Turtle is a text-based format for representing RDF data. This file contains all the linguistic annotations and linking data in a structured format.</p>
+          <p>
+            <strong>TTL Format:</strong> Turtle is a text-based format for
+            representing RDF data. This file contains all the linguistic
+            annotations and linking data in a structured format.
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default ExportTTL; 
+export default ExportTTL;
