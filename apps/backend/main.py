@@ -11,14 +11,13 @@
 
 import logging
 import sys
-from typing import Any, Dict, Optional, Literal
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
 import stanza
-from stanza.utils.conll import CoNLL
 
 logging.basicConfig(
     level=logging.INFO,
