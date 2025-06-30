@@ -17,7 +17,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
-import stanza
+
+from tokenizer import TokenizerService
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,24 +27,6 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
-tokenizer_pipeline_plain = None
-tokenizer_pipeline_conllu = None
-
-
-def initialize_tokenizer_pipelines(model_path: str):
-    options = dict(
-        lang="it",
-        dir=model_path,
-        download_method=None,
-        processors="tokenize,pos,lemma,depparse",
-    )
-
-    global tokenizer_pipeline_plain
-    tokenizer_pipeline_plain = stanza.Pipeline(**options, tokenize_pretokenized=False)
-
-    global tokenizer_pipeline_conllu
-    tokenizer_pipeline_conllu = stanza.Pipeline(**options, tokenize_pretokenized=True)
 
 
 app = FastAPI(
@@ -84,10 +67,7 @@ class TokenizerResponse(BaseModel):
 
 @app.post("/tokenizer", response_model=TokenizerResponse)
 async def tokenizer(request: TokenizerRequest):
-    if request.format == "plain":
-        target = "{:C}".format(tokenizer_pipeline_plain(request.source))
-    elif request.format == "conllu":
-        target = "{:C}".format(tokenizer_pipeline_conllu(request.source))
+    target = tokenizer_service.tokenize(request.source, request.format)
     return TokenizerResponse(target=target, format="conllu")
 
 
@@ -115,7 +95,8 @@ def prelink_conllu(source: str) -> str:
 def main():
     try:
         model_path = "./LiITA_model"  # TODO: configure via env for prd
-        initialize_tokenizer_pipelines(model_path)
+        global tokenizer_service
+        tokenizer_service = TokenizerService(model_path)
     except Exception as e:
         logger.error(f"Failed to initialize pipelines: {e}")
         sys.exit(1)
