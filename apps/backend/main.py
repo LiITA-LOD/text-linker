@@ -115,19 +115,20 @@ def prelink_conllu(source: str) -> str:
 
 def main():
     try:
-        initialize_tokenizer_pipelines("./LiITA_model")
+        model_path = "./LiITA_model"  # TODO: configure via env for prd
+        initialize_tokenizer_pipelines(model_path)
     except Exception as e:
         logger.error(f"Failed to initialize pipelines: {e}")
         sys.exit(1)
 
     try:
-        uvicorn.run(
+        uvicorn.run(  # TODO: configure via env for prd
             app,
-            host="0.0.0.0",  # Bind to all interfaces
+            host="0.0.0.0",
             port=8000,
             log_level="info",
             access_log=True,
-            reload=False,  # Set to True for development
+            reload=False,
         )
     except KeyboardInterrupt:
         logger.info("Server stopped by user")
