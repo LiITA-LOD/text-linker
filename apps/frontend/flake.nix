@@ -18,6 +18,7 @@
           shellHook = ''
             # NOTE: this flags avoids ERR_OSSL_EVP_UNSUPPORTED
             export NODE_OPTIONS=--openssl-legacy-provider
+            export PATH="$PATH:$(realpath ./node_modules/.bin)"
           '';
         };
       }

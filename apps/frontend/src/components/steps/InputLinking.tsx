@@ -1,13 +1,14 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './Step.css';
+import type { StepProps } from '../../types';
 
-const InputLinking = ({ data, onDataChange }) => {
+const InputLinking: React.FC<StepProps> = ({ data, onDataChange }) => {
   useEffect(() => {
     // Update parent component when data changes
     onDataChange({ linking: data.linking || '' });
   }, []);
 
-  const handleLinkingChange = (e) => {
+  const handleLinkingChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
     onDataChange({ linking: e.target.value });
   };
 

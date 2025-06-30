@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Step.css';
+import type { StepProps } from '../../types';
 
-const ExportTTL = ({ data, onDataChange }) => {
-  const [generatedTTL, setGeneratedTTL] = useState('');
+const ExportTTL: React.FC<StepProps> = ({ data, onDataChange }) => {
+  const [generatedTTL, setGeneratedTTL] = useState<string>('');
 
   useEffect(() => {
     // Generate TTL from the collected data
     generateTTL();
   }, [data]);
 
-  const generateTTL = () => {
+  const generateTTL = (): void => {
     // Simple TTL generation based on the collected data
     let ttl = `# Generated TTL for Linguistic Data Annotation
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -28,7 +29,7 @@ text:main rdf:type lila:Text ;
     // Add CONLLU data if available
     if (data.conllu) {
       ttl += `# CONLLU annotations
-${data.conllu.split('\n').filter(line => line.trim()).map((line, index) => {
+${data.conllu.split('\n').filter(line => line.trim()).map((line) => {
   const parts = line.split('\t');
   if (parts.length >= 8) {
     return `token:${parts[0]} rdf:type lila:Token ;
@@ -65,13 +66,13 @@ ${data.linking.split('\n').filter(line => line.trim()).map(line => {
     onDataChange({ ttl });
   };
 
-  const handleTTLChange = (e) => {
+  const handleTTLChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
     const newTTL = e.target.value;
     setGeneratedTTL(newTTL);
     onDataChange({ ttl: newTTL });
   };
 
-  const handleDownload = () => {
+  const handleDownload = (): void => {
     const blob = new Blob([generatedTTL], { type: 'text/turtle' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

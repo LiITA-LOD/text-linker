@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import React from 'react';
 import './App.css';
 import Wizard from './components/Wizard';
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <div className="app">
       <header className="app-header">
@@ -16,4 +16,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App; 

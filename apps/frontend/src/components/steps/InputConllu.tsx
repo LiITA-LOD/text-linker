@@ -1,25 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Step.css';
+import type { StepProps } from '../../types';
 
-const InputText = ({ data, onDataChange }) => {
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef(null);
-  const textareaRef = useRef(null);
+const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
+  const [isDragOver, setIsDragOver] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     // Update parent component when data changes
-    onDataChange({ text: data.text || '' });
+    onDataChange({ conllu: data.conllu || '' });
   }, []);
 
-  const handleTextChange = (e) => {
-    onDataChange({ text: e.target.value });
+  const handleConlluChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    onDataChange({ conllu: e.target.value });
   };
 
-  const handlePaste = async () => {
+  const handlePaste = async (): Promise<void> => {
     try {
       const text = await navigator.clipboard.readText();
-      onDataChange({ text: text });
+      onDataChange({ conllu: text });
       // Focus the textarea after pasting
       if (textareaRef.current) {
         textareaRef.current.focus();
@@ -30,13 +31,13 @@ const InputText = ({ data, onDataChange }) => {
     }
   };
 
-  const handleFileUpload = async (file) => {
+  const handleFileUpload = async (file: File): Promise<void> => {
     if (!file) return;
 
     setIsLoading(true);
     try {
       const text = await readFileAsText(file);
-      onDataChange({ text: text });
+      onDataChange({ conllu: text });
     } catch (err) {
       console.error('Error reading file:', err);
       alert('Error reading file. Please try again.');
@@ -45,17 +46,17 @@ const InputText = ({ data, onDataChange }) => {
     }
   };
 
-  const readFileAsText = (file) => {
+  const readFileAsText = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target.result);
+      reader.onload = (e) => resolve(e.target?.result as string);
       reader.onerror = (e) => reject(e);
       reader.readAsText(file);
     });
   };
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
     if (file) {
       handleFileUpload(file);
     }
@@ -63,17 +64,17 @@ const InputText = ({ data, onDataChange }) => {
     e.target.value = '';
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     setIsDragOver(true);
   };
 
-  const handleDragLeave = (e) => {
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     setIsDragOver(false);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     setIsDragOver(false);
     
@@ -83,7 +84,7 @@ const InputText = ({ data, onDataChange }) => {
     }
   };
 
-  const handlePasteEvent = (e) => {
+  const handlePasteEvent = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     // Handle Ctrl+V paste events
     if (e.ctrlKey && e.key === 'v') {
       // The default paste behavior will handle this
@@ -94,8 +95,8 @@ const InputText = ({ data, onDataChange }) => {
   return (
     <div className="step-container">
       <div className="step-header">
-        <h3>Step 1: Input Text</h3>
-        <p>Enter the text you want to annotate with linguistic data.</p>
+        <h3>Step 2: Input CONLLU</h3>
+        <p>Enter the CONLLU format data for morphological and syntactic annotation.</p>
       </div>
       
       <div className="step-content">
@@ -114,24 +115,17 @@ const InputText = ({ data, onDataChange }) => {
           >
             📁 Upload File
           </button>
-          <button 
-            className="btn btn-skip"
-            onClick={() => onDataChange({ skipTextStep: true })}
-            disabled={isLoading}
-          >
-            ⏭️ Skip
-          </button>
           <input
             ref={fileInputRef}
             type="file"
-            accept=".txt,.md,.html,.xml,.json"
+            accept=".conllu,.txt,.tsv"
             onChange={handleFileSelect}
             style={{ display: 'none' }}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="text-input">Text Content</label>
+          <label htmlFor="conllu-input">CONLLU Data</label>
           <div 
             className={`text-input-container ${isDragOver ? 'drag-over' : ''}`}
             onDragOver={handleDragOver}
@@ -140,19 +134,19 @@ const InputText = ({ data, onDataChange }) => {
           >
             <textarea
               ref={textareaRef}
-              id="text-input"
-              value={data.text || ''}
-              onChange={handleTextChange}
+              id="conllu-input"
+              value={data.conllu || ''}
+              onChange={handleConlluChange}
               onKeyDown={handlePasteEvent}
-              placeholder={isDragOver ? "Drop your file here..." : "Enter your text here or drag & drop a file..."}
-              rows={8}
+              placeholder={isDragOver ? "Drop your CONLLU file here..." : "Enter CONLLU format data here or drag & drop a file..."}
+              rows={10}
               className="form-control"
               disabled={isLoading}
             />
             {isDragOver && (
               <div className="drag-overlay">
                 <div className="drag-message">
-                  📄 Drop file here to load its content
+                  📄 Drop CONLLU file here to load its content
                 </div>
               </div>
             )}
@@ -168,17 +162,23 @@ const InputText = ({ data, onDataChange }) => {
         <div className="text-info">
           <p><strong>Input Methods:</strong></p>
           <ul className="input-methods">
-            <li>📝 Type or paste text directly (Ctrl+V)</li>
+            <li>📝 Type or paste CONLLU data directly (Ctrl+V)</li>
             <li>📋 Use the "Paste from Clipboard" button</li>
-            <li>📁 Click "Upload File" to select a file</li>
-            <li>📄 Drag & drop a file directly onto the text area</li>
-            <li>⏭️ Click "Skip" if you already have CONLLU data</li>
+            <li>📁 Click "Upload File" to select a CONLLU file</li>
+            <li>📄 Drag & drop a CONLLU file directly onto the text area</li>
           </ul>
-          <p><strong>Supported file types:</strong> .txt, .md, .html, .xml, .json</p>
+          <p><strong>CONLLU Format:</strong> Each line represents a token with tab-separated fields: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC</p>
+          <p><strong>Supported file types:</strong> .conllu, .txt, .tsv</p>
+          <p><strong>Example:</strong></p>
+          <pre className="code-example">
+{`1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	_
+2	cat	cat	NOUN	NN	Number=Sing	3	nsubj	_	_
+3	sat	sit	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	_`}
+          </pre>
         </div>
       </div>
     </div>
   );
 };
 
-export default InputText; 
+export default InputConllu; 

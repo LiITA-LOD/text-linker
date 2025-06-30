@@ -1,21 +1,22 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './Wizard.css';
 import InputText from './steps/InputText';
 import InputConllu from './steps/InputConllu';
 import InputLinking from './steps/InputLinking';
 import ExportTTL from './steps/ExportTTL';
+import type { FormData, StepData, Step, APIResponse } from '../types';
 
-const steps = [
+const steps: Step[] = [
   { id: 1, title: 'Input Text', component: InputText },
   { id: 2, title: 'Input CONLLU', component: InputConllu },
   { id: 3, title: 'Input Linking', component: InputLinking },
   { id: 4, title: 'Export TTL', component: ExportTTL },
 ];
 
-const Wizard = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+const Wizard: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<FormData>({
     text: '',
     conllu: '',
     linking: '',
@@ -23,7 +24,7 @@ const Wizard = () => {
     skipTextStep: false,
   });
 
-  const callTokenizationAPI = async (text) => {
+  const callTokenizationAPI = async (text: string): Promise<string> => {
     try {
       const response = await fetch('http://0.0.0.0:8000/tokenizer', {
         method: 'POST',
@@ -40,7 +41,7 @@ const Wizard = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: APIResponse = await response.json();
       
       if (data.format !== 'conllu') {
         throw new Error('Unexpected response format from tokenization API');
@@ -49,11 +50,11 @@ const Wizard = () => {
       return data.target;
     } catch (error) {
       console.error('Tokenization API error:', error);
-      throw new Error(`Failed to tokenize text: ${error.message}`);
+      throw new Error(`Failed to tokenize text: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
-  const callPrelinkerAPI = async (conlluData) => {
+  const callPrelinkerAPI = async (conlluData: string): Promise<string> => {
     try {
       const response = await fetch('http://0.0.0.0:8000/prelinker', {
         method: 'POST',
@@ -70,7 +71,7 @@ const Wizard = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: APIResponse = await response.json();
       
       if (data.format !== 'conllu') {
         throw new Error('Unexpected response format from prelinker API');
@@ -79,11 +80,11 @@ const Wizard = () => {
       return data.target;
     } catch (error) {
       console.error('Prelinker API error:', error);
-      throw new Error(`Failed to prelink CONLLU data: ${error.message}`);
+      throw new Error(`Failed to prelink CONLLU data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
-  const handleNext = async () => {
+  const handleNext = async (): Promise<void> => {
     if (currentStep === 1 && formData.text.trim() && !formData.skipTextStep) {
       // Show loading state for tokenization
       setIsLoading(true);
@@ -95,7 +96,7 @@ const Wizard = () => {
       } catch (error) {
         console.error('Tokenization failed:', error);
         // Show error message to user and don't proceed
-        alert(`Tokenization failed: ${error.message}\n\nPlease ensure the tokenization service is running at http://0.0.0.0:8000/tokenizer`);
+        alert(`Tokenization failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the tokenization service is running at http://0.0.0.0:8000/tokenizer`);
         setIsLoading(false);
         return; // Don't proceed to next step
       }
@@ -114,7 +115,7 @@ const Wizard = () => {
       } catch (error) {
         console.error('Prelinking failed:', error);
         // Show error message to user and don't proceed
-        alert(`Prelinking failed: ${error.message}\n\nPlease ensure the prelinker service is running at http://0.0.0.0:8000/prelinker`);
+        alert(`Prelinking failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the prelinker service is running at http://0.0.0.0:8000/prelinker`);
         setIsLoading(false);
         return; // Don't proceed to next step
       }
@@ -127,13 +128,13 @@ const Wizard = () => {
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (): void => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleDataChange = (stepData) => {
+  const handleDataChange = (stepData: StepData): void => {
     setFormData(prev => ({ ...prev, ...stepData }));
     
     // Handle skip functionality
@@ -151,7 +152,7 @@ const Wizard = () => {
       <div className="wizard-header">
         <h2>Linguistic Data Annotation</h2>
         <div className="step-indicator">
-          {steps.map((step, index) => (
+          {steps.map((step) => (
             <div
               key={step.id}
               className={`step ${currentStep > step.id ? 'completed' : currentStep === step.id ? 'active' : ''}`}
