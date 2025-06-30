@@ -8,10 +8,10 @@ import InputLinking from './steps/InputLinking';
 import InputText from './steps/InputText';
 
 const steps: Step[] = [
-  { id: 1, title: 'Input Text', component: InputText },
-  { id: 2, title: 'Input CoNLL-U', component: InputConllu },
-  { id: 3, title: 'Input Linking', component: InputLinking },
-  { id: 4, title: 'Export TTL', component: ExportTTL },
+  { id: 1, title: 'Original', component: InputText },
+  { id: 2, title: 'CoNLL-U', component: InputConllu },
+  { id: 3, title: 'Linked', component: InputLinking },
+  { id: 4, title: 'Turtle', component: ExportTTL },
 ];
 
 const Wizard: React.FC = () => {
