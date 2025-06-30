@@ -23,87 +23,64 @@ const Wizard = () => {
     skipTextStep: false,
   });
 
-  const generateSampleConllu = (text) => {
-    // Simple tokenization and CONLLU generation
-    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-    
-    if (words.length === 0) {
-      return '# No text provided for tokenization\n';
-    }
+  const callTokenizationAPI = async (text) => {
+    try {
+      const response = await fetch('http://0.0.0.0:8000/tokenizer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          source: text,
+          format: 'plain'
+        })
+      });
 
-    let conllu = '# Generated CONLLU from input text\n';
-    conllu += '# Columns: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC\n\n';
-    
-    words.forEach((word, index) => {
-      const id = index + 1;
-      const form = word.replace(/[^\w\s]/g, ''); // Remove punctuation for form
-      const lemma = form.toLowerCase();
-      const upos = getUPOS(form);
-      const xpos = upos;
-      const feats = getFeatures(form, upos);
-      const head = getHead(id, words.length);
-      const deprel = getDepRel(upos, head);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       
-      conllu += `${id}\t${form}\t${lemma}\t${upos}\t${xpos}\t${feats}\t${head}\t${deprel}\t_\t_\n`;
-    });
-    
-    conllu += '\n';
-    return conllu;
-  };
+      if (data.format !== 'conllu') {
+        throw new Error('Unexpected response format from tokenization API');
+      }
 
-  const getUPOS = (word) => {
-    // Simple POS tagging logic
-    const lower = word.toLowerCase();
-    if (['the', 'a', 'an', 'this', 'that', 'these', 'those'].includes(lower)) return 'DET';
-    if (['is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did'].includes(lower)) return 'AUX';
-    if (lower.endsWith('ing')) return 'VERB';
-    if (lower.endsWith('ed')) return 'VERB';
-    if (lower.endsWith('s') && lower.length > 3) return 'NOUN';
-    if (['i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them'].includes(lower)) return 'PRON';
-    if (['in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'down'].includes(lower)) return 'ADP';
-    if (['and', 'or', 'but', 'if', 'because', 'when', 'where', 'why', 'how'].includes(lower)) return 'CCONJ';
-    if (['quickly', 'slowly', 'well', 'badly', 'very', 'really', 'quite'].includes(lower)) return 'ADV';
-    if (['big', 'small', 'good', 'bad', 'new', 'old', 'young', 'beautiful', 'ugly'].includes(lower)) return 'ADJ';
-    if (/^\d+$/.test(word)) return 'NUM';
-    if (/^[A-Z]/.test(word)) return 'PROPN';
-    return 'NOUN'; // Default to noun
-  };
-
-  const getFeatures = (word, upos) => {
-    const lower = word.toLowerCase();
-    const features = [];
-    
-    if (upos === 'NOUN' || upos === 'PROPN') {
-      features.push('Number=Sing');
-      if (lower.endsWith('s') && !lower.endsWith('ss')) features.push('Number=Plur');
+      return data.target;
+    } catch (error) {
+      console.error('Tokenization API error:', error);
+      throw new Error(`Failed to tokenize text: ${error.message}`);
     }
-    if (upos === 'VERB') {
-      if (lower.endsWith('ing')) features.push('VerbForm=Ger');
-      else if (lower.endsWith('ed')) features.push('Tense=Past');
-      else features.push('VerbForm=Fin');
-    }
-    if (upos === 'PRON') {
-      if (['i', 'we'].includes(lower)) features.push('Person=1');
-      else if (['you'].includes(lower)) features.push('Person=2');
-      else features.push('Person=3');
-    }
-    
-    return features.length > 0 ? features.join('|') : '_';
   };
 
-  const getHead = (id, totalWords) => {
-    // Simple dependency: first word is root, others depend on previous
-    if (id === 1) return 0; // Root
-    return id - 1;
-  };
+  const callPrelinkerAPI = async (conlluData) => {
+    try {
+      const response = await fetch('http://0.0.0.0:8000/prelinker', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          source: conlluData,
+          format: 'conllu'
+        })
+      });
 
-  const getDepRel = (upos, head) => {
-    if (head === 0) return 'root';
-    if (upos === 'DET') return 'det';
-    if (upos === 'ADJ') return 'amod';
-    if (upos === 'ADP') return 'case';
-    if (upos === 'AUX') return 'aux';
-    return 'nmod'; // Default
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.format !== 'conllu') {
+        throw new Error('Unexpected response format from prelinker API');
+      }
+
+      return data.target;
+    } catch (error) {
+      console.error('Prelinker API error:', error);
+      throw new Error(`Failed to prelink CONLLU data: ${error.message}`);
+    }
   };
 
   const handleNext = async () => {
@@ -111,12 +88,36 @@ const Wizard = () => {
       // Show loading state for tokenization
       setIsLoading(true);
       
-      // Simulate server call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      try {
+        // Call the real tokenization API
+        const conlluData = await callTokenizationAPI(formData.text);
+        setFormData(prev => ({ ...prev, conllu: conlluData }));
+      } catch (error) {
+        console.error('Tokenization failed:', error);
+        // Show error message to user and don't proceed
+        alert(`Tokenization failed: ${error.message}\n\nPlease ensure the tokenization service is running at http://0.0.0.0:8000/tokenizer`);
+        setIsLoading(false);
+        return; // Don't proceed to next step
+      }
       
-      // Generate sample CONLLU
-      const sampleConllu = generateSampleConllu(formData.text);
-      setFormData(prev => ({ ...prev, conllu: sampleConllu }));
+      setIsLoading(false);
+    }
+
+    if (currentStep === 2 && formData.conllu.trim()) {
+      // Show loading state for prelinking
+      setIsLoading(true);
+      
+      try {
+        // Call the real prelinker API
+        const linkedConlluData = await callPrelinkerAPI(formData.conllu);
+        setFormData(prev => ({ ...prev, linking: linkedConlluData }));
+      } catch (error) {
+        console.error('Prelinking failed:', error);
+        // Show error message to user and don't proceed
+        alert(`Prelinking failed: ${error.message}\n\nPlease ensure the prelinker service is running at http://0.0.0.0:8000/prelinker`);
+        setIsLoading(false);
+        return; // Don't proceed to next step
+      }
       
       setIsLoading(false);
     }
@@ -165,7 +166,9 @@ const Wizard = () => {
       {isLoading && (
         <div className="wizard-loading">
           <div className="loading-spinner"></div>
-          <div className="loading-message">Tokenizing text...</div>
+          <div className="loading-message">
+            {currentStep === 1 ? 'Tokenizing text...' : currentStep === 2 ? 'Prelinking CONLLU data...' : 'Processing...'}
+          </div>
         </div>
       )}
 
