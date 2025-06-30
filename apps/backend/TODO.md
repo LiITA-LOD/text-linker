@@ -1,0 +1,5 @@
+- [ ] request rate limiting
+- [ ] request size limit
+- [ ] CORS config
+- [ ] env support
+- [ ] better model loading
