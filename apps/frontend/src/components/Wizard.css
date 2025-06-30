@@ -25,7 +25,7 @@
 .step-indicator {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
   margin: 0 auto;
   max-width: 500px;
 }
@@ -42,8 +42,8 @@
   content: '';
   position: absolute;
   top: 20px;
-  left: 50%;
-  width: 100%;
+  left: 85px;
+  width: calc(100% - 45px);
   height: 2px;
   background: rgba(255, 255, 255, 0.2);
   z-index: 1;
