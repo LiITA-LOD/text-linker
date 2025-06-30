@@ -4,7 +4,8 @@
 # dependencies = [
 #     "fastapi>=0.104.0",
 #     "uvicorn[standard]>=0.24.0",
-#     "pydantic>=2.5.0"
+#     "pydantic>=2.5.0",
+#     "stanza>=1.10.1"
 # ]
 # ///
 
@@ -16,6 +17,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
+import stanza
+from stanza.utils.conll import CoNLL
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,6 +27,25 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+tokenizer_pipeline_plain = None
+tokenizer_pipeline_conllu = None
+
+
+def initialize_tokenizer_pipelines(model_path: str):
+    options = dict(
+        lang="it",
+        dir=model_path,
+        download_method=None,
+        processors="tokenize,pos,lemma,depparse",
+    )
+
+    global tokenizer_pipeline_plain
+    tokenizer_pipeline_plain = stanza.Pipeline(**options, tokenize_pretokenized=False)
+
+    global tokenizer_pipeline_conllu
+    tokenizer_pipeline_conllu = stanza.Pipeline(**options, tokenize_pretokenized=True)
+
 
 app = FastAPI(
     title="LiITA Text Linker API",
@@ -64,9 +86,9 @@ class TokenizerResponse(BaseModel):
 @app.post("/tokenizer", response_model=TokenizerResponse)
 async def tokenizer(request: TokenizerRequest):
     if request.format == "plain":
-        target = tokenize_plain_text(request.source)
+        target = "{:C}".format(tokenizer_pipeline_plain(request.source))
     elif request.format == "conllu":
-        target = process_conllu(request.source)
+        target = "{:C}".format(tokenizer_pipeline_conllu(request.source))
     return TokenizerResponse(target=target, format="conllu")
 
 
@@ -86,22 +108,18 @@ async def prelinker(request: PrelinkerRequest):
     return PrelinkerResponse(target=target, format="conllu")
 
 
-def tokenize_plain_text(source: str) -> str:
-    target = source
-    return target
-
-
-def process_conllu(source: str) -> str:
-    target = source
-    return target
-
-
 def prelink_conllu(source: str) -> str:
     target = source
     return target
 
 
 def main():
+    try:
+        initialize_tokenizer_pipelines("./LiITA_model")
+    except Exception as e:
+        logger.error(f"Failed to initialize pipelines: {e}")
+        sys.exit(1)
+
     try:
         uvicorn.run(
             app,
