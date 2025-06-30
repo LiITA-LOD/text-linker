@@ -152,7 +152,7 @@ const InputConllu: React.FC<StepProps> = ({ data, onDataChange }) => {
                   : 'Enter CoNLL-U format data here or drag & drop a file...'
               }
               rows={10}
-              className="form-control"
+              className="form-control no-wrap"
               disabled={isLoading}
             />
             {isDragOver && (

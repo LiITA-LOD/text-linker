@@ -34,7 +34,7 @@ const InputLinking: React.FC<StepProps> = ({ data, onDataChange }) => {
             onChange={handleLinkingChange}
             placeholder="Linking data will be automatically generated from the prelinker service..."
             rows={8}
-            className="form-control"
+            className="form-control no-wrap"
           />
         </div>
 

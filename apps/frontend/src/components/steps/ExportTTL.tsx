@@ -109,7 +109,7 @@ ${data.linking
             onChange={handleTTLChange}
             placeholder="Generated TTL will appear here..."
             rows={12}
-            className="form-control"
+            className="form-control no-wrap"
             readOnly={false}
           />
         </div>

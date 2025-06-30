@@ -100,6 +100,13 @@
   box-sizing: border-box;
 }
 
+.form-control.no-wrap {
+  white-space: pre;
+  word-wrap: normal;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
 .form-control:focus {
   outline: none;
   border-color: #3b82f6;
