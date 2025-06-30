@@ -114,6 +114,13 @@ const InputText = ({ data, onDataChange }) => {
           >
             📁 Upload File
           </button>
+          <button 
+            className="btn btn-skip"
+            onClick={() => onDataChange({ skipTextStep: true })}
+            disabled={isLoading}
+          >
+            ⏭️ Skip
+          </button>
           <input
             ref={fileInputRef}
             type="file"
@@ -165,6 +172,7 @@ const InputText = ({ data, onDataChange }) => {
             <li>📋 Use the "Paste from Clipboard" button</li>
             <li>📁 Click "Upload File" to select a file</li>
             <li>📄 Drag & drop a file directly onto the text area</li>
+            <li>⏭️ Click "Skip" if you already have CONLLU data</li>
           </ul>
           <p><strong>Supported file types:</strong> .txt, .md, .html, .xml, .json</p>
         </div>

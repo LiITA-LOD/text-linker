@@ -20,6 +20,7 @@ const Wizard = () => {
     conllu: '',
     linking: '',
     ttl: '',
+    skipTextStep: false,
   });
 
   const generateSampleConllu = (text) => {
@@ -106,7 +107,7 @@ const Wizard = () => {
   };
 
   const handleNext = async () => {
-    if (currentStep === 1 && formData.text.trim()) {
+    if (currentStep === 1 && formData.text.trim() && !formData.skipTextStep) {
       // Show loading state for tokenization
       setIsLoading(true);
       
@@ -133,6 +134,13 @@ const Wizard = () => {
 
   const handleDataChange = (stepData) => {
     setFormData(prev => ({ ...prev, ...stepData }));
+    
+    // Handle skip functionality
+    if (stepData.skipTextStep && currentStep === 1) {
+      // Clear the skip flag and move to next step
+      setFormData(prev => ({ ...prev, skipTextStep: false }));
+      setCurrentStep(2);
+    }
   };
 
   const CurrentStepComponent = steps[currentStep - 1].component;
@@ -179,7 +187,7 @@ const Wizard = () => {
         <button
           className="btn btn-primary"
           onClick={handleNext}
-          disabled={currentStep === steps.length || isLoading}
+          disabled={currentStep === steps.length || isLoading || (currentStep === 1 && !formData.text.trim() && !formData.skipTextStep)}
         >
           {currentStep === steps.length ? 'Finish' : 'Next'}
         </button>

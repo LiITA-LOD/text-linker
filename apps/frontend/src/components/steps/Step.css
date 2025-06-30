@@ -34,13 +34,32 @@
 
 .input-actions .btn {
   flex: 1;
-  min-width: 140px;
+  min-width: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-size: 0.85rem;
   padding: 0.6rem 1rem;
+}
+
+.input-actions .btn-skip {
+  flex: 0 0 auto;
+  min-width: 80px;
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  font-size: 0.85rem;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-actions .btn-skip:hover:not(:disabled) {
+  background: rgba(168, 85, 247, 0.3);
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px);
 }
 
 .form-group {
@@ -215,6 +234,8 @@
   display: flex;
   justify-content: center;
   margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive adjustments */
@@ -228,6 +249,10 @@
   }
   
   .input-actions .btn {
+    min-width: auto;
+  }
+  
+  .input-actions .btn-skip {
     min-width: auto;
   }
   
