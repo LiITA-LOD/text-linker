@@ -5,7 +5,9 @@
 #     "fastapi>=0.104.0",
 #     "uvicorn[standard]>=0.24.0",
 #     "pydantic>=2.5.0",
-#     "stanza>=1.10.1"
+#     "stanza>=1.10.1",
+#     "sqlalchemy>=2.0.41",
+#     "pymysql>=1.1.1",
 # ]
 # ///
 
@@ -19,6 +21,7 @@ from pydantic import BaseModel, Field
 import uvicorn
 
 from tokenizer import TokenizerService
+from prelinker import PrelinkerService
 
 logging.basicConfig(
     level=logging.INFO,
@@ -83,13 +86,8 @@ class PrelinkerResponse(BaseModel):
 
 @app.post("/prelinker", response_model=PrelinkerResponse)
 async def prelinker(request: PrelinkerRequest):
-    target = prelink_conllu(request.source)
+    target = prelinker_service.prelink(request.source)
     return PrelinkerResponse(target=target, format="conllu")
-
-
-def prelink_conllu(source: str) -> str:
-    target = source
-    return target
 
 
 def main():
@@ -97,6 +95,8 @@ def main():
         model_path = "./LiITA_model"  # TODO: configure via env for prd
         global tokenizer_service
         tokenizer_service = TokenizerService(model_path)
+        global prelinker_service
+        prelinker_service = PrelinkerService()
     except Exception as e:
         logger.error(f"Failed to initialize pipelines: {e}")
         sys.exit(1)
