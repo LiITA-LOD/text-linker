@@ -1,41 +1,23 @@
 #!/usr/bin/env -S uv run --script
 
 import argparse
-
-# import logging
+import os
 import sys
 
-import stanza
-from stanza.utils.conll import CoNLL
-
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format="%(asctime)s - %(levelname)s - %(message)s",
-#     handlers=[logging.StreamHandler(sys.stdout)],
-# )
-#
-# logger = logging.getLogger(__name__)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from lib.tokenizer import TokenizerService
 
 
 def core(model_path: str, source_path: str, target_path: str, format_type: str) -> None:
-    if format_type == "conllu":
-        tokenize_pretokenized = True
-        doc = CoNLL.conll2doc(source_path)
-    elif format_type == "plain":
-        tokenize_pretokenized = False
-        with open(source_path, "r") as f:
-            doc = f.read()
-    else:
-        raise ValueError
+    tokenizer_service = TokenizerService(model_path)
 
-    nlp = stanza.Pipeline(
-        lang="it",
-        dir=model_path,
-        download_method=None,
-        processors="tokenize,pos,lemma,depparse",
-        tokenize_pretokenized=tokenize_pretokenized,
-    )
-    CoNLL.write_doc2conll(nlp(doc), target_path)
+    with open(source_path, "r") as f:
+        source = f.read()
+
+    target = tokenizer_service.tokenize(source, format_type)
+
+    with open(target_path, "w") as f:
+        f.write(target)
 
 
 def main():

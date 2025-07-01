@@ -7,8 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
 
-from tokenizer import TokenizerService
-from prelinker import PrelinkerService
+from lib.tokenizer import TokenizerService
+from lib.prelinker import PrelinkerService
 
 logging.basicConfig(
     level=logging.INFO,
