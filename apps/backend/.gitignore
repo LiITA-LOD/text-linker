@@ -1,3 +1,4 @@
 LiITA_model/
 LiITA_model.tgz
 .env
+__pycache__/

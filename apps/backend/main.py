@@ -1,16 +1,3 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.12"
-# dependencies = [
-#     "fastapi>=0.104.0",
-#     "uvicorn[standard]>=0.24.0",
-#     "pydantic>=2.5.0",
-#     "stanza>=1.10.1",
-#     "sqlalchemy>=2.0.41",
-#     "pymysql>=1.1.1",
-# ]
-# ///
-
 import logging
 import sys
 from typing import Literal
