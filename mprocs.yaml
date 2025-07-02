@@ -1,0 +1,7 @@
+procs:
+  frontend:
+    cwd: ./apps/frontend/
+    shell: "direnv exec . nix develop --command pnpm run dev"
+  backend:
+    cwd: ./apps/backend/
+    shell: "direnv exec . nix develop --command uv run main.py"
