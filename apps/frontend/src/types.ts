@@ -3,7 +3,6 @@ export interface FormData {
   conllu: string;
   linking: string;
   ttl: string;
-  skipTextStep: boolean;
 }
 
 export interface StepData {

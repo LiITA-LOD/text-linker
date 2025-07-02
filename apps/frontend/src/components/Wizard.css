@@ -26,7 +26,7 @@
   display: flex;
   justify-content: space-between;
   align-items: start;
-  margin: 0 auto;
+  margin: 0 auto 1rem auto;
   max-width: 500px;
 }
 
@@ -36,6 +36,12 @@
   align-items: center;
   flex: 1;
   position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.step:hover {
+  transform: translateY(-2px);
 }
 
 .step:not(:last-child)::after {
@@ -90,6 +96,7 @@
   color: rgba(255, 255, 255, 0.7);
   text-align: center;
   max-width: 80px;
+  transition: all 0.3s ease;
 }
 
 .step.active .step-title {
@@ -98,6 +105,18 @@
 
 .step.completed .step-title {
   color: #4ade80;
+}
+
+.step-note {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .wizard-loading {

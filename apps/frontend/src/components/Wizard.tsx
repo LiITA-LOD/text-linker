@@ -22,8 +22,10 @@ const Wizard: React.FC = () => {
     conllu: '',
     linking: '',
     ttl: '',
-    skipTextStep: false,
   });
+
+  // Track which steps have been completed through normal flow
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   const callTokenizationAPI = async (text: string): Promise<string> => {
     try {
@@ -89,8 +91,14 @@ const Wizard: React.FC = () => {
     }
   };
 
+  const handleStepClick = (stepId: number): void => {
+    if (stepId !== currentStep) {
+      setCurrentStep(stepId);
+    }
+  };
+
   const handleNext = async (): Promise<void> => {
-    if (currentStep === 1 && formData.text.trim() && !formData.skipTextStep) {
+    if (currentStep === 1 && formData.text.trim()) {
       // Show loading state for tokenization
       setIsLoading(true);
 
@@ -98,6 +106,7 @@ const Wizard: React.FC = () => {
         // Call the real tokenization API
         const conlluData = await callTokenizationAPI(formData.text);
         setFormData((prev) => ({ ...prev, conllu: conlluData }));
+        setCompletedSteps(prev => new Set([...prev, 1]));
       } catch (error) {
         console.error('Tokenization failed:', error);
         // Show error message to user and don't proceed
@@ -119,6 +128,7 @@ const Wizard: React.FC = () => {
         // Call the real prelinker API
         const linkedConlluData = await callPrelinkerAPI(formData.conllu);
         setFormData((prev) => ({ ...prev, linking: linkedConlluData }));
+        setCompletedSteps(prev => new Set([...prev, 2]));
       } catch (error) {
         console.error('Prelinking failed:', error);
         // Show error message to user and don't proceed
@@ -130,6 +140,11 @@ const Wizard: React.FC = () => {
       }
 
       setIsLoading(false);
+    }
+
+    if (currentStep === 3) {
+      // Mark step 3 as completed (no API call needed)
+      setCompletedSteps(prev => new Set([...prev, 3]));
     }
 
     if (currentStep < steps.length) {
@@ -145,32 +160,33 @@ const Wizard: React.FC = () => {
 
   const handleDataChange = (stepData: StepData): void => {
     setFormData((prev) => ({ ...prev, ...stepData }));
+  };
 
-    // Handle skip functionality
-    if (stepData.skipTextStep && currentStep === 1) {
-      // Clear the skip flag and move to next step
-      setFormData((prev) => ({ ...prev, skipTextStep: false }));
-      setCurrentStep(2);
-    }
+  const getStepStatus = (stepId: number): 'completed' | 'active' | '' => {
+    if (currentStep === stepId) return 'active';
+    if (completedSteps.has(stepId)) return 'completed';
+    return '';
   };
 
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
     <div className="wizard">
-      <div className="wizard-header">
-        <h2>Linguistic Data Annotation</h2>
-        <div className="step-indicator">
-          {steps.map((step) => (
-            <div
-              key={step.id}
-              className={`step ${currentStep > step.id ? 'completed' : currentStep === step.id ? 'active' : ''}`}
-            >
-              <div className="step-number">{step.id}</div>
-              <div className="step-title">{step.title}</div>
-            </div>
-          ))}
-        </div>
+      <div className="step-indicator">
+        {steps.map((step) => (
+          <div
+            key={step.id}
+            className={`step ${getStepStatus(step.id)}`}
+            onClick={() => handleStepClick(step.id)}
+          >
+            <div className="step-number">{step.id}</div>
+            <div className="step-title">{step.title}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="step-note">
+        💡 You can skip to any step by clicking on the step indicators above
       </div>
 
       {isLoading && (
@@ -204,9 +220,7 @@ const Wizard: React.FC = () => {
           disabled={
             currentStep === steps.length ||
             isLoading ||
-            (currentStep === 1 &&
-              !formData.text.trim() &&
-              !formData.skipTextStep)
+            (currentStep === 1 && !formData.text.trim())
           }
         >
           {currentStep === steps.length ? 'Finish' : 'Next'}

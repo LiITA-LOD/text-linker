@@ -43,24 +43,7 @@
   padding: 0.6rem 1rem;
 }
 
-.input-actions .btn-skip {
-  flex: 0 0 auto;
-  min-width: 80px;
-  background: rgba(168, 85, 247, 0.2);
-  color: #a855f7;
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  font-size: 0.85rem;
-  padding: 0.6rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
 
-.input-actions .btn-skip:hover:not(:disabled) {
-  background: rgba(168, 85, 247, 0.3);
-  border-color: rgba(168, 85, 247, 0.5);
-  transform: translateY(-1px);
-}
 
 .form-group {
   display: flex;
@@ -260,10 +243,6 @@
   }
 
   .input-actions .btn {
-    min-width: auto;
-  }
-
-  .input-actions .btn-skip {
     min-width: auto;
   }
 
