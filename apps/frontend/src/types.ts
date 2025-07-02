@@ -9,6 +9,18 @@ export interface StepData {
   [key: string]: any;
 }
 
+export enum StepState {
+  INITIAL = 'initial',
+  PENDING = 'pending',
+  SETTLED = 'settled',
+  ERRORED = 'errored',
+}
+
+export interface StepStatus {
+  focused: boolean;
+  state: StepState;
+}
+
 export interface Step {
   id: number;
   title: string;
