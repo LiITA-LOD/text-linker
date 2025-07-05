@@ -1,4 +1,14 @@
-import React, { useState, useRef } from 'react';
+import { ContentPaste, Upload } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
+import type React from 'react';
+import { useRef, useState } from 'react';
 
 interface InputActionsProps {
   onDataChange: (data: { [key: string]: string }) => void;
@@ -27,7 +37,6 @@ const InputActions: React.FC<InputActionsProps> = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleTextChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -39,10 +48,6 @@ const InputActions: React.FC<InputActionsProps> = ({
     try {
       const text = await navigator.clipboard.readText();
       onDataChange({ [dataKey]: text });
-      // Focus the textarea after pasting
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-      }
     } catch (err) {
       console.error('Failed to read clipboard:', err);
       alert('Unable to access clipboard. Please paste manually using Ctrl+V.');
@@ -102,33 +107,25 @@ const InputActions: React.FC<InputActionsProps> = ({
     }
   };
 
-  const handlePasteEvent = (
-    e: React.KeyboardEvent<HTMLTextAreaElement>,
-  ): void => {
-    // Handle Ctrl+V paste events
-    if (e.ctrlKey && e.key === 'v') {
-      // The default paste behavior will handle this
-      // We just need to make sure our textarea is focused
-    }
-  };
-
   return (
     <>
-      <div className="input-actions">
-        <button
-          className="btn btn-secondary"
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ContentPaste />}
           onClick={handlePaste}
           disabled={isLoading}
         >
-          📋 Paste from Clipboard
-        </button>
-        <button
-          className="btn btn-secondary"
+          Paste from Clipboard
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<Upload />}
           onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
         >
-          📁 Upload File
-        </button>
+          Upload File
+        </Button>
         <input
           ref={fileInputRef}
           type="file"
@@ -136,46 +133,93 @@ const InputActions: React.FC<InputActionsProps> = ({
           onChange={handleFileSelect}
           style={{ display: 'none' }}
         />
-      </div>
+      </Box>
 
-      <div className="form-group">
-        <label htmlFor={`${dataKey}-input`}>
-          {dataKey.charAt(0).toUpperCase() + dataKey.slice(1)} Content
-        </label>
-        <div
-          className={`text-input-container ${isDragOver ? 'drag-over' : ''}`}
+      <Box sx={{ position: 'relative' }}>
+        <TextField
+          multiline
+          rows={rows}
+          value={value}
+          onChange={handleTextChange}
+          placeholder={isDragOver ? dragPlaceholder : placeholder}
+          disabled={isLoading}
+          fullWidth
+          variant="outlined"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              border: isDragOver
+                ? '2px dashed #6366f1'
+                : '1px solid rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+              },
+              '&.Mui-focused': {
+                border: '2px solid #6366f1',
+              },
+            },
+            '& .MuiInputBase-input': {
+              color: '#ffffff',
+              '&::placeholder': {
+                color: 'rgba(255, 255, 255, 0.5)',
+                opacity: 1,
+              },
+            },
+          }}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-        >
-          <textarea
-            ref={textareaRef}
-            id={`${dataKey}-input`}
-            value={value}
-            onChange={handleTextChange}
-            onKeyDown={handlePasteEvent}
-            placeholder={isDragOver ? dragPlaceholder : placeholder}
-            rows={rows}
-            className={`form-control ${className}`}
-            disabled={isLoading}
-          />
-          {isDragOver && (
-            <div className="drag-overlay">
-              <div className="drag-message">
-                📄 Drop file here to load its content
-              </div>
-            </div>
-          )}
-          {isLoading && (
-            <div className="loading-overlay">
-              <div className="loading-spinner"></div>
-              <div className="loading-message">Loading file...</div>
-            </div>
-          )}
-        </div>
-      </div>
+        />
+
+        {isDragOver && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              borderRadius: 1,
+              border: '2px dashed #6366f1',
+              zIndex: 1,
+            }}
+          >
+            <Typography variant="h6" color="primary">
+              📄 Drop file here to load its content
+            </Typography>
+          </Box>
+        )}
+
+        {isLoading && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              borderRadius: 1,
+              zIndex: 1,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <CircularProgress size={24} />
+              <Typography>Loading file...</Typography>
+            </Box>
+          </Box>
+        )}
+      </Box>
     </>
   );
 };
 
-export default InputActions; 
+export default InputActions;

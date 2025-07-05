@@ -1,6 +1,15 @@
+import { ContentPaste, DragIndicator, Edit, Upload } from '@mui/icons-material';
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Typography,
+} from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import './Step.css';
 import type { StepProps } from '../../types';
 import InputActions from './InputActions';
 
@@ -13,13 +22,24 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
   }, []);
 
   return (
-    <div className="step-container">
-      <div className="step-header">
-        <h3>Step 1: Input Text</h3>
-        <p>Enter the text you want to annotate with linguistic data.</p>
-      </div>
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(10px)',
+      }}
+    >
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h3" sx={{ mb: 1 }}>
+          Step 1: Input Text
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Enter the text you want to annotate with linguistic data.
+        </Typography>
+      </Box>
 
-      <div className="step-content">
+      <Box sx={{ mb: 3 }}>
         <InputActions
           onDataChange={onDataChange}
           dataKey="text"
@@ -31,23 +51,44 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
           dragPlaceholder="Drop your file here..."
           rows={8}
         />
+      </Box>
 
-        <div className="text-info">
-          <p>
-            <strong>Input Methods:</strong>
-          </p>
-          <ul className="input-methods">
-            <li>📝 Type or paste text directly (Ctrl+V)</li>
-            <li>📋 Use the "Paste from Clipboard" button</li>
-            <li>📁 Click "Upload File" to select a file</li>
-            <li>📄 Drag & drop a file directly onto the text area</li>
-          </ul>
-          <p>
-            <strong>Supported file types:</strong> .txt, .md, .html, .xml, .json
-          </p>
-        </div>
-      </div>
-    </div>
+      <Box>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Input Methods:
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemIcon>
+              <Edit color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Type or paste text directly (Ctrl+V)" />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <ContentPaste color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Use the 'Paste from Clipboard' button" />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Upload color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Click 'Upload File' to select a file" />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <DragIndicator color="primary" />
+            </ListItemIcon>
+            <ListItemText primary="Drag & drop a file directly onto the text area" />
+          </ListItem>
+        </List>
+
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+          <strong>Supported file types:</strong> .txt, .md, .html, .xml, .json
+        </Typography>
+      </Box>
+    </Paper>
   );
 };
 

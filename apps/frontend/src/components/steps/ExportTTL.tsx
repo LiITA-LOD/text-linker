@@ -1,6 +1,7 @@
+import { Download } from '@mui/icons-material';
+import { Box, Button, Paper, TextField, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import './Step.css';
 import type { StepProps } from '../../types';
 
 const ExportTTL: React.FC<StepProps> = ({ data, onDataChange }) => {
@@ -94,45 +95,80 @@ ${data.linking
   };
 
   return (
-    <div className="step-container">
-      <div className="step-header">
-        <h3>Step 4: Export TTL</h3>
-        <p>Review and export the generated TTL (Turtle) format data.</p>
-      </div>
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(10px)',
+      }}
+    >
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h3" sx={{ mb: 1 }}>
+          Step 4: Export TTL
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Review and export the generated TTL (Turtle) format data.
+        </Typography>
+      </Box>
 
-      <div className="step-content">
-        <div className="form-group">
-          <label htmlFor="ttl-output">Generated TTL</label>
-          <textarea
-            id="ttl-output"
-            value={generatedTTL}
-            onChange={handleTTLChange}
-            placeholder="Generated TTL will appear here..."
-            rows={12}
-            className="form-control no-wrap"
-            readOnly={false}
-          />
-        </div>
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          multiline
+          rows={12}
+          value={generatedTTL}
+          onChange={handleTTLChange}
+          placeholder="Generated TTL will appear here..."
+          fullWidth
+          variant="outlined"
+          label="Generated TTL"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+              },
+              '&.Mui-focused': {
+                border: '2px solid #6366f1',
+              },
+            },
+            '& .MuiInputBase-input': {
+              color: '#ffffff',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              '&::placeholder': {
+                color: 'rgba(255, 255, 255, 0.5)',
+                opacity: 1,
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'rgba(255, 255, 255, 0.7)',
+            },
+          }}
+        />
+      </Box>
 
-        <div className="step-actions">
-          <button
-            className="btn btn-primary"
-            onClick={handleDownload}
-            disabled={!generatedTTL.trim()}
-          >
-            Download TTL File
-          </button>
-        </div>
+      <Box sx={{ mb: 3 }}>
+        <Button
+          variant="contained"
+          startIcon={<Download />}
+          onClick={handleDownload}
+          disabled={!generatedTTL.trim()}
+        >
+          Download TTL File
+        </Button>
+      </Box>
 
-        <div className="text-info">
-          <p>
-            <strong>TTL Format:</strong> Turtle is a text-based format for
-            representing RDF data. This file contains all the linguistic
-            annotations and linking data in a structured format.
-          </p>
-        </div>
-      </div>
-    </div>
+      <Box>
+        <Typography variant="body2" color="text.secondary">
+          <strong>TTL Format:</strong> Turtle is a text-based format for
+          representing RDF data. This file contains all the linguistic
+          annotations and linking data in a structured format.
+        </Typography>
+      </Box>
+    </Paper>
   );
 };
 

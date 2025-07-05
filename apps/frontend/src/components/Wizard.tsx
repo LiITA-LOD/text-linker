@@ -1,7 +1,31 @@
+import {
+  CheckCircle,
+  Error as ErrorIcon,
+  Pending,
+  RadioButtonUnchecked,
+} from '@mui/icons-material';
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Step as MuiStep,
+  Paper,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from '@mui/material';
 import type React from 'react';
 import { useState } from 'react';
-import './Wizard.css';
-import type { APIResponse, FormData, Step, StepData, StepStatus } from '../types';
+import type {
+  APIResponse,
+  FormData,
+  Step,
+  StepData,
+  StepStatus,
+} from '../types';
 import { StepState } from '../types';
 import ExportTTL from './steps/ExportTTL';
 import InputConllu from './steps/InputConllu';
@@ -37,10 +61,16 @@ const Wizard: React.FC = () => {
     return initialStates;
   });
 
-  const updateStepState = (stepId: number, updates: Partial<StepStatus>): void => {
+  const updateStepState = (
+    stepId: number,
+    updates: Partial<StepStatus>,
+  ): void => {
     setStepStates((prev) => {
       const newStates = new Map(prev);
-      const currentState = newStates.get(stepId) || { focused: false, state: StepState.INITIAL };
+      const currentState = newStates.get(stepId) || {
+        focused: false,
+        state: StepState.INITIAL,
+      };
       newStates.set(stepId, { ...currentState, ...updates });
       return newStates;
     });
@@ -51,11 +81,17 @@ const Wizard: React.FC = () => {
       const newStates = new Map(prev);
       // Set all steps to not focused
       steps.forEach((step) => {
-        const currentState = newStates.get(step.id) || { focused: false, state: StepState.INITIAL };
+        const currentState = newStates.get(step.id) || {
+          focused: false,
+          state: StepState.INITIAL,
+        };
         newStates.set(step.id, { ...currentState, focused: false });
       });
       // Set the focused step
-      const focusedState = newStates.get(focusedStepId) || { focused: false, state: StepState.INITIAL };
+      const focusedState = newStates.get(focusedStepId) || {
+        focused: false,
+        state: StepState.INITIAL,
+      };
       newStates.set(focusedStepId, { ...focusedState, focused: true });
       return newStates;
     });
@@ -213,70 +249,133 @@ const Wizard: React.FC = () => {
   const getStepStatus = (stepId: number): string => {
     const stepStatus = stepStates.get(stepId);
     if (!stepStatus) return '';
-    
+
     if (stepStatus.focused) return 'active';
     return stepStatus.state;
+  };
+
+  const getStepIcon = (stepId: number) => {
+    const stepStatus = stepStates.get(stepId);
+    if (!stepStatus) return <RadioButtonUnchecked />;
+
+    switch (stepStatus.state) {
+      case StepState.SETTLED:
+        return <CheckCircle color="success" />;
+      case StepState.ERRORED:
+        return <ErrorIcon color="error" />;
+      case StepState.PENDING:
+        return <Pending color="primary" />;
+      default:
+        return stepStatus.focused ? (
+          <RadioButtonUnchecked color="primary" />
+        ) : (
+          <RadioButtonUnchecked />
+        );
+    }
   };
 
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
-    <div className="wizard">
-      <div className="step-indicator">
-        {steps.map((step) => (
-          <div
-            key={step.id}
-            className={`step ${getStepStatus(step.id)}`}
-            onClick={() => handleStepClick(step.id)}
-          >
-            <div className="step-number">{step.id}</div>
-            <div className="step-title">{step.title}</div>
-          </div>
-        ))}
-      </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {/* Horizontal Stepper */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          background: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        <Stepper activeStep={currentStep - 1} sx={{ mb: 2 }}>
+          {steps.map((step, index) => (
+            <MuiStep
+              key={step.id}
+              completed={getStepStatus(step.id) === 'settled'}
+            >
+              <StepLabel
+                icon={getStepIcon(step.id)}
+                onClick={() => handleStepClick(step.id)}
+                sx={{ cursor: 'pointer' }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                    {step.title}
+                  </Typography>
+                  {getStepStatus(step.id) === 'error' && (
+                    <Chip label="Error" color="error" size="small" />
+                  )}
+                  {getStepStatus(step.id) === 'pending' && (
+                    <Chip label="Processing" color="primary" size="small" />
+                  )}
+                </Box>
+              </StepLabel>
+            </MuiStep>
+          ))}
+        </Stepper>
 
-      <div className="step-note">
-        💡 You can skip to any step by clicking on the step indicators above
-      </div>
+        <Alert severity="info" sx={{ fontSize: '0.875rem' }}>
+          💡 You can skip to any step by clicking on the step indicators above
+        </Alert>
+      </Paper>
 
+      {/* Loading State */}
       {isLoading && (
-        <div className="wizard-loading">
-          <div className="loading-spinner"></div>
-          <div className="loading-message">
-            {currentStep === 1
-              ? 'Tokenizing text...'
-              : currentStep === 2
-                ? 'Prelinking CoNLL-U data...'
-                : 'Processing...'}
-          </div>
-        </div>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <CircularProgress size={24} />
+            <Typography>
+              {currentStep === 1
+                ? 'Tokenizing text...'
+                : currentStep === 2
+                  ? 'Prelinking CoNLL-U data...'
+                  : 'Processing...'}
+            </Typography>
+          </Box>
+        </Paper>
       )}
 
-      <div className={`wizard-content ${isLoading ? 'loading' : ''}`}>
+      {/* Current Step Content */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          background: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
         <CurrentStepComponent data={formData} onDataChange={handleDataChange} />
-      </div>
 
-      <div className="wizard-footer">
-        <button
-          className="btn btn-secondary"
-          onClick={handlePrevious}
-          disabled={currentStep === 1 || isLoading}
-        >
-          Previous
-        </button>
-        <button
-          className="btn btn-primary"
-          onClick={handleNext}
-          disabled={
-            currentStep === steps.length ||
-            isLoading ||
-            (currentStep === 1 && !formData.text.trim())
-          }
-        >
-          {currentStep === steps.length ? 'Finish' : 'Next'}
-        </button>
-      </div>
-    </div>
+        {/* Navigation Buttons */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Button
+            variant="outlined"
+            onClick={handlePrevious}
+            disabled={currentStep === 1 || isLoading}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleNext}
+            disabled={
+              currentStep === steps.length ||
+              isLoading ||
+              (currentStep === 1 && !formData.text.trim())
+            }
+          >
+            {currentStep === steps.length ? 'Finish' : 'Next'}
+          </Button>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 
