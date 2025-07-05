@@ -14,6 +14,7 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             pnpm
+            biome
           ];
           shellHook = ''
             # NOTE: this flags avoids ERR_OSSL_EVP_UNSUPPORTED
