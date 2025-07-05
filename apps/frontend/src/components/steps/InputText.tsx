@@ -22,15 +22,8 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
   }, []);
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 3,
-        background: 'rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(10px)',
-      }}
-    >
-      <Box sx={{ mb: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box>
         <Typography variant="h4" component="h3" sx={{ mb: 1 }}>
           Step 1: Input Text
         </Typography>
@@ -39,48 +32,58 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
         </Typography>
       </Box>
 
-      <Box sx={{ mb: 3 }}>
-        <InputActions
-          onDataChange={onDataChange}
-          dataKey="text"
-          value={data.text || ''}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-          acceptFileTypes=".txt,.md,.html,.xml,.json"
-          placeholder="Enter your text here or drag & drop a file..."
-          dragPlaceholder="Drop your file here..."
-          rows={8}
-        />
-      </Box>
+      <InputActions
+        onDataChange={onDataChange}
+        dataKey="text"
+        value={data.text || ''}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+        acceptFileTypes=".txt,.md,.html,.xml,.json"
+        placeholder="Enter your text here or drag & drop a file..."
+        dragPlaceholder="Drop your file here..."
+        rows={8}
+      />
 
       <Box>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Input Methods:
+        <Typography variant="h6" sx={{ mb: 2, color: 'text.primary' }}>
+          Input Methods
         </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <Edit color="primary" />
+        <List dense sx={{ py: 0 }}>
+          <ListItem sx={{ px: 0 }}>
+            <ListItemIcon sx={{ minWidth: 32 }}>
+              <Edit color="primary" fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Type or paste text directly (Ctrl+V)" />
+            <ListItemText
+              primary="Type or paste text directly (Ctrl+V)"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
           </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <ContentPaste color="primary" />
+          <ListItem sx={{ px: 0 }}>
+            <ListItemIcon sx={{ minWidth: 32 }}>
+              <ContentPaste color="primary" fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Use the 'Paste from Clipboard' button" />
+            <ListItemText
+              primary="Use the 'Paste from Clipboard' button"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
           </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <Upload color="primary" />
+          <ListItem sx={{ px: 0 }}>
+            <ListItemIcon sx={{ minWidth: 32 }}>
+              <Upload color="primary" fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Click 'Upload File' to select a file" />
+            <ListItemText
+              primary="Click 'Upload File' to select a file"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
           </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <DragIndicator color="primary" />
+          <ListItem sx={{ px: 0 }}>
+            <ListItemIcon sx={{ minWidth: 32 }}>
+              <DragIndicator color="primary" fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Drag & drop a file directly onto the text area" />
+            <ListItemText
+              primary="Drag & drop a file directly onto the text area"
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
           </ListItem>
         </List>
 
@@ -88,7 +91,7 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
           <strong>Supported file types:</strong> .txt, .md, .html, .xml, .json
         </Typography>
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

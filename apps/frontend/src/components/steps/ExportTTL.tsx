@@ -95,15 +95,8 @@ ${data.linking
   };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 3,
-        background: 'rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(10px)',
-      }}
-    >
-      <Box sx={{ mb: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box>
         <Typography variant="h4" component="h3" sx={{ mb: 1 }}>
           Step 4: Export TTL
         </Typography>
@@ -112,45 +105,46 @@ ${data.linking
         </Typography>
       </Box>
 
-      <Box sx={{ mb: 3 }}>
-        <TextField
-          multiline
-          rows={12}
-          value={generatedTTL}
-          onChange={handleTTLChange}
-          placeholder="Generated TTL will appear here..."
-          fullWidth
-          variant="outlined"
-          label="Generated TTL"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              '&:hover': {
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-              },
-              '&.Mui-focused': {
-                border: '2px solid #6366f1',
-              },
+      <TextField
+        multiline
+        rows={12}
+        value={generatedTTL}
+        onChange={handleTTLChange}
+        placeholder="Generated TTL will appear here..."
+        fullWidth
+        variant="outlined"
+        label="Generated TTL"
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: 'rgba(15, 23, 42, 0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(148, 163, 184, 0.2)',
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              border: '1px solid rgba(148, 163, 184, 0.3)',
             },
-            '& .MuiInputBase-input': {
-              color: '#ffffff',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              '&::placeholder': {
-                color: 'rgba(255, 255, 255, 0.5)',
-                opacity: 1,
-              },
+            '&.Mui-focused': {
+              border: '2px solid #6366f1',
+              boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.1)',
             },
-            '& .MuiInputLabel-root': {
-              color: 'rgba(255, 255, 255, 0.7)',
+          },
+          '& .MuiInputBase-input': {
+            color: '#f8fafc',
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+            lineHeight: 1.5,
+            '&::placeholder': {
+              color: 'rgba(203, 213, 225, 0.6)',
+              opacity: 1,
             },
-          }}
-        />
-      </Box>
+          },
+          '& .MuiInputLabel-root': {
+            color: 'rgba(203, 213, 225, 0.7)',
+          },
+        }}
+      />
 
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
         <Button
           variant="contained"
           startIcon={<Download />}
@@ -163,12 +157,10 @@ ${data.linking
 
       <Box>
         <Typography variant="body2" color="text.secondary">
-          <strong>TTL Format:</strong> Turtle is a text-based format for
-          representing RDF data. This file contains all the linguistic
-          annotations and linking data in a structured format.
+          <strong>TTL Format:</strong> Turtle is a text-based format for representing RDF data. This file contains all the linguistic annotations and linking data in a structured format.
         </Typography>
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

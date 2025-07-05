@@ -277,17 +277,10 @@ const Wizard: React.FC = () => {
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {/* Horizontal Stepper */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        <Stepper activeStep={currentStep - 1} sx={{ mb: 2 }}>
+      <Paper elevation={0}>
+        <Stepper activeStep={currentStep - 1} sx={{ p: 3 }}>
           {steps.map((step, index) => (
             <MuiStep
               key={step.id}
@@ -298,40 +291,31 @@ const Wizard: React.FC = () => {
                 onClick={() => handleStepClick(step.id)}
                 sx={{ cursor: 'pointer' }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                    {step.title}
-                  </Typography>
-                  {getStepStatus(step.id) === 'error' && (
-                    <Chip label="Error" color="error" size="small" />
-                  )}
-                  {getStepStatus(step.id) === 'pending' && (
-                    <Chip label="Processing" color="primary" size="small" />
-                  )}
-                </Box>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {step.title}
+                </Typography>
+                {getStepStatus(step.id) === 'error' && (
+                  <Chip label="Error" color="error" size="small" sx={{ ml: 1 }} />
+                )}
+                {getStepStatus(step.id) === 'pending' && (
+                  <Chip label="Processing" color="primary" size="small" sx={{ ml: 1 }} />
+                )}
               </StepLabel>
             </MuiStep>
           ))}
         </Stepper>
 
-        <Alert severity="info" sx={{ fontSize: '0.875rem' }}>
+        <Alert severity="info" sx={{ mx: 3, mb: 3, fontSize: '0.875rem' }}>
           💡 You can skip to any step by clicking on the step indicators above
         </Alert>
       </Paper>
 
       {/* Loading State */}
       {isLoading && (
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            background: 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(10px)',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <CircularProgress size={24} />
-            <Typography>
+        <Paper elevation={0}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 3 }}>
+            <CircularProgress size={20} />
+            <Typography variant="body2">
               {currentStep === 1
                 ? 'Tokenizing text...'
                 : currentStep === 2
@@ -343,18 +327,13 @@ const Wizard: React.FC = () => {
       )}
 
       {/* Current Step Content */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        <CurrentStepComponent data={formData} onDataChange={handleDataChange} />
-
+      <Paper elevation={0}>
+        <Box sx={{ p: 3 }}>
+          <CurrentStepComponent data={formData} onDataChange={handleDataChange} />
+        </Box>
+        
         {/* Navigation Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 3, pt: 0 }}>
           <Button
             variant="outlined"
             onClick={handlePrevious}

@@ -109,12 +109,13 @@ const InputActions: React.FC<InputActionsProps> = ({
 
   return (
     <>
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
         <Button
           variant="outlined"
           startIcon={<ContentPaste />}
           onClick={handlePaste}
           disabled={isLoading}
+          size="small"
         >
           Paste from Clipboard
         </Button>
@@ -123,6 +124,7 @@ const InputActions: React.FC<InputActionsProps> = ({
           startIcon={<Upload />}
           onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
+          size="small"
         >
           Upload File
         </Button>
@@ -147,22 +149,25 @@ const InputActions: React.FC<InputActionsProps> = ({
           variant="outlined"
           sx={{
             '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: 'rgba(15, 23, 42, 0.3)',
               backdropFilter: 'blur(10px)',
-              border: isDragOver
-                ? '2px dashed #6366f1'
-                : '1px solid rgba(255, 255, 255, 0.2)',
+              border: isDragOver ? '2px dashed #6366f1' : '1px solid rgba(148, 163, 184, 0.2)',
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
-                border: '1px solid rgba(255, 255, 255, 0.3)',
+                border: '1px solid rgba(148, 163, 184, 0.3)',
               },
               '&.Mui-focused': {
                 border: '2px solid #6366f1',
+                boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.1)',
               },
             },
             '& .MuiInputBase-input': {
-              color: '#ffffff',
+              color: '#f8fafc',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              lineHeight: 1.5,
               '&::placeholder': {
-                color: 'rgba(255, 255, 255, 0.5)',
+                color: 'rgba(203, 213, 225, 0.6)',
                 opacity: 1,
               },
             },
@@ -171,7 +176,7 @@ const InputActions: React.FC<InputActionsProps> = ({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         />
-
+        
         {isDragOver && (
           <Box
             sx={{
@@ -189,12 +194,12 @@ const InputActions: React.FC<InputActionsProps> = ({
               zIndex: 1,
             }}
           >
-            <Typography variant="h6" color="primary">
+            <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
               📄 Drop file here to load its content
             </Typography>
           </Box>
         )}
-
+        
         {isLoading && (
           <Box
             sx={{
@@ -206,14 +211,14 @@ const InputActions: React.FC<InputActionsProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              backgroundColor: 'rgba(15, 23, 42, 0.8)',
               borderRadius: 1,
               zIndex: 1,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <CircularProgress size={24} />
-              <Typography>Loading file...</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <CircularProgress size={16} />
+              <Typography variant="body2">Loading file...</Typography>
             </Box>
           </Box>
         )}
