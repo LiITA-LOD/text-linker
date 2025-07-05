@@ -13,14 +13,33 @@
       in {
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
+            nodejs
             pnpm
             biome
           ];
-          shellHook = ''
-            # NOTE: this flags avoids ERR_OSSL_EVP_UNSUPPORTED
-            export NODE_OPTIONS=--openssl-legacy-provider
-            export PATH="$PATH:$(realpath ./node_modules/.bin)"
-          '';
+        };
+        packages = {
+          default = pkgs.stdenv.mkDerivation (finalAttrs: {
+            pname = "text-linker-frontend";
+            version = "0.1.0";
+            src = ./.;
+            buildInputs = with pkgs; [
+              nodejs
+              pnpm
+              pnpm.configHook
+            ];
+            pnpmDeps = pkgs.pnpm.fetchDeps {
+              inherit (finalAttrs) pname version src;
+              hash = "sha256-vx0fgXQAGoDcIpuqoDNub3VgFB7rKls2THTuFwBSFTU=";
+            };
+            buildPhase = ''
+              pnpm run build
+            '';
+
+            installPhase = ''
+              cp -r dist $out
+            '';
+          });
         };
       }
     );
