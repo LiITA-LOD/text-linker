@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
 import InputActions from './InputActions';
 
-const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
+const Origin: React.FC<StepProps> = ({ data, onDataChange }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -43,4 +43,4 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
   );
 };
 
-export default InputText;
+export default Origin; 

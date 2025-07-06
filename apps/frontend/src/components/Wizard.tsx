@@ -27,16 +27,16 @@ import type {
   StepStatus,
 } from '../types';
 import { StepState } from '../types';
-import ExportTTL from './steps/ExportTTL';
-import InputConllu from './steps/InputConllu';
-import InputLinking from './steps/InputLinking';
-import InputText from './steps/InputText';
+import Turtle from './steps/Turtle';
+import Conllu from './steps/Conllu';
+import Linked from './steps/Linked';
+import Origin from './steps/Origin';
 
 const steps: Step[] = [
-  { id: 1, title: 'Original', component: InputText },
-  { id: 2, title: 'CoNLL-U', component: InputConllu },
-  { id: 3, title: 'Linked', component: InputLinking },
-  { id: 4, title: 'Turtle', component: ExportTTL },
+  { id: 1, title: 'Original', component: Origin },
+  { id: 2, title: 'CoNLL-U', component: Conllu },
+  { id: 3, title: 'Linked', component: Linked },
+  { id: 4, title: 'Turtle', component: Turtle },
 ];
 
 const Wizard: React.FC = () => {

@@ -7,40 +7,40 @@ import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
 import InputActions from './InputActions';
 
-const ExportTTL: React.FC<StepProps> = ({ data, onDataChange }) => {
+const Conllu: React.FC<StepProps> = ({ data, onDataChange }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // Update parent component when data changes
-    onDataChange({ ttl: data.ttl || '' });
+    onDataChange({ conllu: data.conllu || '' });
   }, []);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box>
         <Typography variant="h4" component="h3" sx={{ mb: 1 }}>
-          Step 4: Export TTL
+          Step 2: Input CoNLL-U
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Review and export the generated TTL (Turtle) format data.
+          Enter the CoNLL-U format data for morphological and syntactic annotation.
         </Typography>
       </Box>
 
       <InputActions
         onDataChange={onDataChange}
-        dataKey="ttl"
-        value={data.ttl || ''}
+        dataKey="conllu"
+        value={data.conllu || ''}
         isLoading={isLoading}
         setIsLoading={setIsLoading}
-        acceptFileTypes=".ttl"
-        placeholder="Enter your TTL data here or drag & drop a file..."
-        dragPlaceholder="Drop your TTL file here..."
+        acceptFileTypes=".conllu"
+        placeholder="Enter your CoNLL-U data here or drag & drop a file..."
+        dragPlaceholder="Drop your CoNLL-U file here..."
         rows={10}
         showOutputButtons={true}
-        defaultFileName="linguistic-annotation"
+        defaultFileName="input-conllu"
       />
     </Box>
   );
 };
 
-export default ExportTTL;
+export default Conllu; 

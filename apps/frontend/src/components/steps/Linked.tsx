@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
 import InputActions from './InputActions';
 
-const InputLinking: React.FC<StepProps> = ({ data, onDataChange }) => {
+const Linked: React.FC<StepProps> = ({ data, onDataChange }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -41,4 +41,4 @@ const InputLinking: React.FC<StepProps> = ({ data, onDataChange }) => {
   );
 };
 
-export default InputLinking;
+export default Linked; 
