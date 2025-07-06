@@ -24,6 +24,7 @@ interface InputActionsProps {
   className?: string;
   showOutputButtons?: boolean; // Whether to show copy/download buttons
   defaultFileName?: string; // Default filename for download
+  showTextField?: boolean; // Whether to show the text input field
 }
 
 const InputActions: React.FC<InputActionsProps> = ({
@@ -39,6 +40,7 @@ const InputActions: React.FC<InputActionsProps> = ({
   className = '',
   showOutputButtons = false,
   defaultFileName = 'output',
+  showTextField = true,
 }) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -265,105 +267,107 @@ const InputActions: React.FC<InputActionsProps> = ({
         />
       </Box>
 
-      <Box sx={{ position: 'relative' }}>
-        <TextField
-          multiline
-          rows={rows}
-          value={value}
-          onChange={handleTextChange}
-          placeholder={placeholder}
-          disabled={isLoading}
-          fullWidth
-          variant="outlined"
+      {showTextField && (
+        <Box sx={{ position: 'relative' }}>
+          <TextField
+            multiline
+            rows={rows}
+            value={value}
+            onChange={handleTextChange}
+            placeholder={placeholder}
+            disabled={isLoading}
+            fullWidth
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: 'rgba(15, 23, 42, 0.3)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(148, 163, 184, 0.2)',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  border: '1px solid rgba(148, 163, 184, 0.3)',
+                },
+                '&.Mui-focused': {
+                  border: '2px solid #6366f1',
+                  boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.1)',
+                },
+              },
+              '& .MuiInputBase-input': {
+                color: '#f8fafc',
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                lineHeight: 1.5,
+                '&::placeholder': {
+                  color: 'rgba(203, 213, 225, 0.6)',
+                  opacity: 1,
+                },
+              },
+            }}
+          />
+          
+          {isLoading && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                borderRadius: 1,
+                zIndex: 1,
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <CircularProgress size={16} />
+                <Typography variant="body2">Loading file...</Typography>
+              </Box>
+            </Box>
+          )}
+        </Box>
+      )}
+      
+      {isDragOver && createPortal(
+        <Box
           sx={{
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(15, 23, 42, 0.3)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(148, 163, 184, 0.2)',
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': {
-                border: '1px solid rgba(148, 163, 184, 0.3)',
-              },
-              '&.Mui-focused': {
-                border: '2px solid #6366f1',
-                boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.1)',
-              },
-            },
-            '& .MuiInputBase-input': {
-              color: '#f8fafc',
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              lineHeight: 1.5,
-              '&::placeholder': {
-                color: 'rgba(203, 213, 225, 0.6)',
-                opacity: 1,
-              },
-            },
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+            backdropFilter: 'blur(4px)',
+            border: '3px dashed #6366f1',
+            zIndex: 9999,
+            pointerEvents: 'none',
           }}
-        />
-        
-        {isDragOver && createPortal(
+        >
           <Box
             sx={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(99, 102, 241, 0.15)',
-              backdropFilter: 'blur(4px)',
-              border: '3px dashed #6366f1',
-              zIndex: 9999,
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              borderRadius: 2,
+              padding: 3,
+              border: '2px solid #6366f1',
+              textAlign: 'center',
               pointerEvents: 'none',
             }}
           >
-            <Box
-              sx={{
-                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                borderRadius: 2,
-                padding: 3,
-                border: '2px solid #6366f1',
-                textAlign: 'center',
-                pointerEvents: 'none',
-              }}
-            >
-              <Typography variant="h6" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
-                Drop file here
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Release to load the file content
-              </Typography>
-            </Box>
-          </Box>,
-          document.body
-        )}
-        
-        {isLoading && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(15, 23, 42, 0.8)',
-              borderRadius: 1,
-              zIndex: 1,
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <CircularProgress size={16} />
-              <Typography variant="body2">Loading file...</Typography>
-            </Box>
+            <Typography variant="h6" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
+              Drop file here
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Release to load the file content
+            </Typography>
           </Box>
-        )}
-      </Box>
+        </Box>,
+        document.body
+      )}
     </>
   );
 };
