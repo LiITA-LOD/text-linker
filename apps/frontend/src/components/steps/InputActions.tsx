@@ -1,4 +1,9 @@
-import { ContentPaste, Upload, ContentCopy, Download } from '@mui/icons-material';
+import {
+  ContentCopy,
+  ContentPaste,
+  Download,
+  Upload,
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -8,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import type React from 'react';
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface InputActionsProps {
@@ -57,8 +62,12 @@ const InputActions: React.FC<InputActionsProps> = ({
     const handleGlobalDragLeave = (e: DragEvent) => {
       e.preventDefault();
       // Only hide if we're leaving the window entirely
-      if (e.clientX <= 0 || e.clientY <= 0 || 
-          e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+      if (
+        e.clientX <= 0 ||
+        e.clientY <= 0 ||
+        e.clientX >= window.innerWidth ||
+        e.clientY >= window.innerHeight
+      ) {
         setIsDragOver(false);
       }
     };
@@ -128,18 +137,20 @@ const InputActions: React.FC<InputActionsProps> = ({
       try {
         const handle = await (window as any).showSaveFilePicker({
           suggestedName: `${defaultFileName}.txt`,
-          types: [{
-            description: 'Text files',
-            accept: {
-              'text/plain': ['.txt'],
+          types: [
+            {
+              description: 'Text files',
+              accept: {
+                'text/plain': ['.txt'],
+              },
             },
-          }],
+          ],
         });
-        
+
         const writable = await handle.createWritable();
         await writable.write(value);
         await writable.close();
-        
+
         alert('File saved successfully!');
       } catch (err) {
         if ((err as any).name === 'AbortError') {
@@ -160,17 +171,17 @@ const InputActions: React.FC<InputActionsProps> = ({
   const fallbackDownload = (): void => {
     // Create a blob with the content
     const blob = new Blob([value], { type: 'text/plain;charset=utf-8' });
-    
+
     // Create a download link
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `${defaultFileName}.txt`;
-    
+
     // Trigger download
     document.body.appendChild(link);
     link.click();
-    
+
     // Cleanup
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
@@ -209,11 +220,17 @@ const InputActions: React.FC<InputActionsProps> = ({
     e.target.value = '';
   };
 
-
-
   return (
     <>
-      <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1.5,
+          mb: 2,
+          flexWrap: 'wrap',
+          alignItems: 'center',
+        }}
+      >
         <Box sx={{ display: 'flex', gap: 1.5 }}>
           <Button
             variant="outlined"
@@ -234,7 +251,7 @@ const InputActions: React.FC<InputActionsProps> = ({
             Upload File
           </Button>
         </Box>
-        
+
         {showOutputButtons && (
           <Box sx={{ display: 'flex', gap: 1.5, ml: 'auto' }}>
             <Button
@@ -257,7 +274,7 @@ const InputActions: React.FC<InputActionsProps> = ({
             </Button>
           </Box>
         )}
-        
+
         <input
           ref={fileInputRef}
           type="file"
@@ -304,7 +321,7 @@ const InputActions: React.FC<InputActionsProps> = ({
               },
             }}
           />
-          
+
           {isLoading && (
             <Box
               sx={{
@@ -329,45 +346,50 @@ const InputActions: React.FC<InputActionsProps> = ({
           )}
         </Box>
       )}
-      
-      {isDragOver && createPortal(
-        <Box
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(99, 102, 241, 0.15)',
-            backdropFilter: 'blur(4px)',
-            border: '3px dashed #6366f1',
-            zIndex: 9999,
-            pointerEvents: 'none',
-          }}
-        >
+
+      {isDragOver &&
+        createPortal(
           <Box
             sx={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
-              borderRadius: 2,
-              padding: 3,
-              border: '2px solid #6366f1',
-              textAlign: 'center',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(99, 102, 241, 0.15)',
+              backdropFilter: 'blur(4px)',
+              border: '3px dashed #6366f1',
+              zIndex: 9999,
               pointerEvents: 'none',
             }}
           >
-            <Typography variant="h6" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
-              Drop file here
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Release to load the file content
-            </Typography>
-          </Box>
-        </Box>,
-        document.body
-      )}
+            <Box
+              sx={{
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                borderRadius: 2,
+                padding: 3,
+                border: '2px solid #6366f1',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              <Typography
+                variant="h6"
+                color="primary"
+                sx={{ fontWeight: 600, mb: 1 }}
+              >
+                Drop file here
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Release to load the file content
+              </Typography>
+            </Box>
+          </Box>,
+          document.body,
+        )}
     </>
   );
 };

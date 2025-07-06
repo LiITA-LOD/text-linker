@@ -1,7 +1,4 @@
-import {
-  Box,
-  Typography,
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
@@ -22,7 +19,8 @@ const Conllu: React.FC<StepProps> = ({ data, onDataChange }) => {
           Step 2: Input CoNLL-U
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Enter the CoNLL-U format data for morphological and syntactic annotation.
+          Enter the CoNLL-U format data for morphological and syntactic
+          annotation.
         </Typography>
       </Box>
 
@@ -43,4 +41,4 @@ const Conllu: React.FC<StepProps> = ({ data, onDataChange }) => {
   );
 };
 
-export default Conllu; 
+export default Conllu;

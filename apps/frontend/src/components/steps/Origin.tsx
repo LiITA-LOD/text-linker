@@ -1,7 +1,4 @@
-import {
-  Box,
-  Typography,
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
@@ -43,4 +40,4 @@ const Origin: React.FC<StepProps> = ({ data, onDataChange }) => {
   );
 };
 
-export default Origin; 
+export default Origin;
