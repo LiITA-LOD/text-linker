@@ -1,4 +1,4 @@
-import { ContentPaste, Upload } from '@mui/icons-material';
+import { ContentPaste, Upload, ContentCopy, Download } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -21,6 +21,8 @@ interface InputActionsProps {
   dragPlaceholder: string;
   rows?: number;
   className?: string;
+  showOutputButtons?: boolean; // Whether to show copy/download buttons
+  defaultFileName?: string; // Default filename for download
 }
 
 const InputActions: React.FC<InputActionsProps> = ({
@@ -34,6 +36,8 @@ const InputActions: React.FC<InputActionsProps> = ({
   dragPlaceholder,
   rows = 8,
   className = '',
+  showOutputButtons = false,
+  defaultFileName = 'output',
 }) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,6 +56,81 @@ const InputActions: React.FC<InputActionsProps> = ({
       console.error('Failed to read clipboard:', err);
       alert('Unable to access clipboard. Please paste manually using Ctrl+V.');
     }
+  };
+
+  const handleCopy = async (): Promise<void> => {
+    if (!value.trim()) {
+      alert('No content to copy.');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(value);
+      // You could add a toast notification here instead of alert
+      alert('Content copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to write to clipboard:', err);
+      alert('Unable to copy to clipboard. Please copy manually using Ctrl+C.');
+    }
+  };
+
+  const handleDownload = async (): Promise<void> => {
+    if (!value.trim()) {
+      alert('No content to download.');
+      return;
+    }
+
+    // Try to use the modern File System Access API for "Save As" dialog
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: `${defaultFileName}.txt`,
+          types: [{
+            description: 'Text files',
+            accept: {
+              'text/plain': ['.txt'],
+            },
+          }],
+        });
+        
+        const writable = await handle.createWritable();
+        await writable.write(value);
+        await writable.close();
+        
+        alert('File saved successfully!');
+      } catch (err) {
+        if ((err as any).name === 'AbortError') {
+          // User cancelled the save dialog
+          return;
+        }
+        console.error('Failed to save file:', err);
+        alert('Failed to save file. Falling back to download...');
+        // Fall back to the old method
+        fallbackDownload();
+      }
+    } else {
+      // Fallback for browsers that don't support File System Access API
+      fallbackDownload();
+    }
+  };
+
+  const fallbackDownload = (): void => {
+    // Create a blob with the content
+    const blob = new Blob([value], { type: 'text/plain;charset=utf-8' });
+    
+    // Create a download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${defaultFileName}.txt`;
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleFileUpload = async (file: File): Promise<void> => {
@@ -109,25 +188,51 @@ const InputActions: React.FC<InputActionsProps> = ({
 
   return (
     <>
-      <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
-        <Button
-          variant="outlined"
-          startIcon={<ContentPaste />}
-          onClick={handlePaste}
-          disabled={isLoading}
-          size="small"
-        >
-          Paste from Clipboard
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<Upload />}
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isLoading}
-          size="small"
-        >
-          Upload File
-        </Button>
+      <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ContentPaste />}
+            onClick={handlePaste}
+            disabled={isLoading}
+            size="small"
+          >
+            Paste from Clipboard
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<Upload />}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading}
+            size="small"
+          >
+            Upload File
+          </Button>
+        </Box>
+        
+        {showOutputButtons && (
+          <Box sx={{ display: 'flex', gap: 1.5, ml: 'auto' }}>
+            <Button
+              variant="outlined"
+              startIcon={<ContentCopy />}
+              onClick={handleCopy}
+              disabled={isLoading || !value.trim()}
+              size="small"
+            >
+              Copy to Clipboard
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<Download />}
+              onClick={handleDownload}
+              disabled={isLoading || !value.trim()}
+              size="small"
+            >
+              Download File
+            </Button>
+          </Box>
+        )}
+        
         <input
           ref={fileInputRef}
           type="file"

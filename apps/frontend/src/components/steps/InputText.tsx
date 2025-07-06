@@ -42,6 +42,8 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
         placeholder="Enter your text here or drag & drop a file..."
         dragPlaceholder="Drop your file here..."
         rows={8}
+        showOutputButtons={true}
+        defaultFileName="input-text"
       />
 
       <Box>
@@ -89,6 +91,9 @@ const InputText: React.FC<StepProps> = ({ data, onDataChange }) => {
 
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
           <strong>Supported file types:</strong> .txt, .md, .html, .xml, .json
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          <strong>Output options:</strong> Use "Copy to Clipboard" to copy the text or "Download File" to save it as a .txt file (modern browsers will show a "Save As" dialog).
         </Typography>
       </Box>
     </Box>
