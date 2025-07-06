@@ -310,20 +310,55 @@ const Wizard: React.FC = () => {
         </Alert>
       </Paper>
 
-      {/* Loading State */}
+      {/* Fullscreen Loading Overlay */}
       {isLoading && (
-        <Paper elevation={0}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 3 }}>
-            <CircularProgress size={20} />
-            <Typography variant="body2">
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <Paper
+            elevation={8}
+            sx={{
+              p: 4,
+              borderRadius: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              minWidth: 300,
+              backgroundColor: 'rgba(30, 41, 59, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(148, 163, 184, 0.1)',
+            }}
+          >
+            <CircularProgress size={40} sx={{ color: 'primary.main' }} />
+            <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
               {currentStep === 1
                 ? 'Tokenizing text...'
                 : currentStep === 2
                   ? 'Prelinking CoNLL-U data...'
                   : 'Processing...'}
             </Typography>
-          </Box>
-        </Paper>
+            <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+              {currentStep === 1
+                ? 'Converting your text into CoNLL-U format'
+                : currentStep === 2
+                  ? 'Adding entity linking annotations'
+                  : 'Processing your data...'}
+            </Typography>
+          </Paper>
+        </Box>
       )}
 
       {/* Current Step Content */}
