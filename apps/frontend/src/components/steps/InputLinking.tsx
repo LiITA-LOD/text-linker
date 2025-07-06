@@ -1,19 +1,16 @@
-import { Box, Paper, TextField, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
+import InputActions from './InputActions';
 
 const InputLinking: React.FC<StepProps> = ({ data, onDataChange }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   useEffect(() => {
     // Update parent component when data changes
     onDataChange({ linking: data.linking || '' });
   }, []);
-
-  const handleLinkingChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ): void => {
-    onDataChange({ linking: e.target.value });
-  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -26,81 +23,20 @@ const InputLinking: React.FC<StepProps> = ({ data, onDataChange }) => {
         </Typography>
       </Box>
 
-      <TextField
-        multiline
-        rows={8}
+            <InputActions
+        onDataChange={onDataChange}
+        dataKey="linking"
         value={data.linking || ''}
-        onChange={handleLinkingChange}
-        placeholder="Linking data will be automatically generated from the prelinker service..."
-        fullWidth
-        variant="outlined"
-        label="Linking Data (Auto-generated)"
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            backgroundColor: 'rgba(15, 23, 42, 0.3)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(148, 163, 184, 0.2)',
-            transition: 'all 0.2s ease-in-out',
-            '&:hover': {
-              border: '1px solid rgba(148, 163, 184, 0.3)',
-            },
-            '&.Mui-focused': {
-              border: '2px solid #6366f1',
-              boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.1)',
-            },
-          },
-          '& .MuiInputBase-input': {
-            color: '#f8fafc',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-            lineHeight: 1.5,
-            '&::placeholder': {
-              color: 'rgba(203, 213, 225, 0.6)',
-              opacity: 1,
-            },
-          },
-          '& .MuiInputLabel-root': {
-            color: 'rgba(203, 213, 225, 0.7)',
-          },
-        }}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+        acceptFileTypes=".conllu"
+        placeholder="Enter your annotated CoNLL-U data here or drag & drop a file..."
+        dragPlaceholder="Drop your linking file here..."
+        rows={10}
+        showTextField={true}
+        showOutputButtons={true}
+        defaultFileName="input-linking"
       />
-
-      <Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          <strong>Automatic Linking:</strong> The prelinker service has automatically generated linking data from your CoNLL-U input.
-        </Typography>
-        
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          <strong>Manual Editing:</strong> You can review and edit the linking data above if needed.
-        </Typography>
-        
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          <strong>Linking Format:</strong> The data connects tokens with external linguistic resources, knowledge bases, or lexical databases.
-        </Typography>
-        
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          <strong>Example Format:</strong>
-        </Typography>
-        
-        <Box
-          component="pre"
-          sx={{
-            backgroundColor: 'rgba(15, 23, 42, 0.5)',
-            p: 2,
-            borderRadius: 1,
-            overflow: 'auto',
-            fontSize: '0.75rem',
-            fontFamily: 'monospace',
-            border: '1px solid rgba(148, 163, 184, 0.1)',
-            color: '#cbd5e1',
-            lineHeight: 1.4,
-          }}
-        >
-          {`token_id:1 -> resource:LiLaLemma -> lemma_id:latin_cat
-token_id:2 -> resource:LiLaBrill -> brill_id:brill_cat_noun
-token_id:3 -> resource:LiLaIGVL -> igvl_id:igvl_sit_verb`}
-        </Box>
-      </Box>
     </Box>
   );
 };
