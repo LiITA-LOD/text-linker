@@ -1,13 +1,6 @@
-export interface FormData {
-  text: string;
-  conllu: string;
-  linking: string;
-  ttl: string;
-}
+export type StepKey = 'origin' | 'conllu' | 'linked' | 'turtle';
 
-export interface StepData {
-  [key: string]: any;
-}
+export type FormData = Record<StepKey, string | null>;
 
 export enum StepState {
   INITIAL = 'initial',
@@ -29,7 +22,7 @@ export interface Step {
 
 export interface StepProps {
   data: FormData;
-  onDataChange: (stepData: StepData) => void;
+  mergeWizardData: (stepKey: StepKey, value: string | null) => void;
 }
 
 export interface APIResponse {

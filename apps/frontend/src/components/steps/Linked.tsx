@@ -2,15 +2,35 @@ import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
-import InputActions from './InputActions';
+import InputActions from '../InputActions';
+import { parse, serialize as unparse, type ConlluDocument } from '../../utils/conllu';
 
-const Linked: React.FC<StepProps> = ({ data, onDataChange }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
+  const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
 
   useEffect(() => {
-    // Update parent component when data changes
-    onDataChange({ linking: data.linking || '' });
-  }, []);
+    if (data.linked) {
+      try {
+        setParsedData(parse(data.linked));
+      } catch (error) {
+        console.error('Error parsing linking data:', error);
+        setParsedData(null);
+      }
+    } else {
+      setParsedData(null);
+    }
+  }, [data.linked]);
+
+  const handleDataChange = (value: string) => {
+    try {
+      setParsedData(parse(value));
+      mergeWizardData('linked', value);
+    } catch (error) {
+      console.error('Error parsing input data:', error);
+      setParsedData(null);
+      mergeWizardData('linked', null);
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -25,18 +45,15 @@ const Linked: React.FC<StepProps> = ({ data, onDataChange }) => {
       </Box>
 
       <InputActions
-        onDataChange={onDataChange}
-        dataKey="linking"
-        value={data.linking || ''}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
         acceptFileTypes=".conllu"
-        placeholder="Enter your annotated CoNLL-U data here or drag & drop a file..."
-        dragPlaceholder="Drop your linking file here..."
-        rows={10}
-        showTextField={true}
-        showOutputButtons={true}
         defaultFileName="input-linking"
+        dragPlaceholder="Drop your linking file here..."
+        onDataChange={handleDataChange}
+        placeholder="Enter your annotated CoNLL-U data here or drag & drop a file..."
+        rows={10}
+        showOutputButtons={true}
+        showTextField={true}
+        value={parsedData ? unparse(parsedData) : ''}
       />
     </Box>
   );

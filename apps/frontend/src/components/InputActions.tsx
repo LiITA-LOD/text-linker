@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Paper,
   TextField,
   Typography,
 } from '@mui/material';
@@ -17,11 +16,8 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface InputActionsProps {
-  onDataChange: (data: { [key: string]: string }) => void;
-  dataKey: string; // The key to use when calling onDataChange (e.g., 'text', 'conllu')
+  onDataChange: (value: string) => void;
   value: string; // Current value of the textarea
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
   acceptFileTypes: string; // File input accept attribute
   placeholder: string;
   dragPlaceholder: string;
@@ -34,20 +30,16 @@ interface InputActionsProps {
 
 const InputActions: React.FC<InputActionsProps> = ({
   onDataChange,
-  dataKey,
   value,
-  isLoading,
-  setIsLoading,
   acceptFileTypes,
   placeholder,
-  dragPlaceholder,
   rows = 8,
-  className = '',
   showOutputButtons = false,
   defaultFileName = 'output',
   showTextField = true,
 }) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Global drag and drop handlers
@@ -97,13 +89,14 @@ const InputActions: React.FC<InputActionsProps> = ({
   const handleTextChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ): void => {
-    onDataChange({ [dataKey]: e.target.value });
+    const text = e.target.value;
+    onDataChange(text);
   };
 
   const handlePaste = async (): Promise<void> => {
     try {
       const text = await navigator.clipboard.readText();
-      onDataChange({ [dataKey]: text });
+      onDataChange(text);
     } catch (err) {
       console.error('Failed to read clipboard:', err);
       alert('Unable to access clipboard. Please paste manually using Ctrl+V.');
@@ -193,7 +186,7 @@ const InputActions: React.FC<InputActionsProps> = ({
     setIsLoading(true);
     try {
       const text = await readFileAsText(file);
-      onDataChange({ [dataKey]: text });
+      onDataChange(text);
     } catch (err) {
       console.error('Error reading file:', err);
       alert('Error reading file. Please try again.');

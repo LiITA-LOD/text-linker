@@ -2,15 +2,35 @@ import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
-import InputActions from './InputActions';
+import InputActions from '../InputActions';
+import { parse, serialize as unparse, type ConlluDocument } from '../../utils/conllu';
 
-const Conllu: React.FC<StepProps> = ({ data, onDataChange }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const Conllu: React.FC<StepProps> = ({ data, mergeWizardData }) => {
+  const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
 
   useEffect(() => {
-    // Update parent component when data changes
-    onDataChange({ conllu: data.conllu || '' });
-  }, []);
+    if (data.conllu) {
+      try {
+        setParsedData(parse(data.conllu));
+      } catch (error) {
+        console.error('Error parsing linking data:', error);
+        setParsedData(null);
+      }
+    } else {
+      setParsedData(null);
+    }
+  }, [data.conllu]);
+
+  const handleDataChange = (value: string) => {
+    try {
+      setParsedData(parse(value));
+      mergeWizardData('conllu', value);
+    } catch (error) {
+      console.error('Error parsing input data:', error);
+      setParsedData(null);
+      mergeWizardData('conllu', null);
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -25,17 +45,15 @@ const Conllu: React.FC<StepProps> = ({ data, onDataChange }) => {
       </Box>
 
       <InputActions
-        onDataChange={onDataChange}
-        dataKey="conllu"
-        value={data.conllu || ''}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
         acceptFileTypes=".conllu"
-        placeholder="Enter your CoNLL-U data here or drag & drop a file..."
+        defaultFileName="input-conllu"
         dragPlaceholder="Drop your CoNLL-U file here..."
+        onDataChange={handleDataChange}
+        placeholder="Enter your CoNLL-U data here or drag & drop a file..."
         rows={10}
         showOutputButtons={true}
-        defaultFileName="input-conllu"
+        showTextField={true}
+        value={parsedData ? unparse(parsedData) : ''}
       />
     </Box>
   );

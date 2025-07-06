@@ -2,15 +2,35 @@ import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
-import InputActions from './InputActions';
+import InputActions from '../InputActions';
+import { parse, unparse } from '../../utils/trivial';
 
-const Turtle: React.FC<StepProps> = ({ data, onDataChange }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const Turtle: React.FC<StepProps> = ({ data, mergeWizardData }) => {
+  const [parsedData, setParsedData] = useState<string | null>(null);
 
   useEffect(() => {
-    // Update parent component when data changes
-    onDataChange({ ttl: data.ttl || '' });
-  }, []);
+    if (data.turtle) {
+      try {
+        setParsedData(parse(data.turtle));
+      } catch (error) {
+        console.error('Error parsing linking data:', error);
+        setParsedData(null);
+      }
+    } else {
+      setParsedData(null);
+    }
+  }, [data.turtle]);
+
+  const handleDataChange = (value: string) => {
+    try {
+      setParsedData(parse(value));
+      mergeWizardData('turtle', value);
+    } catch (error) {
+      console.error('Error parsing input data:', error);
+      setParsedData(null);
+      mergeWizardData('turtle', null);
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -24,17 +44,15 @@ const Turtle: React.FC<StepProps> = ({ data, onDataChange }) => {
       </Box>
 
       <InputActions
-        onDataChange={onDataChange}
-        dataKey="ttl"
-        value={data.ttl || ''}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
         acceptFileTypes=".ttl"
-        placeholder="Enter your TTL data here or drag & drop a file..."
+        defaultFileName="linguistic-annotation"
         dragPlaceholder="Drop your TTL file here..."
+        onDataChange={handleDataChange}
+        placeholder="Enter your TTL data here or drag & drop a file..."
         rows={10}
         showOutputButtons={true}
-        defaultFileName="linguistic-annotation"
+        showTextField={true}
+        value={parsedData ? unparse(parsedData) : ''}
       />
     </Box>
   );

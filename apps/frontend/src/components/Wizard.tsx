@@ -12,7 +12,6 @@ import {
   CircularProgress,
   Step as MuiStep,
   Paper,
-  StepContent,
   StepLabel,
   Stepper,
   Typography,
@@ -23,7 +22,7 @@ import type {
   APIResponse,
   FormData,
   Step,
-  StepData,
+  StepKey,
   StepStatus,
 } from '../types';
 import { StepState } from '../types';
@@ -43,10 +42,10 @@ const Wizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
-    text: '',
+    origin: '',
     conllu: '',
-    linking: '',
-    ttl: '',
+    linked: '',
+    turtle: '',
   });
 
   // New step state tracking system
@@ -169,14 +168,14 @@ const Wizard: React.FC = () => {
   };
 
   const handleNext = async (): Promise<void> => {
-    if (currentStep === 1 && formData.text.trim()) {
+    if (currentStep === 1 && formData.origin.trim()) {
       // Update step 1 to pending
       updateStepState(1, { state: StepState.PENDING });
       setIsLoading(true);
 
       try {
         // Call the real tokenization API
-        const conlluData = await callTokenizationAPI(formData.text);
+        const conlluData = await callTokenizationAPI(formData.origin);
         setFormData((prev) => ({ ...prev, conllu: conlluData }));
         // Update step 1 to settled and step 2 to initial
         updateStepState(1, { state: StepState.SETTLED });
@@ -203,7 +202,7 @@ const Wizard: React.FC = () => {
       try {
         // Call the real prelinker API
         const linkedConlluData = await callPrelinkerAPI(formData.conllu);
-        setFormData((prev) => ({ ...prev, linking: linkedConlluData }));
+        setFormData((prev) => ({ ...prev, linked: linkedConlluData }));
         // Update step 2 to settled and step 3 to initial
         updateStepState(2, { state: StepState.SETTLED });
         updateStepState(3, { state: StepState.INITIAL });
@@ -242,8 +241,8 @@ const Wizard: React.FC = () => {
     }
   };
 
-  const handleDataChange = (stepData: StepData): void => {
-    setFormData((prev) => ({ ...prev, ...stepData }));
+  const handleDataChange = (stepKey: StepKey, value: string): void => {
+    setFormData((prev) => ({ ...prev, [stepKey]: value }));
   };
 
   const getStepStatus = (stepId: number): string => {
@@ -365,7 +364,7 @@ const Wizard: React.FC = () => {
       {/* Current Step Content */}
       <Paper elevation={0}>
         <Box sx={{ p: 3 }}>
-          <CurrentStepComponent data={formData} onDataChange={handleDataChange} />
+          <CurrentStepComponent data={formData} mergeWizardData={handleDataChange} />
         </Box>
 
         {/* Navigation Buttons */}
@@ -383,7 +382,7 @@ const Wizard: React.FC = () => {
             disabled={
               currentStep === steps.length ||
               isLoading ||
-              (currentStep === 1 && !formData.text.trim())
+              (currentStep === 1 && !formData.origin.trim())
             }
           >
             {currentStep === steps.length ? 'Finish' : 'Next'}
