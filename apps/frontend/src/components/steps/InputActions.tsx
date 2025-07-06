@@ -8,7 +8,8 @@ import {
   Typography,
 } from '@mui/material';
 import type React from 'react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface InputActionsProps {
   onDataChange: (data: { [key: string]: string }) => void;
@@ -41,6 +42,46 @@ const InputActions: React.FC<InputActionsProps> = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Global drag and drop handlers
+  useEffect(() => {
+    const handleGlobalDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      if (!isDragOver) {
+        setIsDragOver(true);
+      }
+    };
+
+    const handleGlobalDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      // Only hide if we're leaving the window entirely
+      if (e.clientX <= 0 || e.clientY <= 0 || 
+          e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+        setIsDragOver(false);
+      }
+    };
+
+    const handleGlobalDrop = (e: DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+
+      const files = Array.from(e.dataTransfer?.files || []);
+      if (files.length > 0) {
+        handleFileUpload(files[0]);
+      }
+    };
+
+    // Add global event listeners
+    document.addEventListener('dragover', handleGlobalDragOver);
+    document.addEventListener('dragleave', handleGlobalDragLeave);
+    document.addEventListener('drop', handleGlobalDrop);
+
+    return () => {
+      document.removeEventListener('dragover', handleGlobalDragOver);
+      document.removeEventListener('dragleave', handleGlobalDragLeave);
+      document.removeEventListener('drop', handleGlobalDrop);
+    };
+  }, [isDragOver]);
 
   const handleTextChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -166,25 +207,7 @@ const InputActions: React.FC<InputActionsProps> = ({
     e.target.value = '';
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    setIsDragOver(false);
-
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      handleFileUpload(files[0]);
-    }
-  };
 
   return (
     <>
@@ -248,7 +271,7 @@ const InputActions: React.FC<InputActionsProps> = ({
           rows={rows}
           value={value}
           onChange={handleTextChange}
-          placeholder={isDragOver ? dragPlaceholder : placeholder}
+          placeholder={placeholder}
           disabled={isLoading}
           fullWidth
           variant="outlined"
@@ -256,7 +279,7 @@ const InputActions: React.FC<InputActionsProps> = ({
             '& .MuiOutlinedInput-root': {
               backgroundColor: 'rgba(15, 23, 42, 0.3)',
               backdropFilter: 'blur(10px)',
-              border: isDragOver ? '2px dashed #6366f1' : '1px solid rgba(148, 163, 184, 0.2)',
+              border: '1px solid rgba(148, 163, 184, 0.2)',
               transition: 'all 0.2s ease-in-out',
               '&:hover': {
                 border: '1px solid rgba(148, 163, 184, 0.3)',
@@ -277,15 +300,12 @@ const InputActions: React.FC<InputActionsProps> = ({
               },
             },
           }}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
         />
         
-        {isDragOver && (
+        {isDragOver && createPortal(
           <Box
             sx={{
-              position: 'absolute',
+              position: 'fixed',
               top: 0,
               left: 0,
               right: 0,
@@ -293,16 +313,32 @@ const InputActions: React.FC<InputActionsProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'rgba(99, 102, 241, 0.1)',
-              borderRadius: 1,
-              border: '2px dashed #6366f1',
-              zIndex: 1,
+              backgroundColor: 'rgba(99, 102, 241, 0.15)',
+              backdropFilter: 'blur(4px)',
+              border: '3px dashed #6366f1',
+              zIndex: 9999,
+              pointerEvents: 'none',
             }}
           >
-            <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
-              📄 Drop file here to load its content
-            </Typography>
-          </Box>
+            <Box
+              sx={{
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                borderRadius: 2,
+                padding: 3,
+                border: '2px solid #6366f1',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              <Typography variant="h6" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
+                Drop file here
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Release to load the file content
+              </Typography>
+            </Box>
+          </Box>,
+          document.body
         )}
         
         {isLoading && (
