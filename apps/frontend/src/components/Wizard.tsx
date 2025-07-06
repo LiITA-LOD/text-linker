@@ -306,7 +306,8 @@ const Wizard: React.FC = () => {
         </Stepper>
 
         <Alert severity="info" sx={{ mx: 3, mb: 3, fontSize: '0.875rem' }}>
-          💡 You can skip to any step by clicking on the step indicators above
+          You can skip to any step by clicking on the step indicators above.
+          During any step you can save the data and load it back to continue at a later time.
         </Alert>
       </Paper>
 
@@ -366,7 +367,7 @@ const Wizard: React.FC = () => {
         <Box sx={{ p: 3 }}>
           <CurrentStepComponent data={formData} onDataChange={handleDataChange} />
         </Box>
-        
+
         {/* Navigation Buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 3, pt: 0 }}>
           <Button
