@@ -1,7 +1,10 @@
 procs:
-  frontend:
+  fe-runner:
     cwd: ./apps/frontend/
     shell: "direnv exec . nix develop --command pnpm run dev"
-  backend:
+  fe-tester:
+    cwd: ./apps/frontend/
+    shell: "direnv exec . nix develop --command pnpm run test"
+  be-runner:
     cwd: ./apps/backend/
     shell: "direnv exec . nix develop --command uv run main.py"
