@@ -49,7 +49,7 @@ class PrelinkerService:
 
         for sentence in doc_dict:
             for token in sentence:
-                key = (token.get("text"), token.get("upos"))
+                key = (token.get("lemma"), token.get("upos"))
                 links = "LiITA=" + json.dumps(self.bank.get(key, []))
                 if "misc" not in token:
                     token["misc"] = links
