@@ -159,23 +159,23 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">Form:</Typography>
-                        <Typography variant="body2">{selectedToken.form}</Typography>
+                        <Typography variant="body2">{selectedToken.form ?? '—'}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">Lemma:</Typography>
-                        <Typography variant="body2">{selectedToken.lemma}</Typography>
+                        <Typography variant="body2">{selectedToken.lemma ?? '—'}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">POS:</Typography>
-                        <Typography variant="body2">{selectedToken.upos}</Typography>
+                        <Typography variant="body2">{selectedToken.upos ?? '—'}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">Head:</Typography>
-                        <Typography variant="body2">{selectedToken.head}</Typography>
+                        <Typography variant="body2">{selectedToken.head ?? '—'}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" color="text.secondary">Dependency:</Typography>
-                        <Typography variant="body2">{selectedToken.deprel}</Typography>
+                        <Typography variant="body2">{selectedToken.deprel ?? '—'}</Typography>
                       </Box>
                       {selectedToken.feats && Object.keys(selectedToken.feats).length > 0 && (
                         <>
@@ -190,7 +190,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                                     {key}
                                   </Box>
                                   <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
-                                    {value}
+                                    {value ?? '—'}
                                   </Box>
                                 </Box>
                               ))}

@@ -1,14 +1,14 @@
 export interface ConlluToken {
   id: string;
   form: string;
-  lemma: string;
-  upos: string;
-  xpos: string;
-  feats: Record<string, string>;
-  head: string;
-  deprel: string;
-  deps: string;
-  misc: string;
+  lemma: string | undefined;
+  upos: string | undefined;
+  xpos: string | undefined;
+  feats: Record<string, string> | undefined;
+  head: string | undefined;
+  deprel: string | undefined;
+  deps: string | undefined;
+  misc: string | undefined;
 }
 
 export type ConlluComment =
@@ -153,25 +153,24 @@ function parseComment(line: string, sentence: ConlluSentence): void {
 
 function createToken(fields: string[]): ConlluToken {
   const featsString = fields[FIELD_INDICES.FEATS] || '_';
-  let feats: Record<string, string>;
-  
+  let feats: Record<string, string> | undefined;
   try {
     feats = parseFeats(featsString);
   } catch {
-    feats = {};
+    feats = undefined;
   }
 
   return {
     id: fields[FIELD_INDICES.ID] || '_',
     form: fields[FIELD_INDICES.FORM] || '_',
-    lemma: fields[FIELD_INDICES.LEMMA] || '_',
-    upos: fields[FIELD_INDICES.UPOS] || '_',
-    xpos: fields[FIELD_INDICES.XPOS] || '_',
+    lemma: fields[FIELD_INDICES.LEMMA] === '_' ? undefined : fields[FIELD_INDICES.LEMMA] || '_',
+    upos: fields[FIELD_INDICES.UPOS] === '_' ? undefined : fields[FIELD_INDICES.UPOS] || '_',
+    xpos: fields[FIELD_INDICES.XPOS] === '_' ? undefined : fields[FIELD_INDICES.XPOS] || '_',
     feats,
-    head: fields[FIELD_INDICES.HEAD] || '_',
-    deprel: fields[FIELD_INDICES.DEPREL] || '_',
-    deps: fields[FIELD_INDICES.DEPS] || '_',
-    misc: fields[FIELD_INDICES.MISC] || '_',
+    head: fields[FIELD_INDICES.HEAD] === '_' ? undefined : fields[FIELD_INDICES.HEAD] || '_',
+    deprel: fields[FIELD_INDICES.DEPREL] === '_' ? undefined : fields[FIELD_INDICES.DEPREL] || '_',
+    deps: fields[FIELD_INDICES.DEPS] === '_' ? undefined : fields[FIELD_INDICES.DEPS] || '_',
+    misc: fields[FIELD_INDICES.MISC] === '_' ? undefined : fields[FIELD_INDICES.MISC] || '_',
   };
 }
 
@@ -189,19 +188,27 @@ function serializeSentence(sentence: ConlluSentence): string {
 
   // Add tokens
   for (const token of sentence.tokens) {
-    const featsString = serializeFeats(token.feats);
+    const featsString = token.feats ? serializeFeats(token.feats) : '_';
+    const lemmaString = token.lemma ?? '_';
+    const uposString = token.upos ?? '_';
+    const xposString = token.xpos ?? '_';
+    const headString = token.head ?? '_';
+    const deprelString = token.deprel ?? '_';
+    const depsString = token.deps ?? '_';
+    const miscString = token.misc ?? '_';
+
     lines.push(
       [
         token.id,
         token.form,
-        token.lemma,
-        token.upos,
-        token.xpos,
+        lemmaString,
+        uposString,
+        xposString,
         featsString,
-        token.head,
-        token.deprel,
-        token.deps,
-        token.misc,
+        headString,
+        deprelString,
+        depsString,
+        miscString,
       ].join('\t'),
     );
   }
@@ -449,9 +456,9 @@ function validateSentenceConstraints(lines: string[], errors: string[]): void {
 /**
  * Parse FEATS string into key-value pairs
  */
-export function parseFeats(featsString: string): Record<string, string> {
-  if (featsString === '_' || featsString === '') {
-    return {};
+export function parseFeats(featsString: string): Record<string, string> | undefined {
+  if (featsString === '_' || featsString.trim() === '') {
+    return undefined;
   }
 
   const result: Record<string, string> = {};
