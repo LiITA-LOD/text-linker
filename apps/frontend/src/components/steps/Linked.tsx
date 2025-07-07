@@ -1,12 +1,17 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
 import InputActions from '../InputActions';
-import { parse, serialize as unparse, type ConlluDocument } from '../../utils/conllu';
+import TokenPills from '../TokenPills';
+import { parse, serialize as unparse, type ConlluDocument, type ConlluToken } from '../../utils/conllu';
 
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
+  const [selectedTokenKey, setSelectedTokenKey] = useState<string | undefined>();
+  const [selectedToken, setSelectedToken] = useState<ConlluToken | null>(null);
+  const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (data.linked) {
@@ -32,6 +37,20 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     }
   };
 
+  const handleTokenClick = (token: ConlluToken, sentenceIndex: number, tokenIndex: number) => {
+    const tokenKey = `${sentenceIndex}:${tokenIndex}`;
+    if (selectedTokenKey === tokenKey) {
+      setSelectedTokenKey(undefined);
+      setSelectedToken(null);
+      setSelectedSentenceIndex(null);
+    } else {
+      setSelectedTokenKey(tokenKey);
+      setSelectedToken(token);
+      setSelectedSentenceIndex(sentenceIndex);
+    }
+    console.log('Clicked token:', token, 'at sentence:', sentenceIndex, 'token index:', tokenIndex);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box>
@@ -52,9 +71,144 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
         placeholder="Enter your annotated CoNLL-U data here or drag & drop a file..."
         rows={10}
         showOutputButtons={true}
-        showTextField={true}
+        showTextField={false}
         value={parsedData ? unparse(parsedData) : ''}
       />
+
+      {/* Token Pills Display */}
+      {parsedData && parsedData.sentences.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ flex: selectedToken ? 2 : 1 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {parsedData.sentences.map((sentence, sentenceIndex) => (
+                  <Box key={sentenceIndex} sx={{ py: 1 }}>
+                    <TokenPills
+                      sentence={sentence}
+                      sentenceIndex={sentenceIndex}
+                      onTokenClick={handleTokenClick}
+                      selectedTokenKey={selectedTokenKey}
+                    />
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            
+            {selectedToken && (
+              <Box sx={{ flex: 1, minWidth: { md: '300px' } }}>
+                {/* Sentence Details Card */}
+                {selectedSentenceIndex !== null && parsedData && (
+                  <Accordion defaultExpanded={false} sx={{ mb: 2 }}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      <Typography variant="h6">Sentence Details</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="body2" color="text.secondary">ID:</Typography>
+                          <Typography variant="body2">{selectedSentenceIndex + 1}</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant="body2" color="text.secondary">Token count:</Typography>
+                          <Typography variant="body2">{parsedData.sentences[selectedSentenceIndex].tokens.length}</Typography>
+                        </Box>
+                        {parsedData.sentences[selectedSentenceIndex].comments.length > 0 && (
+                          <>
+                            <Box sx={{ mt: 1 }}>
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                Comments:
+                              </Typography>
+                              <Box component="dl" sx={{ m: 0, pl: 1 }}>
+                                {parsedData.sentences[selectedSentenceIndex].comments.map((comment, commentIndex) => (
+                                  <Box key={commentIndex} sx={{ mb: 0.5 }}>
+                                    {comment.type === 'metadata' ? (
+                                      <>
+                                        <Box component="dt" sx={{ fontWeight: 'bold', fontSize: '0.75rem', color: 'text.secondary' }}>
+                                          {comment.key}
+                                        </Box>
+                                        <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
+                                          {comment.value}
+                                        </Box>
+                                      </>
+                                    ) : (
+                                      <Box component="dd" sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}>
+                                        {comment.text}
+                                      </Box>
+                                    )}
+                                  </Box>
+                                ))}
+                              </Box>
+                            </Box>
+                          </>
+                        )}
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
+                )}
+
+                {/* Token Details Card */}
+                <Accordion defaultExpanded>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Token Details</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">ID:</Typography>
+                        <Typography variant="body2">{selectedToken.id}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">Form:</Typography>
+                        <Typography variant="body2">{selectedToken.form}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">Lemma:</Typography>
+                        <Typography variant="body2">{selectedToken.lemma}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">POS:</Typography>
+                        <Typography variant="body2">{selectedToken.upos}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">Head:</Typography>
+                        <Typography variant="body2">{selectedToken.head}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" color="text.secondary">Dependency:</Typography>
+                        <Typography variant="body2">{selectedToken.deprel}</Typography>
+                      </Box>
+                      {selectedToken.feats !== '_' && (
+                        <>
+                          <Box sx={{ mt: 1 }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              Features:
+                            </Typography>
+                            <Box component="dl" sx={{ m: 0, pl: 1 }}>
+                              {selectedToken.feats.split('|').map((feature, featureIndex) => {
+                                const [key, value] = feature.split('=');
+                                return (
+                                  <Box key={featureIndex} sx={{ mb: 0.5 }}>
+                                    <Box component="dt" sx={{ fontWeight: 'bold', fontSize: '0.75rem', color: 'text.secondary' }}>
+                                      {key}
+                                    </Box>
+                                    <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
+                                      {value}
+                                    </Box>
+                                  </Box>
+                                );
+                              })}
+                            </Box>
+                          </Box>
+                        </>
+                      )}
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };
