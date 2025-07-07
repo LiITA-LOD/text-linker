@@ -1,0 +1,57 @@
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import React from 'react';
+
+const SentenceDetails: React.FC<{
+  sentenceIndex: number;
+  sentence: any;
+}> = React.memo(({ sentenceIndex, sentence }) => (
+  <Accordion defaultExpanded={false} sx={{ mb: 2 }}>
+    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+      <Typography variant="h6">Sentence Details</Typography>
+    </AccordionSummary>
+    <AccordionDetails>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="body2" color="text.secondary">ID:</Typography>
+          <Typography variant="body2">{sentenceIndex + 1}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="body2" color="text.secondary">Token count:</Typography>
+          <Typography variant="body2">{sentence.tokens.length}</Typography>
+        </Box>
+        {sentence.comments.length > 0 && (
+          <>
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Comments:
+              </Typography>
+              <Box component="dl" sx={{ m: 0, pl: 1 }}>
+                {sentence.comments.map((comment: any, commentIndex: number) => (
+                  <Box key={commentIndex} sx={{ mb: 0.5 }}>
+                    {comment.type === 'metadata' ? (
+                      <>
+                        <Box component="dt" sx={{ fontWeight: 'bold', fontSize: '0.75rem', color: 'text.secondary' }}>
+                          {comment.key}
+                        </Box>
+                        <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
+                          {comment.value}
+                        </Box>
+                      </>
+                    ) : (
+                      <Box component="dd" sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}>
+                        {comment.text}
+                      </Box>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </>
+        )}
+      </Box>
+    </AccordionDetails>
+  </Accordion>
+));
+
+export default SentenceDetails;
