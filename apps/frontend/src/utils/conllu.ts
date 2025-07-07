@@ -4,7 +4,7 @@ export interface ConlluToken {
   lemma: string;
   upos: string;
   xpos: string;
-  feats: string;
+  feats: Record<string, string>;
   head: string;
   deprel: string;
   deps: string;
@@ -152,13 +152,22 @@ function parseComment(line: string, sentence: ConlluSentence): void {
 }
 
 function createToken(fields: string[]): ConlluToken {
+  const featsString = fields[FIELD_INDICES.FEATS] || '_';
+  let feats: Record<string, string>;
+  
+  try {
+    feats = parseFeats(featsString);
+  } catch {
+    feats = {};
+  }
+
   return {
     id: fields[FIELD_INDICES.ID] || '_',
     form: fields[FIELD_INDICES.FORM] || '_',
     lemma: fields[FIELD_INDICES.LEMMA] || '_',
     upos: fields[FIELD_INDICES.UPOS] || '_',
     xpos: fields[FIELD_INDICES.XPOS] || '_',
-    feats: fields[FIELD_INDICES.FEATS] || '_',
+    feats,
     head: fields[FIELD_INDICES.HEAD] || '_',
     deprel: fields[FIELD_INDICES.DEPREL] || '_',
     deps: fields[FIELD_INDICES.DEPS] || '_',
@@ -180,6 +189,7 @@ function serializeSentence(sentence: ConlluSentence): string {
 
   // Add tokens
   for (const token of sentence.tokens) {
+    const featsString = serializeFeats(token.feats);
     lines.push(
       [
         token.id,
@@ -187,7 +197,7 @@ function serializeSentence(sentence: ConlluSentence): string {
         token.lemma,
         token.upos,
         token.xpos,
-        token.feats,
+        featsString,
         token.head,
         token.deprel,
         token.deps,
@@ -243,6 +253,7 @@ function validateTokenLine(
   }
 
   validateFieldSpaces(fields, lineNumber, errors);
+  validateFeats(fields, lineNumber, errors);
 }
 
 function validateMultiwordToken(
@@ -321,6 +332,25 @@ function validateFieldSpaces(
       errors.push(
         `Line ${lineNumber}: No spaces allowed in field ${FIELD_NAMES[i]}`,
       );
+    }
+  }
+}
+
+function validateFeats(
+  fields: string[],
+  lineNumber: number,
+  errors: string[],
+): void {
+  const featsString = fields[FIELD_INDICES.FEATS];
+  if (featsString === '_' || featsString === '') {
+    return;
+  }
+
+  try {
+    parseFeats(featsString);
+  } catch (error) {
+    if (error instanceof Error) {
+      errors.push(`Line ${lineNumber}: ${error.message}`);
     }
   }
 }
@@ -414,4 +444,48 @@ function validateSentenceConstraints(lines: string[], errors: string[]): void {
     }
   }
   checkSentenceMeta();
+}
+
+/**
+ * Parse FEATS string into key-value pairs
+ */
+export function parseFeats(featsString: string): Record<string, string> {
+  if (featsString === '_' || featsString === '') {
+    return {};
+  }
+
+  const result: Record<string, string> = {};
+  const features = featsString.split('|');
+
+  for (const feature of features) {
+    const equalIndex = feature.indexOf('=');
+    if (equalIndex === -1) {
+      throw new Error(`Invalid FEATS format: "${feature}" (missing equals sign)`);
+    }
+
+    const key = feature.substring(0, equalIndex).trim();
+    if (key === '') {
+      throw new Error(`Invalid FEATS format: "${feature}" (empty feature key)`);
+    }
+
+    const value = feature.substring(equalIndex + 1).trim();
+    result[key] = value;
+  }
+
+  return result;
+}
+
+/**
+ * Serialize FEATS object back to string format
+ */
+export function serializeFeats(feats: Record<string, string>): string {
+  if (Object.keys(feats).length === 0) {
+    return '_';
+  }
+
+  const sortedFeatures = Object.keys(feats)
+    .sort()
+    .map(key => `${key}=${feats[key]}`);
+
+  return sortedFeatures.join('|');
 }

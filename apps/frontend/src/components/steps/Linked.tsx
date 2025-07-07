@@ -177,26 +177,23 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                         <Typography variant="body2" color="text.secondary">Dependency:</Typography>
                         <Typography variant="body2">{selectedToken.deprel}</Typography>
                       </Box>
-                      {selectedToken.feats !== '_' && (
+                      {selectedToken.feats && Object.keys(selectedToken.feats).length > 0 && (
                         <>
                           <Box sx={{ mt: 1 }}>
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                               Features:
                             </Typography>
                             <Box component="dl" sx={{ m: 0, pl: 1 }}>
-                              {selectedToken.feats.split('|').map((feature, featureIndex) => {
-                                const [key, value] = feature.split('=');
-                                return (
-                                  <Box key={featureIndex} sx={{ mb: 0.5 }}>
-                                    <Box component="dt" sx={{ fontWeight: 'bold', fontSize: '0.75rem', color: 'text.secondary' }}>
-                                      {key}
-                                    </Box>
-                                    <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
-                                      {value}
-                                    </Box>
+                              {Object.entries(selectedToken.feats).map(([key, value], featureIndex) => (
+                                <Box key={featureIndex} sx={{ mb: 0.5 }}>
+                                  <Box component="dt" sx={{ fontWeight: 'bold', fontSize: '0.75rem', color: 'text.secondary' }}>
+                                    {key}
                                   </Box>
-                                );
-                              })}
+                                  <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
+                                    {value}
+                                  </Box>
+                                </Box>
+                              ))}
                             </Box>
                           </Box>
                         </>

@@ -59,7 +59,7 @@ describe('parse', () => {
 
   test('parses underscore feats', () => {
     const input = `1\tword\tword\tNOUN\tNN\t_\t0\troot\t_\t_`;
-    expect(parse(input).sentences[0].tokens[0].feats).toBe('_');
+    expect(parse(input).sentences[0].tokens[0].feats).toEqual({});
   });
 
   test('parses multiword tokens', () => {
@@ -125,7 +125,7 @@ describe('serialize', () => {
               lemma: 'word',
               upos: 'NOUN',
               xpos: 'NN',
-              feats: '_',
+              feats: {},
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -150,7 +150,7 @@ describe('serialize', () => {
               lemma: 'word',
               upos: 'NOUN',
               xpos: 'NN',
-              feats: '_',
+              feats: {},
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -177,7 +177,7 @@ describe('serialize', () => {
               lemma: 'word',
               upos: 'NOUN',
               xpos: 'NN',
-              feats: '_',
+              feats: {},
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -204,7 +204,7 @@ describe('serialize', () => {
               lemma: 'hello',
               upos: 'INTJ',
               xpos: 'UH',
-              feats: '_',
+              feats: {},
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -221,7 +221,7 @@ describe('serialize', () => {
               lemma: 'goodbye',
               upos: 'INTJ',
               xpos: 'UH',
-              feats: '_',
+              feats: {},
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -247,7 +247,7 @@ describe('serialize', () => {
               lemma: 'hello',
               upos: 'INTJ',
               xpos: 'UH',
-              feats: '_',
+              feats: {},
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -264,7 +264,7 @@ describe('serialize', () => {
               lemma: 'goodbye',
               upos: 'INTJ',
               xpos: 'UH',
-              feats: '_',
+              feats: {},
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -293,7 +293,7 @@ describe('serialize', () => {
               lemma: '_',
               upos: '_',
               xpos: '_',
-              feats: '_',
+              feats: {},
               head: '_',
               deprel: '_',
               deps: '_',
@@ -305,7 +305,7 @@ describe('serialize', () => {
               lemma: 'ir',
               upos: 'VERB',
               xpos: 'VBP',
-              feats: 'Number=Plur|Person=1',
+              feats: { Number: 'Plur', Person: '1' },
               head: '0',
               deprel: 'root',
               deps: '_',
@@ -523,5 +523,152 @@ describe('validate', () => {
 
     const result = validate(input);
     expect(result.isValid).toBe(true);
+  });
+});
+
+describe('FEATS parsing', () => {
+  test('parses underscore feats as empty object', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[0].feats).toEqual({});
+  });
+
+  test('parses single feature as key-value pair', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].feats).toEqual({ Number: 'Sing' });
+  });
+
+  test('parses multiple features as key-value pairs', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing|Person=3\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].feats).toEqual({ 
+      Number: 'Sing', 
+      Person: '3' 
+    });
+  });
+
+  test('parses complex feature combinations', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tGender=Masc|Number=Sing|Case=Nom\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].feats).toEqual({ 
+      Gender: 'Masc', 
+      Number: 'Sing', 
+      Case: 'Nom' 
+    });
+  });
+
+  test('handles empty feature values', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tGender=|Number=Sing\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].feats).toEqual({ 
+      Gender: '', 
+      Number: 'Sing' 
+    });
+  });
+
+  test('handles feature values with equals signs', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tFeature=Value=With=Equals\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].feats).toEqual({ 
+      Feature: 'Value=With=Equals' 
+    });
+  });
+
+  test('serializes empty feats object as underscore', () => {
+    const document = {
+      sentences: [
+        {
+          comments: [{ type: 'metadata' as const, key: 'sent_id', value: '1' }],
+          tokens: [
+            {
+              id: '1',
+              form: 'word',
+              lemma: 'word',
+              upos: 'NOUN',
+              xpos: 'NN',
+              feats: {},
+              head: '0',
+              deprel: 'root',
+              deps: '_',
+              misc: '_',
+            },
+          ],
+        },
+      ],
+    };
+    expect(serialize(document)).toContain('\t_\t');
+  });
+
+  test('serializes single feature as key-value pair', () => {
+    const document = {
+      sentences: [
+        {
+          comments: [{ type: 'metadata' as const, key: 'sent_id', value: '1' }],
+          tokens: [
+            {
+              id: '1',
+              form: 'word',
+              lemma: 'word',
+              upos: 'NOUN',
+              xpos: 'NN',
+              feats: { Number: 'Sing' },
+              head: '0',
+              deprel: 'root',
+              deps: '_',
+              misc: '_',
+            },
+          ],
+        },
+      ],
+    };
+    expect(serialize(document)).toContain('\tNumber=Sing\t');
+  });
+
+  test('serializes multiple features in alphabetical order', () => {
+    const document = {
+      sentences: [
+        {
+          comments: [{ type: 'metadata' as const, key: 'sent_id', value: '1' }],
+          tokens: [
+            {
+              id: '1',
+              form: 'word',
+              lemma: 'word',
+              upos: 'NOUN',
+              xpos: 'NN',
+              feats: { Number: 'Sing', Gender: 'Masc', Case: 'Nom' },
+              head: '0',
+              deprel: 'root',
+              deps: '_',
+              misc: '_',
+            },
+          ],
+        },
+      ],
+    };
+    expect(serialize(document)).toContain('\tCase=Nom|Gender=Masc|Number=Sing\t');
+  });
+
+  test('validates malformed feats with error message', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing|InvalidFeature\t0\troot\t_\tSpaceAfter=No`;
+    const result = validate(input);
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        'Line 4: Invalid FEATS format: "InvalidFeature" (missing equals sign)',
+      ]),
+    );
+  });
+
+  test('validates empty feature key with error message', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\t=Sing|Number=Sing\t0\troot\t_\tSpaceAfter=No`;
+    const result = validate(input);
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        'Line 4: Invalid FEATS format: "=Sing" (empty feature key)',
+      ]),
+    );
   });
 });
