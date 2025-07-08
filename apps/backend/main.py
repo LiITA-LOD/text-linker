@@ -1,5 +1,6 @@
 import logging
 import sys
+import os
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Request
@@ -27,7 +28,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # TODO: configure for production
+    allow_origins=os.getenv("CORS_ALLOW_ORIGINS", "*").split(","),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -79,7 +80,7 @@ async def prelinker(request: PrelinkerRequest):
 
 def main():
     try:
-        model_path = "./LiITA_model"  # TODO: configure via env for prd
+        model_path = os.getenv("MODEL_PATH", "./LiITA_model")
         global tokenizer_service
         tokenizer_service = TokenizerService(model_path)
         global prelinker_service
@@ -89,11 +90,11 @@ def main():
         sys.exit(1)
 
     try:
-        uvicorn.run(  # TODO: configure via env for prd
+        uvicorn.run(
             app,
-            host="0.0.0.0",
-            port=8000,
-            log_level="info",
+            host=os.getenv("HOST", "0.0.0.0"),
+            port=int(os.getenv("PORT", "8000")),
+            log_level=os.getenv("LOG_LEVEL", "info"),
             access_log=True,
             reload=False,
         )
