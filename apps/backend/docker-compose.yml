@@ -2,13 +2,14 @@ version: '3.8'
 
 services:
   text-linker-backend:
-    # image: ghcr.io/liita-lod/text-linker-backend:latest
-    build: .
+    image: ghcr.io/liita-lod/text-linker/backend:latest
+    # build: .
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=${DATABASE_URL:-}
-      - MODEL_PATH=${MODEL_PATH:-./LiITA_model}
+      - STANZA_RESOURCES_URL=${STANZA_RESOURCES_URL:https://example.com/download/LiITA_model.tgz}
+      - STANZA_RESOURCES_DIR=${STANZA_RESOURCES_DIR:LiITA_model}
+      - DATABASE_URL=${DATABASE_URL:mysql+pymysql://username:password@host:port/database}
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-8000}
       - LOG_LEVEL=${LOG_LEVEL:-info}
