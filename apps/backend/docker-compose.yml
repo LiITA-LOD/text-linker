@@ -7,9 +7,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - STANZA_RESOURCES_URL=${STANZA_RESOURCES_URL:https://example.com/download/stanza_resources.tgz}
-      - STANZA_RESOURCES_DIR=${STANZA_RESOURCES_DIR:stanza_resources}
-      - DATABASE_URL=${DATABASE_URL:mysql+pymysql://username:password@host:port/database}
+      - STANZA_RESOURCES_URL=${STANZA_RESOURCES_URL:-https://example.com/download/stanza_resources.tgz}
+      - STANZA_RESOURCES_DIR=${STANZA_RESOURCES_DIR:-stanza_resources}
+      - DATABASE_URL=${DATABASE_URL:-mysql+pymysql://username:password@host:port/database}
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-8000}
       - LOG_LEVEL=${LOG_LEVEL:-info}
