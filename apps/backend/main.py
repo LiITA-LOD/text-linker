@@ -87,22 +87,11 @@ async def prelinker(request: PrelinkerRequest):
     return PrelinkerResponse(target=target, format="conllu")
 
 
-def main():
-    try:
-        uvicorn.run(
-            app,
-            host=os.getenv("HOST", "0.0.0.0"),
-            port=int(os.getenv("PORT", "8000")),
-            log_level=os.getenv("LOG_LEVEL", "info"),
-            access_log=True,
-            reload=False,
-        )
-    except KeyboardInterrupt:
-        logger.info("Server stopped by user")
-    except Exception as e:
-        logger.error(f"Server error: {e}")
-        sys.exit(1)
-
-
 if __name__ == "__main__":
-    main()
+    uvicorn.run(
+        "main:app",
+        host=os.getenv("HOST", "0.0.0.0"),
+        port=int(os.getenv("PORT", "8000")),
+        log_level=os.getenv("LOG_LEVEL", "info"),
+        access_log=True,
+    )
