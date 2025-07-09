@@ -2,6 +2,13 @@
 
 FROM ghcr.io/astral-sh/uv:bookworm-slim
 
+# CA certificates are required to perform the HTTPS (e.g. retrieving the stanza models).
+RUN \
+  apt-get -y update && \
+  apt-get install -y --no-install-recommends ca-certificates && \
+  rm -rf /var/lib/apt/lists/* \
+  rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Enable bytecode compilation
