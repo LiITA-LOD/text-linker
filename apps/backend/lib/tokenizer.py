@@ -1,4 +1,5 @@
 from stanza import Pipeline
+from lib.resourcer import Resourcer
 
 
 class TokenizerService:
@@ -8,7 +9,11 @@ class TokenizerService:
         """Initialize the tokenizer service with the specified model path."""
         self.pipeline_plain: Pipeline
         self.pipeline_conllu: Pipeline
+        self._initialize_resources()
         self._initialize_pipelines()
+
+    def _initialize_resources(self) -> None:
+        Resourcer().ensure_available()
 
     def _initialize_pipelines(self) -> None:
         """Initialize the tokenizer pipelines with the specified model path."""
