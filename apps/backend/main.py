@@ -80,9 +80,8 @@ async def prelinker(request: PrelinkerRequest):
 
 def main():
     try:
-        model_path = os.getenv("MODEL_PATH", "./LiITA_model")
         global tokenizer_service
-        tokenizer_service = TokenizerService(model_path)
+        tokenizer_service = TokenizerService()
         global prelinker_service
         prelinker_service = PrelinkerService()
     except Exception as e:

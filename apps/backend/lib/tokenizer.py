@@ -4,17 +4,16 @@ from stanza import Pipeline
 class TokenizerService:
     """Service class for handling text tokenization operations."""
 
-    def __init__(self, model_path: str):
+    def __init__(self):
         """Initialize the tokenizer service with the specified model path."""
         self.pipeline_plain: Pipeline
         self.pipeline_conllu: Pipeline
-        self._initialize_pipelines(model_path)
+        self._initialize_pipelines()
 
-    def _initialize_pipelines(self, model_path: str) -> None:
+    def _initialize_pipelines(self) -> None:
         """Initialize the tokenizer pipelines with the specified model path."""
         options = dict(
             lang="it",
-            dir=model_path,
             download_method=None,
             processors="tokenize,pos,lemma,depparse",
         )
