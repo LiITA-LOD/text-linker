@@ -2,6 +2,7 @@ import logging
 import sys
 import os
 from typing import Literal
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,10 +21,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.tokenizer_service = TokenizerService()
+    app.state.prelinker_service = PrelinkerService()
+    yield  # NOTE: startup (cleanup) goes before (after) the yield
+
+
 app = FastAPI(
     title="LiITA Text Linker API",
     description="API for text tokenization and prelinking",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -58,7 +67,7 @@ class TokenizerResponse(BaseModel):
 
 @app.post("/tokenizer", response_model=TokenizerResponse)
 async def tokenizer(request: TokenizerRequest):
-    target = tokenizer_service.tokenize(request.source, request.format)
+    target = app.state.tokenizer_service.tokenize(request.source, request.format)
     return TokenizerResponse(target=target, format="conllu")
 
 
@@ -74,20 +83,11 @@ class PrelinkerResponse(BaseModel):
 
 @app.post("/prelinker", response_model=PrelinkerResponse)
 async def prelinker(request: PrelinkerRequest):
-    target = prelinker_service.prelink(request.source)
+    target = app.state.prelinker_service.prelink(request.source)
     return PrelinkerResponse(target=target, format="conllu")
 
 
 def main():
-    try:
-        global tokenizer_service
-        tokenizer_service = TokenizerService()
-        global prelinker_service
-        prelinker_service = PrelinkerService()
-    except Exception as e:
-        logger.error(f"Failed to initialize pipelines: {e}")
-        sys.exit(1)
-
     try:
         uvicorn.run(
             app,
