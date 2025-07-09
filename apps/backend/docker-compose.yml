@@ -13,7 +13,7 @@ services:
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-8000}
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - ALLOW_ORIGINS=${ALLOWED_ORIGINS:-*}
+      - CORS_ALLOW_ORIGINS=${CORS_ALLOW_ORIGINS:-*}
     volumes:
       - ./stanza_resources:/app/stanza_resources
     restart: unless-stopped
