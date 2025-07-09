@@ -94,4 +94,5 @@ if __name__ == "__main__":
         port=int(os.getenv("PORT", "8000")),
         log_level=os.getenv("LOG_LEVEL", "info"),
         access_log=True,
+        reload=os.getenv("UVICORN_RELOAD", "false").lower() == "true",
     )
