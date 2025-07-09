@@ -7,15 +7,15 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - STANZA_RESOURCES_URL=${STANZA_RESOURCES_URL:https://example.com/download/LiITA_model.tgz}
-      - STANZA_RESOURCES_DIR=${STANZA_RESOURCES_DIR:LiITA_model}
+      - STANZA_RESOURCES_URL=${STANZA_RESOURCES_URL:https://example.com/download/stanza_resources.tgz}
+      - STANZA_RESOURCES_DIR=${STANZA_RESOURCES_DIR:stanza_resources}
       - DATABASE_URL=${DATABASE_URL:mysql+pymysql://username:password@host:port/database}
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-8000}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ALLOW_ORIGINS=${ALLOWED_ORIGINS:-*}
     volumes:
-      - ./LiITA_model:/app/LiITA_model
+      - ./stanza_resources:/app/stanza_resources
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
