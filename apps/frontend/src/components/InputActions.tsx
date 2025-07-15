@@ -155,7 +155,7 @@ const InputActions: React.FC<InputActionsProps> = ({
     // Try to use the modern File System Access API for "Save As" dialog
     if ('showSaveFilePicker' in window) {
       try {
-        const handle = await (window as any).showSaveFilePicker({
+        const handle = await window.showSaveFilePicker({
           suggestedName: `${defaultFileName}.txt`,
           types: [
             {
@@ -173,7 +173,7 @@ const InputActions: React.FC<InputActionsProps> = ({
 
         alert('File saved successfully!');
       } catch (err) {
-        if ((err as any).name === 'AbortError') {
+        if ((err as Error).name === 'AbortError') {
           // User cancelled the save dialog
           return;
         }
