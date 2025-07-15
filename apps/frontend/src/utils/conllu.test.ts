@@ -542,36 +542,36 @@ describe('FEATS parsing', () => {
   test('parses multiple features as key-value pairs', () => {
     const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing|Person=3\t0\troot\t_\tSpaceAfter=No`;
     const result = parse(input);
-    expect(result.sentences[0].tokens[1].feats).toEqual({ 
-      Number: 'Sing', 
-      Person: '3' 
+    expect(result.sentences[0].tokens[1].feats).toEqual({
+      Number: 'Sing',
+      Person: '3',
     });
   });
 
   test('parses complex feature combinations', () => {
     const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tGender=Masc|Number=Sing|Case=Nom\t0\troot\t_\tSpaceAfter=No`;
     const result = parse(input);
-    expect(result.sentences[0].tokens[1].feats).toEqual({ 
-      Gender: 'Masc', 
-      Number: 'Sing', 
-      Case: 'Nom' 
+    expect(result.sentences[0].tokens[1].feats).toEqual({
+      Gender: 'Masc',
+      Number: 'Sing',
+      Case: 'Nom',
     });
   });
 
   test('handles empty feature values', () => {
     const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tGender=|Number=Sing\t0\troot\t_\tSpaceAfter=No`;
     const result = parse(input);
-    expect(result.sentences[0].tokens[1].feats).toEqual({ 
-      Gender: '', 
-      Number: 'Sing' 
+    expect(result.sentences[0].tokens[1].feats).toEqual({
+      Gender: '',
+      Number: 'Sing',
     });
   });
 
   test('handles feature values with equals signs', () => {
     const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tFeature=Value=With=Equals\t0\troot\t_\tSpaceAfter=No`;
     const result = parse(input);
-    expect(result.sentences[0].tokens[1].feats).toEqual({ 
-      Feature: 'Value=With=Equals' 
+    expect(result.sentences[0].tokens[1].feats).toEqual({
+      Feature: 'Value=With=Equals',
     });
   });
 
@@ -647,7 +647,9 @@ describe('FEATS parsing', () => {
         },
       ],
     };
-    expect(serialize(document)).toContain('\tCase=Nom|Gender=Masc|Number=Sing\t');
+    expect(serialize(document)).toContain(
+      '\tCase=Nom|Gender=Masc|Number=Sing\t',
+    );
   });
 
   test('validates malformed feats with error message', () => {

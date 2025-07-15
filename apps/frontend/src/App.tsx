@@ -1,6 +1,13 @@
 import type React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, AppBar, Toolbar, Typography, Container, Box } from '@mui/material';
+import {
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Box,
+} from '@mui/material';
 import Wizard from './components/Wizard';
 
 // Create a refined dark theme with better aesthetics
@@ -28,7 +35,8 @@ const theme = createTheme({
     divider: 'rgba(148, 163, 184, 0.1)', // Slate 400 with low opacity
   },
   typography: {
-    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontFamily:
+      'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     h1: {
       fontWeight: 700,
       fontSize: '2.25rem',
@@ -126,20 +134,25 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box
+        sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+      >
         <AppBar position="static" elevation={0}>
           <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h1" component="h1" sx={{ mb: 0.5 }}>
                 LiITA TextLinker
               </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.8, fontWeight: 400 }}>
+              <Typography
+                variant="body1"
+                sx={{ opacity: 0.8, fontWeight: 400 }}
+              >
                 Linguistic Data Annotation Wizard
               </Typography>
             </Box>
           </Toolbar>
         </AppBar>
-        
+
         <Container component="main" sx={{ flex: 1, py: 4, maxWidth: 'lg' }}>
           <Wizard />
         </Container>

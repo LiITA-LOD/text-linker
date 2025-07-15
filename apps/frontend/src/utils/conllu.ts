@@ -163,14 +163,35 @@ function createToken(fields: string[]): ConlluToken {
   return {
     id: fields[FIELD_INDICES.ID] || '_',
     form: fields[FIELD_INDICES.FORM] || '_',
-    lemma: fields[FIELD_INDICES.LEMMA] === '_' ? undefined : fields[FIELD_INDICES.LEMMA] || '_',
-    upos: fields[FIELD_INDICES.UPOS] === '_' ? undefined : fields[FIELD_INDICES.UPOS] || '_',
-    xpos: fields[FIELD_INDICES.XPOS] === '_' ? undefined : fields[FIELD_INDICES.XPOS] || '_',
+    lemma:
+      fields[FIELD_INDICES.LEMMA] === '_'
+        ? undefined
+        : fields[FIELD_INDICES.LEMMA] || '_',
+    upos:
+      fields[FIELD_INDICES.UPOS] === '_'
+        ? undefined
+        : fields[FIELD_INDICES.UPOS] || '_',
+    xpos:
+      fields[FIELD_INDICES.XPOS] === '_'
+        ? undefined
+        : fields[FIELD_INDICES.XPOS] || '_',
     feats,
-    head: fields[FIELD_INDICES.HEAD] === '_' ? undefined : fields[FIELD_INDICES.HEAD] || '_',
-    deprel: fields[FIELD_INDICES.DEPREL] === '_' ? undefined : fields[FIELD_INDICES.DEPREL] || '_',
-    deps: fields[FIELD_INDICES.DEPS] === '_' ? undefined : fields[FIELD_INDICES.DEPS] || '_',
-    misc: fields[FIELD_INDICES.MISC] === '_' ? undefined : fields[FIELD_INDICES.MISC] || '_',
+    head:
+      fields[FIELD_INDICES.HEAD] === '_'
+        ? undefined
+        : fields[FIELD_INDICES.HEAD] || '_',
+    deprel:
+      fields[FIELD_INDICES.DEPREL] === '_'
+        ? undefined
+        : fields[FIELD_INDICES.DEPREL] || '_',
+    deps:
+      fields[FIELD_INDICES.DEPS] === '_'
+        ? undefined
+        : fields[FIELD_INDICES.DEPS] || '_',
+    misc:
+      fields[FIELD_INDICES.MISC] === '_'
+        ? undefined
+        : fields[FIELD_INDICES.MISC] || '_',
   };
 }
 
@@ -456,7 +477,9 @@ function validateSentenceConstraints(lines: string[], errors: string[]): void {
 /**
  * Parse FEATS string into key-value pairs
  */
-export function parseFeats(featsString: string): Record<string, string> | undefined {
+export function parseFeats(
+  featsString: string,
+): Record<string, string> | undefined {
   if (featsString === '_' || featsString.trim() === '') {
     return undefined;
   }
@@ -467,7 +490,9 @@ export function parseFeats(featsString: string): Record<string, string> | undefi
   for (const feature of features) {
     const equalIndex = feature.indexOf('=');
     if (equalIndex === -1) {
-      throw new Error(`Invalid FEATS format: "${feature}" (missing equals sign)`);
+      throw new Error(
+        `Invalid FEATS format: "${feature}" (missing equals sign)`,
+      );
     }
 
     const key = feature.substring(0, equalIndex).trim();
@@ -492,7 +517,7 @@ export function serializeFeats(feats: Record<string, string>): string {
 
   const sortedFeatures = Object.keys(feats)
     .sort()
-    .map(key => `${key}=${feats[key]}`);
+    .map((key) => `${key}=${feats[key]}`);
 
   return sortedFeatures.join('|');
 }

@@ -33,9 +33,11 @@ import Origin from './steps/Origin';
 
 const getBackendUrl = (): string => {
   const metaTag = document.querySelector('meta[name="backend-url"]');
-  const content = metaTag?.getAttribute('content') || new URL("api/", window.location.href).href;
+  const content =
+    metaTag?.getAttribute('content') ||
+    new URL('api/', window.location.href).href;
   // NOTE: trailing slash is essential to allow concatenation using URL class
-  const baseUrl = (content && content?.endsWith('/')) ? content : content + '/';
+  const baseUrl = content && content?.endsWith('/') ? content : content + '/';
   return baseUrl;
 };
 
@@ -302,10 +304,20 @@ const Wizard: React.FC = () => {
                   {step.title}
                 </Typography>
                 {getStepStatus(step.id) === 'error' && (
-                  <Chip label="Error" color="error" size="small" sx={{ ml: 1 }} />
+                  <Chip
+                    label="Error"
+                    color="error"
+                    size="small"
+                    sx={{ ml: 1 }}
+                  />
                 )}
                 {getStepStatus(step.id) === 'pending' && (
-                  <Chip label="Processing" color="primary" size="small" sx={{ ml: 1 }} />
+                  <Chip
+                    label="Processing"
+                    color="primary"
+                    size="small"
+                    sx={{ ml: 1 }}
+                  />
                 )}
               </StepLabel>
             </MuiStep>
@@ -314,7 +326,8 @@ const Wizard: React.FC = () => {
 
         <Alert severity="info" sx={{ mx: 3, mb: 3, fontSize: '0.875rem' }}>
           You can skip to any step by clicking on the step indicators above.
-          During any step you can save the data and load it back to continue at a later time.
+          During any step you can save the data and load it back to continue at
+          a later time.
         </Alert>
       </Paper>
 
@@ -351,14 +364,20 @@ const Wizard: React.FC = () => {
             }}
           >
             <CircularProgress size={40} sx={{ color: 'primary.main' }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 600, color: 'text.primary' }}
+            >
               {currentStep === 1
                 ? 'Tokenizing text...'
                 : currentStep === 2
                   ? 'Prelinking CoNLL-U data...'
                   : 'Processing...'}
             </Typography>
-            <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            <Typography
+              variant="body2"
+              sx={{ textAlign: 'center', color: 'text.secondary' }}
+            >
               {currentStep === 1
                 ? 'Converting your text into CoNLL-U format'
                 : currentStep === 2
@@ -372,11 +391,16 @@ const Wizard: React.FC = () => {
       {/* Current Step Content */}
       <Paper elevation={0}>
         <Box sx={{ p: 3 }}>
-          <CurrentStepComponent data={formData} mergeWizardData={handleDataChange} />
+          <CurrentStepComponent
+            data={formData}
+            mergeWizardData={handleDataChange}
+          />
         </Box>
 
         {/* Navigation Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 3, pt: 0 }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'space-between', p: 3, pt: 0 }}
+        >
           <Button
             variant="outlined"
             onClick={handlePrevious}

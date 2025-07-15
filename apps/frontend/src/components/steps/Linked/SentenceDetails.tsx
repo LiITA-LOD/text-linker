@@ -1,4 +1,10 @@
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
 
@@ -13,11 +19,15 @@ const SentenceDetails: React.FC<{
     <AccordionDetails>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="body2" color="text.secondary">ID:</Typography>
+          <Typography variant="body2" color="text.secondary">
+            ID:
+          </Typography>
           <Typography variant="body2">{sentenceIndex + 1}</Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="body2" color="text.secondary">Token count:</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Token count:
+          </Typography>
           <Typography variant="body2">{sentence.tokens.length}</Typography>
         </Box>
         {sentence.comments.length > 0 && (
@@ -31,15 +41,28 @@ const SentenceDetails: React.FC<{
                   <Box key={commentIndex} sx={{ mb: 0.5 }}>
                     {comment.type === 'metadata' ? (
                       <>
-                        <Box component="dt" sx={{ fontWeight: 'bold', fontSize: '0.75rem', color: 'text.secondary' }}>
+                        <Box
+                          component="dt"
+                          sx={{
+                            fontWeight: 'bold',
+                            fontSize: '0.75rem',
+                            color: 'text.secondary',
+                          }}
+                        >
                           {comment.key}
                         </Box>
-                        <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
+                        <Box
+                          component="dd"
+                          sx={{ ml: 1, fontSize: '0.875rem' }}
+                        >
                           {comment.value}
                         </Box>
                       </>
                     ) : (
-                      <Box component="dd" sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}>
+                      <Box
+                        component="dd"
+                        sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}
+                      >
                         {comment.text}
                       </Box>
                     )}

@@ -3,7 +3,11 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
 import InputActions from '../InputActions';
-import { parse, serialize as unparse, type ConlluDocument } from '../../utils/conllu';
+import {
+  parse,
+  serialize as unparse,
+  type ConlluDocument,
+} from '../../utils/conllu';
 
 const Conllu: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
