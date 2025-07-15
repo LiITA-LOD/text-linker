@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import type React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface InputActionsProps {
@@ -41,6 +41,33 @@ const InputActions: React.FC<InputActionsProps> = ({
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const readFileAsText = useCallback((file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onerror = (e) => reject(e);
+      reader.readAsText(file);
+    });
+  }, []);
+
+  const handleFileUpload = useCallback(
+    async (file: File): Promise<void> => {
+      if (!file) return;
+
+      setIsLoading(true);
+      try {
+        const text = await readFileAsText(file);
+        onDataChange(text);
+      } catch (err) {
+        console.error('Error reading file:', err);
+        alert('Error reading file. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [onDataChange, readFileAsText],
+  );
 
   // Global drag and drop handlers
   useEffect(() => {
@@ -84,7 +111,7 @@ const InputActions: React.FC<InputActionsProps> = ({
       document.removeEventListener('dragleave', handleGlobalDragLeave);
       document.removeEventListener('drop', handleGlobalDrop);
     };
-  }, [isDragOver]);
+  }, [isDragOver, handleFileUpload]);
 
   const handleTextChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -178,30 +205,6 @@ const InputActions: React.FC<InputActionsProps> = ({
     // Cleanup
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  };
-
-  const handleFileUpload = async (file: File): Promise<void> => {
-    if (!file) return;
-
-    setIsLoading(true);
-    try {
-      const text = await readFileAsText(file);
-      onDataChange(text);
-    } catch (err) {
-      console.error('Error reading file:', err);
-      alert('Error reading file. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const readFileAsText = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
-      reader.onerror = (e) => reject(e);
-      reader.readAsText(file);
-    });
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>): void => {
