@@ -61,6 +61,7 @@ const TokenDetails: React.FC<{
             </Typography>
             <Box component="dl" sx={{ m: 0, pl: 1 }}>
               {Object.entries(token.feats).map(([key, value], featureIndex) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe for static lists
                 <Box key={featureIndex} sx={{ mb: 0.5 }}>
                   <Box
                     component="dt"

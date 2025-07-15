@@ -38,6 +38,7 @@ const SentenceDetails: React.FC<{
             </Typography>
             <Box component="dl" sx={{ m: 0, pl: 1 }}>
               {sentence.comments.map((comment, commentIndex: number) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe for static lists
                 <Box key={commentIndex} sx={{ mb: 0.5 }}>
                   {comment.type === 'metadata' ? (
                     <>

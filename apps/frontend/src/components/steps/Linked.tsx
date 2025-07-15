@@ -141,6 +141,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 {parsedData.sentences.map((sentence, sentenceIndex) => {
                   return (
                     <SentencePills
+                      // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe for static lists
                       key={sentenceIndex}
                       sentence={sentence}
                       sentenceIndex={sentenceIndex}
