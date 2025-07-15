@@ -17,3 +17,6 @@ dist/
 
 # Nix build result symlink
 result
+
+.env*
+!.env.example
