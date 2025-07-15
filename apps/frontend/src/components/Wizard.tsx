@@ -26,10 +26,10 @@ import type {
   StepStatus,
 } from '../types';
 import { StepState } from '../types';
-import Turtle from './steps/Turtle';
 import Conllu from './steps/Conllu';
 import Linked from './steps/Linked';
 import Origin from './steps/Origin';
+import Turtle from './steps/Turtle';
 
 const getBackendUrl = (): string => {
   const metaTag = document.querySelector('meta[name="backend-url"]');

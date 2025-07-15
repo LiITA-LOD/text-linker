@@ -20,7 +20,7 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
 
     const isMultiword = token.id.includes('-');
     const isPunctuation = /^[.,!?;:]$/.test(token.form);
-    const isBracket = /^[\(\)\[\]\{\}""'']$/.test(token.form);
+    const isBracket = /^[()[\]{}""'']$/.test(token.form);
 
     return (
       <Chip

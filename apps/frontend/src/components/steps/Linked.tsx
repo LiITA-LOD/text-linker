@@ -1,15 +1,16 @@
 import { Box, Typography } from '@mui/material';
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import type React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { StepProps } from '../../types';
-import InputActions from '../InputActions';
-import SentencePills from './Linked/SentencePills';
 import {
-  parse,
-  serialize as unparse,
   type ConlluDocument,
   type ConlluToken,
+  parse,
+  serialize as unparse,
 } from '../../utils/conllu';
+import InputActions from '../InputActions';
 import SentenceDetails from './Linked/SentenceDetails';
+import SentencePills from './Linked/SentencePills';
 import TokenDetails from './Linked/TokenDetails';
 
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {

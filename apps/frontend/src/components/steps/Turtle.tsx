@@ -2,8 +2,8 @@ import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
-import InputActions from '../InputActions';
 import { parse, unparse } from '../../utils/trivial';
+import InputActions from '../InputActions';
 
 const Turtle: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [parsedData, setParsedData] = useState<string | null>(null);

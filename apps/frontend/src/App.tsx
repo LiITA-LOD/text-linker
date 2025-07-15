@@ -1,13 +1,13 @@
-import type React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import {
-  CssBaseline,
   AppBar,
+  Box,
+  Container,
+  CssBaseline,
   Toolbar,
   Typography,
-  Container,
-  Box,
 } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import type React from 'react';
 import Wizard from './components/Wizard';
 
 // Create a refined dark theme with better aesthetics

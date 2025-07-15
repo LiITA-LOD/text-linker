@@ -1,13 +1,13 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
-import { type ConlluToken } from '../../utils/conllu';
+import type { ConlluToken } from '../../utils/conllu';
 
 const TokenDetails: React.FC<{
   token: ConlluToken;

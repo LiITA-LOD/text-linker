@@ -2,12 +2,12 @@ import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import type { StepProps } from '../../types';
-import InputActions from '../InputActions';
 import {
+  type ConlluDocument,
   parse,
   serialize as unparse,
-  type ConlluDocument,
 } from '../../utils/conllu';
+import InputActions from '../InputActions';
 
 const Conllu: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
