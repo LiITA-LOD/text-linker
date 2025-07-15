@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+
+  backend:
+    image: ghcr.io/liita-lod/text-linker/backend:latest
+    pull_policy: always
+    # build: apps/backend
+    ports:
+      - "8090:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-mysql+pymysql://username:password@host:port/database}
+      - STANZA_RESOURCES_URL=${STANZA_RESOURCES_URL:-https://example.com/download/stanza_resources.tgz}
+      - STANZA_RESOURCES_DIR=stanza_resources
+      - CORS_ALLOW_ORIGINS=*
+      - HOST=0.0.0.0
+      - PORT=8000
+      - LOG_LEVEL=info
+    volumes:
+      - stanza_resources:/app/stanza_resources
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/liita-lod/text-linker/frontend:latest
+    pull_policy: always
+    # build: apps/frontend
+    ports:
+      - "8080:8000"
+    configs:
+      - source: config.toml
+        target: /config.toml
+    environment:
+      - SERVER_CONFIG_FILE=/config.toml
+    restart: unless-stopped
+
+volumes:
+  stanza_resources:
+
+configs:
+  config.toml:
+    content: |
+      [general]
+      host = "0.0.0.0"
+      port = 8000
+      log-level = "info"
+      [[advanced.redirects]]
+      source = "/text-linker/api/{linker,tokenizer}"
+      destination = "https://localhost:8090/$1"
+      kind = 302
