@@ -31,6 +31,14 @@ import Conllu from './steps/Conllu';
 import Linked from './steps/Linked';
 import Origin from './steps/Origin';
 
+const getBackendUrl = (): string => {
+  const metaTag = document.querySelector('meta[name="backend-url"]');
+  const content = metaTag?.getAttribute('content') || new URL("api/", window.location.href).href;
+  // NOTE: trailing slash is essential to allow concatenation using URL class
+  const baseUrl = (content && content?.endsWith('/')) ? content : content + '/';
+  return baseUrl;
+};
+
 const steps: Step[] = [
   { id: 1, title: 'Original', component: Origin },
   { id: 2, title: 'CoNLL-U', component: Conllu },
@@ -98,7 +106,7 @@ const Wizard: React.FC = () => {
 
   const callTokenizationAPI = async (text: string): Promise<string> => {
     try {
-      const response = await fetch('http://0.0.0.0:8000/tokenizer', {
+      const response = await fetch(new URL('tokenizer', getBackendUrl()).href, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +138,7 @@ const Wizard: React.FC = () => {
 
   const callPrelinkerAPI = async (conlluData: string): Promise<string> => {
     try {
-      const response = await fetch('http://0.0.0.0:8000/prelinker', {
+      const response = await fetch(new URL('prelinker', getBackendUrl()).href, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -185,7 +193,7 @@ const Wizard: React.FC = () => {
         // Update step 1 to errored
         updateStepState(1, { state: StepState.ERRORED });
         alert(
-          `Tokenization failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the tokenization service is running at http://0.0.0.0:8000/tokenizer`,
+          `Tokenization failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the tokenization service is running at ${API_ENDPOINTS.TOKENIZER}`,
         );
         setIsLoading(false);
         return; // Don't proceed to next step
@@ -211,7 +219,7 @@ const Wizard: React.FC = () => {
         // Update step 2 to errored
         updateStepState(2, { state: StepState.ERRORED });
         alert(
-          `Prelinking failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the prelinker service is running at http://0.0.0.0:8000/prelinker`,
+          `Prelinking failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease ensure the prelinker service is running at ${API_ENDPOINTS.PRELINKER}`,
         );
         setIsLoading(false);
         return; // Don't proceed to next step

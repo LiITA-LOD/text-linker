@@ -8,5 +8,8 @@ export default defineConfig({
   },
   html: {
     title: 'LiITA Text Linker',
+    meta: {
+      ...(process.env.BACKEND_URL && { 'backend-url': process.env.BACKEND_URL }),
+    },
   },
 });
