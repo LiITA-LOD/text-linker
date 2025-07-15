@@ -37,7 +37,7 @@ const getBackendUrl = (): string => {
     metaTag?.getAttribute('content') ||
     new URL('api/', window.location.href).href;
   // NOTE: trailing slash is essential to allow concatenation using URL class
-  const baseUrl = content && content?.endsWith('/') ? content : content + '/';
+  const baseUrl = content?.endsWith('/') ? content : `${content}/`;
   return baseUrl;
 };
 
@@ -290,7 +290,7 @@ const Wizard: React.FC = () => {
       {/* Horizontal Stepper */}
       <Paper elevation={0}>
         <Stepper activeStep={currentStep - 1} sx={{ p: 3 }}>
-          {steps.map((step, index) => (
+          {steps.map((step, _index) => (
             <MuiStep
               key={step.id}
               completed={getStepStatus(step.id) === 'settled'}

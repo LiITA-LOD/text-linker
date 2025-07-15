@@ -55,34 +55,30 @@ const TokenDetails: React.FC<{
           <Typography variant="body2">{token.deprel ?? '—'}</Typography>
         </Box>
         {token.feats && Object.keys(token.feats).length > 0 && (
-          <>
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Features:
-              </Typography>
-              <Box component="dl" sx={{ m: 0, pl: 1 }}>
-                {Object.entries(token.feats).map(
-                  ([key, value], featureIndex) => (
-                    <Box key={featureIndex} sx={{ mb: 0.5 }}>
-                      <Box
-                        component="dt"
-                        sx={{
-                          fontWeight: 'bold',
-                          fontSize: '0.75rem',
-                          color: 'text.secondary',
-                        }}
-                      >
-                        {key}
-                      </Box>
-                      <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
-                        {value ?? '—'}
-                      </Box>
-                    </Box>
-                  ),
-                )}
-              </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Features:
+            </Typography>
+            <Box component="dl" sx={{ m: 0, pl: 1 }}>
+              {Object.entries(token.feats).map(([key, value], featureIndex) => (
+                <Box key={featureIndex} sx={{ mb: 0.5 }}>
+                  <Box
+                    component="dt"
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: '0.75rem',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    {key}
+                  </Box>
+                  <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
+                    {value ?? '—'}
+                  </Box>
+                </Box>
+              ))}
             </Box>
-          </>
+          </Box>
         )}
       </Box>
     </AccordionDetails>

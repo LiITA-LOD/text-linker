@@ -31,46 +31,41 @@ const SentenceDetails: React.FC<{
           <Typography variant="body2">{sentence.tokens.length}</Typography>
         </Box>
         {sentence.comments.length > 0 && (
-          <>
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Comments:
-              </Typography>
-              <Box component="dl" sx={{ m: 0, pl: 1 }}>
-                {sentence.comments.map((comment: any, commentIndex: number) => (
-                  <Box key={commentIndex} sx={{ mb: 0.5 }}>
-                    {comment.type === 'metadata' ? (
-                      <>
-                        <Box
-                          component="dt"
-                          sx={{
-                            fontWeight: 'bold',
-                            fontSize: '0.75rem',
-                            color: 'text.secondary',
-                          }}
-                        >
-                          {comment.key}
-                        </Box>
-                        <Box
-                          component="dd"
-                          sx={{ ml: 1, fontSize: '0.875rem' }}
-                        >
-                          {comment.value}
-                        </Box>
-                      </>
-                    ) : (
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Comments:
+            </Typography>
+            <Box component="dl" sx={{ m: 0, pl: 1 }}>
+              {sentence.comments.map((comment: any, commentIndex: number) => (
+                <Box key={commentIndex} sx={{ mb: 0.5 }}>
+                  {comment.type === 'metadata' ? (
+                    <>
                       <Box
-                        component="dd"
-                        sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}
+                        component="dt"
+                        sx={{
+                          fontWeight: 'bold',
+                          fontSize: '0.75rem',
+                          color: 'text.secondary',
+                        }}
                       >
-                        {comment.text}
+                        {comment.key}
                       </Box>
-                    )}
-                  </Box>
-                ))}
-              </Box>
+                      <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
+                        {comment.value}
+                      </Box>
+                    </>
+                  ) : (
+                    <Box
+                      component="dd"
+                      sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}
+                    >
+                      {comment.text}
+                    </Box>
+                  )}
+                </Box>
+              ))}
             </Box>
-          </>
+          </Box>
         )}
       </Box>
     </AccordionDetails>
