@@ -7,10 +7,11 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
+import type { ConlluSentence } from '../../../utils/conllu';
 
 const SentenceDetails: React.FC<{
   sentenceIndex: number;
-  sentence: any;
+  sentence: ConlluSentence;
 }> = React.memo(({ sentenceIndex, sentence }) => (
   <Accordion defaultExpanded={false} sx={{ mb: 2 }}>
     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -36,7 +37,7 @@ const SentenceDetails: React.FC<{
               Comments:
             </Typography>
             <Box component="dl" sx={{ m: 0, pl: 1 }}>
-              {sentence.comments.map((comment: any, commentIndex: number) => (
+              {sentence.comments.map((comment, commentIndex: number) => (
                 <Box key={commentIndex} sx={{ mb: 0.5 }}>
                   {comment.type === 'metadata' ? (
                     <>

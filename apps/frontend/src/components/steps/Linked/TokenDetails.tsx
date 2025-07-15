@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import type { ConlluToken } from '../../utils/conllu';
+import type { ConlluToken } from '../../../utils/conllu';
 
 const TokenDetails: React.FC<{
   token: ConlluToken;
