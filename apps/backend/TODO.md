@@ -1,2 +1,1 @@
 - [ ] request rate limiting
-- [ ] request size limit

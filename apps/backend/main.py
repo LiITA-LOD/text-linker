@@ -12,6 +12,10 @@ import uvicorn
 from lib.tokenizer import TokenizerService
 from lib.prelinker import PrelinkerService
 
+MAX_REQUEST_CONTENT_LENGTH = int(os.getenv("MAX_REQUEST_CONTENT_LENGTH", 10 * 2**20))
+MAX_TOKENIZER_SOURCE_LENGTH = int(os.getenv("MAX_TOKENIZER_SOURCE_LENGTH", 100_000))
+MAX_PRELINKER_SOURCE_LENGTH = int(os.getenv("MAX_PRELINKER_SOURCE_LENGTH", 1_000_000))
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -44,6 +48,31 @@ app.add_middleware(
 )
 
 
+@app.middleware("http")
+async def request_size_middleware(request: Request, call_next):
+    if request.method == "POST":
+        if not (content_length := request.headers.get("content-length")):
+            raise HTTPException(
+                status_code=411,
+                detail="Content-Length header is missing",
+            )
+
+        if not content_length.isdecimal():
+            raise HTTPException(
+                status_code=400,
+                detail="Content-Length header is invalid",
+            )
+
+        if (size := int(content_length)) > MAX_REQUEST_CONTENT_LENGTH:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Request size {size} exceeds {MAX_REQUEST_CONTENT_LENGTH} bytes limit",
+            )
+
+    response = await call_next(request)
+    return response
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exception: Exception):
     logger.error(exception, exc_info=True)
@@ -56,7 +85,12 @@ async def root():
 
 
 class TokenizerRequest(BaseModel):
-    source: str = Field(..., description="Text to tokenize", min_length=1)
+    source: str = Field(
+        ...,
+        description="Text to tokenize",
+        min_length=1,
+        max_length=MAX_TOKENIZER_SOURCE_LENGTH,
+    )
     format: Literal["plain", "conllu"] = Field("plain", description="Source format")
 
 
@@ -72,7 +106,12 @@ async def tokenizer(request: TokenizerRequest):
 
 
 class PrelinkerRequest(BaseModel):
-    source: str = Field(..., description="Text to prelink", min_length=1)
+    source: str = Field(
+        ...,
+        description="Text to prelink",
+        min_length=1,
+        max_length=MAX_PRELINKER_SOURCE_LENGTH,
+    )
     format: Literal["conllu"] = Field(..., description="Source format")
 
 
