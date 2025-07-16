@@ -9,12 +9,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
 
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 from lib.tokenizer import TokenizerService
 from lib.prelinker import PrelinkerService
 
 MAX_REQUEST_CONTENT_LENGTH = int(os.getenv("MAX_REQUEST_CONTENT_LENGTH", 10 * 2**20))
 MAX_TOKENIZER_SOURCE_LENGTH = int(os.getenv("MAX_TOKENIZER_SOURCE_LENGTH", 100_000))
 MAX_PRELINKER_SOURCE_LENGTH = int(os.getenv("MAX_PRELINKER_SOURCE_LENGTH", 1_000_000))
+
+DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "1/second")
+TOKENIZER_RATE_LIMIT = os.getenv("TOKENIZER_RATE_LIMIT", "6/minute")
+PRELINKER_RATE_LIMIT = os.getenv("PRELINKER_RATE_LIMIT", "12/minute")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,6 +46,10 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+limiter = Limiter(key_func=get_remote_address, default_limits=[DEFAULT_RATE_LIMIT])
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -100,8 +112,11 @@ class TokenizerResponse(BaseModel):
 
 
 @app.post("/tokenizer", response_model=TokenizerResponse)
-async def tokenizer(request: TokenizerRequest):
-    target = app.state.tokenizer_service.tokenize(request.source, request.format)
+@limiter.limit(TOKENIZER_RATE_LIMIT)
+async def tokenizer(request: Request, tokenizer_request: TokenizerRequest):
+    target = app.state.tokenizer_service.tokenize(
+        tokenizer_request.source, tokenizer_request.format
+    )
     return TokenizerResponse(target=target, format="conllu")
 
 
@@ -121,8 +136,9 @@ class PrelinkerResponse(BaseModel):
 
 
 @app.post("/prelinker", response_model=PrelinkerResponse)
-async def prelinker(request: PrelinkerRequest):
-    target = app.state.prelinker_service.prelink(request.source)
+@limiter.limit(PRELINKER_RATE_LIMIT)
+async def prelinker(request: Request, prelinker_request: PrelinkerRequest):
+    target = app.state.prelinker_service.prelink(prelinker_request.source)
     return PrelinkerResponse(target=target, format="conllu")
 
 
