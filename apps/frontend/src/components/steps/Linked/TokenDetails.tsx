@@ -26,38 +26,50 @@ const TokenDetails: React.FC<{
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="body2" color="text.secondary">
-            Form:
+            FORM:
           </Typography>
           <Typography variant="body2">{token.form ?? '—'}</Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="body2" color="text.secondary">
-            Lemma:
+            LEMMA:
           </Typography>
           <Typography variant="body2">{token.lemma ?? '—'}</Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="body2" color="text.secondary">
-            POS:
+            UPOS:
           </Typography>
           <Typography variant="body2">{token.upos ?? '—'}</Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="body2" color="text.secondary">
-            Head:
+            XPOS:
+          </Typography>
+          <Typography variant="body2">{token.xpos ?? '—'}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="body2" color="text.secondary">
+            HEAD:
           </Typography>
           <Typography variant="body2">{token.head ?? '—'}</Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="body2" color="text.secondary">
-            Dependency:
+            DEPREL:
           </Typography>
           <Typography variant="body2">{token.deprel ?? '—'}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="body2" color="text.secondary">
+            DEPS:
+          </Typography>
+          <Typography variant="body2">{token.deps ?? '—'}</Typography>
         </Box>
         {token.feats && Object.keys(token.feats).length > 0 && (
           <Box sx={{ mt: 1 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              Features:
+              FEATS:
             </Typography>
             <Box component="dl" sx={{ m: 0, pl: 1 }}>
               {Object.entries(token.feats).map(([key, value], featureIndex) => (
@@ -76,6 +88,21 @@ const TokenDetails: React.FC<{
                   <Box component="dd" sx={{ ml: 1, fontSize: '0.875rem' }}>
                     {value ?? '—'}
                   </Box>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        )}
+        {token.misc && token.misc.length > 0 && (
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              MISC:
+            </Typography>
+            <Box component="ul" sx={{ m: 0, pl: 1 }}>
+              {token.misc.map((miscItem, miscIndex) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe for static lists
+                <Box key={miscIndex} component="li" sx={{ mb: 0.5, ml: 2 }}>
+                  <Typography variant="body2">{miscItem ?? '—'}</Typography>
                 </Box>
               ))}
             </Box>
