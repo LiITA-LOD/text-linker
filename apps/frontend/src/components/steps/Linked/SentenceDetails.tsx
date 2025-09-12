@@ -13,7 +13,7 @@ const SentenceDetails: React.FC<{
   sentenceIndex: number;
   sentence: ConlluSentence;
 }> = React.memo(({ sentenceIndex, sentence }) => (
-  <Accordion defaultExpanded={false} sx={{ mb: 2 }}>
+  <Accordion defaultExpanded={false}>
     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
       <Typography variant="h6">Sentence Details</Typography>
     </AccordionSummary>
