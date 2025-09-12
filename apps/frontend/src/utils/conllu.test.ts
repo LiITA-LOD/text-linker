@@ -674,3 +674,151 @@ describe('FEATS parsing', () => {
     );
   });
 });
+
+
+describe('MISC parsing', () => {
+  test('parses underscore MISC as undefined', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[0].misc).toBeUndefined();
+  });
+
+  test('parses single MISC component', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].misc).toEqual(['SpaceAfter=No']);
+  });
+
+  test('parses multiple MISC components', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpaceAfter=No|Translit=world|Gloss=earth`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].misc).toEqual(['SpaceAfter=No', 'Translit=world', 'Gloss=earth']);
+  });
+
+  test('handles empty MISC components', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpaceAfter=No||Translit=hello`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].misc).toEqual(['SpaceAfter=No', '', 'Translit=hello']);
+  });
+
+  test('handles MISC components with equals signs', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tXML=<tag attr="value">|SpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].misc).toEqual(['XML=<tag attr="value">', 'SpaceAfter=No']);
+  });
+
+  test('handles MISC components with pipes in content', () => {
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tXML=<tag>content|with|pipes</tag>|SpaceAfter=No`;
+    const result = parse(input);
+    expect(result.sentences[0].tokens[1].misc).toEqual(['XML=<tag>content', 'with', 'pipes</tag>', 'SpaceAfter=No']);
+  });
+
+  test('serializes empty MISC array as underscore', () => {
+    const document = {
+      sentences: [
+        {
+          comments: [{ type: 'metadata' as const, key: 'sent_id', value: '1' }],
+          tokens: [
+            {
+              id: '1',
+              form: 'word',
+              lemma: 'word',
+              upos: 'NOUN',
+              xpos: 'NN',
+              feats: undefined,
+              head: '0',
+              deprel: 'root',
+              deps: undefined,
+              misc: [],
+            },
+          ],
+        },
+      ],
+    };
+    expect(serialize(document)).toContain('\t_\t');
+  });
+
+  test('serializes single MISC component', () => {
+    const document = {
+      sentences: [
+        {
+          comments: [{ type: 'metadata' as const, key: 'sent_id', value: '1' }],
+          tokens: [
+            {
+              id: '1',
+              form: 'word',
+              lemma: 'word',
+              upos: 'NOUN',
+              xpos: 'NN',
+              feats: undefined,
+              head: '0',
+              deprel: 'root',
+              deps: undefined,
+              misc: ['SpaceAfter=No'],
+            },
+          ],
+        },
+      ],
+    };
+    expect(serialize(document)).toContain('\tSpaceAfter=No');
+  });
+
+  test('serializes multiple MISC components', () => {
+    const document = {
+      sentences: [
+        {
+          comments: [{ type: 'metadata' as const, key: 'sent_id', value: '1' }],
+          tokens: [
+            {
+              id: '1',
+              form: 'word',
+              lemma: 'word',
+              upos: 'NOUN',
+              xpos: 'NN',
+              feats: undefined,
+              head: '0',
+              deprel: 'root',
+              deps: undefined,
+              misc: ['SpaceAfter=No', 'Translit=hello', 'Gloss=greeting'],
+            },
+          ],
+        },
+      ],
+    };
+    expect(serialize(document)).toContain('\tSpaceAfter=No|Translit=hello|Gloss=greeting');
+  });
+
+  test('serializes MISC components with empty strings', () => {
+    const document = {
+      sentences: [
+        {
+          comments: [{ type: 'metadata' as const, key: 'sent_id', value: '1' }],
+          tokens: [
+            {
+              id: '1',
+              form: 'word',
+              lemma: 'word',
+              upos: 'NOUN',
+              xpos: 'NN',
+              feats: undefined,
+              head: '0',
+              deprel: 'root',
+              deps: undefined,
+              misc: ['SpaceAfter=No', '', 'Translit=hello'],
+            },
+          ],
+        },
+      ],
+    };
+    expect(serialize(document)).toContain('\tSpaceAfter=No||Translit=hello');
+  });
+
+  test('handles invalid MISC field gracefully in parse', () => {
+    // Test with a MISC field that has leading space (invalid according to UD spec)
+    const input = `# sent_id = 1\n# text = Hello world.\n1\tHello\thello\tINTJ\tUH\t_\t2\tdiscourse\t_\t_\n2\tworld\tworld\tNOUN\tNN\tNumber=Sing\t0\troot\t_\t SpaceAfter=No`;
+    const parsed = parse(input);
+    // Invalid MISC field should be set to undefined due to try-catch in createToken
+    expect(parsed.sentences[0].tokens[1].misc).toBeUndefined();
+  });
+
+});

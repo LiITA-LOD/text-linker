@@ -8,7 +8,7 @@ export interface ConlluToken {
   head: string | undefined;
   deprel: string | undefined;
   deps: string | undefined;
-  misc: string | undefined;
+  misc: string[] | undefined;
 }
 
 export type ConlluComment =
@@ -160,6 +160,14 @@ function createToken(fields: string[]): ConlluToken {
     feats = undefined;
   }
 
+  const miscString = fields[FIELD_INDICES.MISC] || '_';
+  let misc: string[] | undefined;
+  try {
+    misc = parseMisc(miscString);
+  } catch {
+    misc = undefined;
+  }
+
   return {
     id: fields[FIELD_INDICES.ID] || '_',
     form: fields[FIELD_INDICES.FORM] || '_',
@@ -188,10 +196,7 @@ function createToken(fields: string[]): ConlluToken {
       fields[FIELD_INDICES.DEPS] === '_'
         ? undefined
         : fields[FIELD_INDICES.DEPS] || '_',
-    misc:
-      fields[FIELD_INDICES.MISC] === '_'
-        ? undefined
-        : fields[FIELD_INDICES.MISC] || '_',
+    misc,
   };
 }
 
@@ -216,7 +221,7 @@ function serializeSentence(sentence: ConlluSentence): string {
     const headString = token.head ?? '_';
     const deprelString = token.deprel ?? '_';
     const depsString = token.deps ?? '_';
-    const miscString = token.misc ?? '_';
+    const miscString = token.misc ? serializeMisc(token.misc) : '_';
 
     lines.push(
       [
@@ -520,4 +525,43 @@ export function serializeFeats(feats: Record<string, string>): string {
     .map((key) => `${key}=${feats[key]}`);
 
   return sortedFeatures.join('|');
+}
+
+/**
+ * Parse MISC string into array of strings
+ */
+export function parseMisc(miscString: string): string[] | undefined {
+  if (miscString === '_') {
+    return undefined;
+  }
+
+  // MISC cannot be empty
+  if (miscString === '') {
+    throw new Error('Invalid MISC format: "" (empty field)');
+  }
+
+  // MISC cannot contain control characters (TAB, CR, LF, other control characters)
+  // TAB is \x09, CR is \x0D, LF is \x0A
+  const controlChars = /[\x00-\x1F\x7F]/;
+  if (controlChars.test(miscString)) {
+    throw new Error(`Invalid MISC format: "${miscString}" (contains control characters)`);
+  }
+
+  // MISC cannot start or end with a space
+  if (miscString.startsWith(' ') || miscString.endsWith(' ')) {
+    throw new Error(`Invalid MISC format: "${miscString}" (starts or ends with space)`);
+  }
+
+  return miscString.split('|');
+}
+
+/**
+ * Serialize MISC array back to string format
+ */
+export function serializeMisc(misc: string[]): string {
+  if (misc.length === 0) {
+    return '_';
+  }
+
+  return misc.join('|');
 }
