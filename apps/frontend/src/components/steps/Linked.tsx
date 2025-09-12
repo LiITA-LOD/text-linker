@@ -37,6 +37,16 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     }
   }, [data.linked]);
 
+  // Update selectedToken when parsedData changes (e.g., after token updates)
+  useEffect(() => {
+    if (parsedData && selectedSentenceIndex !== null && selectedTokenIndex !== undefined) {
+      const sentence = parsedData.sentences[selectedSentenceIndex];
+      if (sentence && sentence.tokens[selectedTokenIndex]) {
+        setSelectedToken(sentence.tokens[selectedTokenIndex]);
+      }
+    }
+  }, [parsedData, selectedSentenceIndex, selectedTokenIndex]);
+
   // Memoize the serialized data to prevent expensive unparse calls on every render
   const serializedData = useMemo(() => {
     return parsedData ? unparse(parsedData) : '';
@@ -73,6 +83,39 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
       mergeWizardData('linked', null);
     }
   };
+
+  const handleTokenUpdate = useCallback(
+    (updatedToken: ConlluToken) => {
+      if (!parsedData || selectedSentenceIndex === null || selectedTokenIndex === undefined) {
+        return;
+      }
+
+      // Create a deep copy of the parsed data
+      const updatedParsedData = {
+        ...parsedData,
+        sentences: parsedData.sentences.map((sentence, sentenceIdx) => {
+          if (sentenceIdx === selectedSentenceIndex) {
+            return {
+              ...sentence,
+              tokens: sentence.tokens.map((token, tokenIdx) => {
+                if (tokenIdx === selectedTokenIndex) {
+                  return updatedToken;
+                }
+                return token;
+              }),
+            };
+          }
+          return sentence;
+        }),
+      };
+
+      // Update the parsed data and serialize it
+      setParsedData(updatedParsedData);
+      const serializedData = unparse(updatedParsedData);
+      mergeWizardData('linked', serializedData);
+    },
+    [parsedData, selectedSentenceIndex, selectedTokenIndex, mergeWizardData],
+  );
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -182,7 +225,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 },
               }}
             >
-              <LinkingDetails token={selectedToken} />
+              <LinkingDetails token={selectedToken} onTokenUpdate={handleTokenUpdate} />
               <SentenceDetails
                 sentenceIndex={selectedSentenceIndex}
                 sentence={parsedData.sentences[selectedSentenceIndex]}

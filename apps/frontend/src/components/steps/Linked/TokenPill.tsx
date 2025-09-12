@@ -1,6 +1,7 @@
 import { Chip } from '@mui/material';
 import React from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
+import { getLiITACount } from '../../../utils/liita';
 
 interface TokenPillProps {
   token: ConlluToken;
@@ -21,16 +22,24 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
     const isMultiword = token.id.includes('-');
     const isPunctuation = /^[.,!?;:]$/.test(token.form);
     const isBracket = /^[()[\]{}""'']$/.test(token.form);
+    const linksCount = getLiITACount(token);
 
     return (
       <Chip
         label={token.form}
         onClick={handleClick}
-        variant={isSelected ? 'filled' : 'outlined'}
-        color={isSelected ? 'primary' : 'default'}
+        variant="filled"
+        color={
+          (isBracket || isMultiword || isPunctuation) ?
+            'secondary'
+            : linksCount < 1 ?
+              "warning"
+              : linksCount > 1 ?
+                "error"
+                : "default"
+        }
         sx={{
           cursor: 'pointer',
-          transition: 'all 0.2s ease-in-out',
           fontSize: 'inherit',
           height: 'auto',
           padding: '2px 6px',
@@ -39,33 +48,14 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
             fontSize: 'inherit',
           },
           '&:hover': {
-            transform: 'translateY(-1px)',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+            outlineWidth: "2px",
+            outlineStyle: "solid",
+            outlineColor: "white",
           },
-          ...(isMultiword && {
-            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-            borderColor: 'rgba(99, 102, 241, 0.3)',
-          }),
-          ...(isPunctuation && {
-            backgroundColor: 'rgba(148, 163, 184, 0.1)',
-            borderColor: 'rgba(148, 163, 184, 0.3)',
-            '&:hover': {
-              backgroundColor: 'rgba(148, 163, 184, 0.2)',
-            },
-          }),
-          ...(isBracket && {
-            backgroundColor: 'rgba(148, 163, 184, 0.1)',
-            borderColor: 'rgba(148, 163, 184, 0.3)',
-            '&:hover': {
-              backgroundColor: 'rgba(148, 163, 184, 0.2)',
-            },
-          }),
           ...(isSelected && {
-            backgroundColor: 'primary.main',
-            color: 'primary.contrastText',
-            '&:hover': {
-              backgroundColor: 'primary.dark',
-            },
+            outlineWidth: "2px",
+            outlineStyle: "solid",
+            outlineColor: "white",
           }),
         }}
       />

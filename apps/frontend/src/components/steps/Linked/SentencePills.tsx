@@ -25,6 +25,7 @@ const SentencePills: React.FC<SentencePillsProps> = React.memo(
           fontFamily: 'inherit',
           rowGap: '4px',
           columnGap: '4px',
+          padding: '2px',
         }}
       >
         {sentence.tokens.map((token, tokenIndex) => (
