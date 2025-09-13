@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
   Typography,
@@ -21,7 +22,8 @@ import {
 const LinkingEditor: React.FC<{
   token: ConlluToken | null;
   onTokenUpdate?: (updatedToken: ConlluToken) => void;
-}> = React.memo(({ token, onTokenUpdate }) => {
+  onInfoClick?: () => void;
+}> = React.memo(({ token, onTokenUpdate, onInfoClick }) => {
   const [items, setItems] = useState<string[]>([]);
   const [newItem, setNewItem] = useState('');
 
@@ -50,7 +52,7 @@ const LinkingEditor: React.FC<{
 
   const updateToken = (updatedItems: string[]) => {
     if (!token || !onTokenUpdate) return;
-    
+
     const serializedValue = serializeLiITAValue(updatedItems);
     const updatedToken = updateTokenLiITA(token, serializedValue);
     onTokenUpdate(updatedToken);
@@ -62,12 +64,34 @@ const LinkingEditor: React.FC<{
     }
   };
 
+  // Create token display text
+  const getTokenDisplayText = () => {
+    if (!token) return 'No token selected';
+
+    const form = token.form || '_';
+    const lemma = `(${token.lemma || '_'})`;
+    const pos = `[${token.upos || '_'}]`;
+
+    return `${form} ${lemma} ${pos}`;
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {/* Header */}
-      <Typography variant="h6">
-        Linking Editor ({items.length} links)
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography variant="h6">
+          {getTokenDisplayText()} ({items.length} links)
+        </Typography>
+        {onInfoClick && (
+          <IconButton
+            size="small"
+            onClick={onInfoClick}
+            sx={{ color: 'text.secondary' }}
+          >
+            <InfoIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
 
       {/* Add new item bar */}
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>

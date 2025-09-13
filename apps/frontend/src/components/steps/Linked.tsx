@@ -1,4 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { StepProps } from '../../types';
@@ -9,10 +10,9 @@ import {
   serialize as unparse,
 } from '../../utils/conllu';
 import InputActions from '../InputActions';
+import DetailsModal from './Linked/DetailsModal';
 import LinkingEditor from './Linked/LinkingEditor';
-import SentenceDetails from './Linked/SentenceDetails';
 import SentencePills from './Linked/SentencePills';
-import TokenDetails from './Linked/TokenDetails';
 
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
@@ -23,6 +23,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [selectedSentenceIndex, setSelectedSentenceIndex] = useState<
     number | null
   >(null);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   useEffect(() => {
     if (data.linked) {
@@ -225,16 +226,24 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 },
               }}
             >
-              <LinkingEditor token={selectedToken} onTokenUpdate={handleTokenUpdate} />
-              <SentenceDetails
-                sentenceIndex={selectedSentenceIndex}
-                sentence={parsedData.sentences[selectedSentenceIndex]}
+              <LinkingEditor 
+                token={selectedToken} 
+                onTokenUpdate={handleTokenUpdate}
+                onInfoClick={() => setInfoModalOpen(true)}
               />
-              <TokenDetails token={selectedToken} />
             </Box>
           )}
         </Box>
       )}
+
+      {/* Details Modal */}
+      <DetailsModal
+        open={infoModalOpen}
+        onClose={() => setInfoModalOpen(false)}
+        token={selectedToken}
+        sentence={selectedSentenceIndex !== null && parsedData ? parsedData.sentences[selectedSentenceIndex] : null}
+        sentenceIndex={selectedSentenceIndex}
+      />
     </Box>
   );
 };
