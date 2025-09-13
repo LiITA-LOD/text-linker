@@ -9,7 +9,7 @@ import {
   serialize as unparse,
 } from '../../utils/conllu';
 import InputActions from '../InputActions';
-import LinkingDetails from './Linked/LinkingDetails';
+import LinkingEditor from './Linked/LinkingEditor';
 import SentenceDetails from './Linked/SentenceDetails';
 import SentencePills from './Linked/SentencePills';
 import TokenDetails from './Linked/TokenDetails';
@@ -225,7 +225,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 },
               }}
             >
-              <LinkingDetails token={selectedToken} onTokenUpdate={handleTokenUpdate} />
+              <LinkingEditor token={selectedToken} onTokenUpdate={handleTokenUpdate} />
               <SentenceDetails
                 sentenceIndex={selectedSentenceIndex}
                 sentence={parsedData.sentences[selectedSentenceIndex]}
