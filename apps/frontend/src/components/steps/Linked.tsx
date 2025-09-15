@@ -164,7 +164,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
           {/* Scrollable Sentences Section */}
           <Box
             sx={{
-              flex: selectedToken ? 2 : 1,
+              flex: 1,
               overflow: 'hidden', // Prevent container overflow
               display: 'flex',
               flexDirection: 'column',
@@ -172,9 +172,9 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
           >
             <Box
               sx={{
-                overflowY: 'auto', // Make this section scrollable
                 flex: 1,
                 pr: 1, // Add some padding for scrollbar
+                overflowY: 'scroll',
                 '&::-webkit-scrollbar': {
                   width: '8px',
                 },
@@ -217,7 +217,8 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
               flex: 1,
               minWidth: { md: '300px' },
               maxWidth: { md: '400px' },
-              overflowY: 'auto', // Make details section scrollable too
+              pr: 2, // Add some padding for scrollbar
+              overflowY: 'scroll',
               '&::-webkit-scrollbar': {
                 width: '8px',
               },
