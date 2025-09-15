@@ -13,6 +13,7 @@ import DetailsModal from './Linked/DetailsModal';
 import LinkingEditor from './Linked/LinkingEditor';
 import ProgressIndicator from './Linked/ProgressIndicator';
 import SentencePills from './Linked/SentencePills';
+import StereoButtons from './Linked/StereoButtons';
 
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
@@ -234,6 +235,13 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
             }}
           >
             <ProgressIndicator parsedData={parsedData} />
+
+            <StereoButtons
+              parsedData={parsedData}
+              selectedSentenceIndex={selectedSentenceIndex}
+              selectedTokenIndex={selectedTokenIndex}
+              onTokenSelect={handleTokenClick}
+            />
 
             {selectedToken && selectedSentenceIndex !== null && parsedData && (
               <LinkingEditor
