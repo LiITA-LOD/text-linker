@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { StepProps } from '../../types';
 import {
   type ConlluDocument,
@@ -25,6 +25,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     number | null
   >(null);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const sentencesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (data.linked) {
@@ -127,6 +128,35 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     [parsedData, selectedSentenceIndex, selectedTokenIndex, mergeWizardData],
   );
 
+  const handleFocusToken = useCallback(() => {
+    if (
+      !sentencesContainerRef.current ||
+      selectedSentenceIndex === null ||
+      selectedTokenIndex === undefined ||
+      !parsedData
+    ) {
+      return;
+    }
+
+    // Find the selected sentence element
+    const sentenceElements = sentencesContainerRef.current.querySelectorAll(
+      '[data-sentence-index]',
+    );
+    const targetSentenceElement = Array.from(sentenceElements).find(
+      (el) =>
+        el.getAttribute('data-sentence-index') ===
+        selectedSentenceIndex.toString(),
+    );
+
+    if (targetSentenceElement) {
+      // Scroll the sentence into view
+      targetSentenceElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  }, [selectedSentenceIndex, selectedTokenIndex, parsedData]);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box>
@@ -171,6 +201,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
             }}
           >
             <Box
+              ref={sentencesContainerRef}
               sx={{
                 flex: 1,
                 pr: 1, // Add some padding for scrollbar
@@ -194,18 +225,21 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {parsedData.sentences.map((sentence, sentenceIndex) => {
                   return (
-                    <SentencePills
-                      // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe for static lists
+                    <Box
                       key={sentenceIndex}
-                      sentence={sentence}
-                      sentenceIndex={sentenceIndex}
-                      selectedTokenIndex={
-                        selectedSentenceIndex === sentenceIndex
-                          ? selectedTokenIndex
-                          : undefined
-                      }
-                      onTokenClick={handleTokenClick}
-                    />
+                      data-sentence-index={sentenceIndex}
+                    >
+                      <SentencePills
+                        sentence={sentence}
+                        sentenceIndex={sentenceIndex}
+                        selectedTokenIndex={
+                          selectedSentenceIndex === sentenceIndex
+                            ? selectedTokenIndex
+                            : undefined
+                        }
+                        onTokenClick={handleTokenClick}
+                      />
+                    </Box>
                   );
                 })}
               </Box>
@@ -242,6 +276,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
               selectedSentenceIndex={selectedSentenceIndex}
               selectedTokenIndex={selectedTokenIndex}
               onTokenSelect={handleTokenClick}
+              onFocusToken={handleFocusToken}
             />
 
             {selectedToken && selectedSentenceIndex !== null && parsedData && (

@@ -4,6 +4,7 @@ import {
   SkipNext,
   FastRewind,
   FastForward,
+  CenterFocusStrong,
 } from '@mui/icons-material';
 import React from 'react';
 import type { ConlluDocument } from '../../../utils/conllu';
@@ -14,6 +15,7 @@ interface StereoButtonsProps {
   selectedSentenceIndex: number | null;
   selectedTokenIndex: number | undefined;
   onTokenSelect: (sentenceIndex: number, tokenIndex: number) => void;
+  onFocusToken?: () => void;
 }
 
 const StereoButtons: React.FC<StereoButtonsProps> = ({
@@ -21,6 +23,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
   selectedSentenceIndex,
   selectedTokenIndex,
   onTokenSelect,
+  onFocusToken,
 }) => {
   if (
     !parsedData ||
@@ -34,19 +37,39 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
   const currentTokenIndex = selectedTokenIndex;
 
   const findPreviousToken = () => {
+    // Try previous token in current sentence
     if (currentTokenIndex > 0) {
       onTokenSelect(selectedSentenceIndex, currentTokenIndex - 1);
+      return;
+    }
+
+    // Try last token of previous sentence
+    if (selectedSentenceIndex > 0) {
+      const prevSentence = parsedData.sentences[selectedSentenceIndex - 1];
+      if (prevSentence.tokens.length > 0) {
+        onTokenSelect(
+          selectedSentenceIndex - 1,
+          prevSentence.tokens.length - 1,
+        );
+      }
     }
   };
 
   const findNextToken = () => {
+    // Try next token in current sentence
     if (currentTokenIndex < currentSentence.tokens.length - 1) {
       onTokenSelect(selectedSentenceIndex, currentTokenIndex + 1);
+      return;
+    }
+
+    // Try first token of next sentence
+    if (selectedSentenceIndex < parsedData.sentences.length - 1) {
+      onTokenSelect(selectedSentenceIndex + 1, 0);
     }
   };
 
   const findPreviousUnlinkedOrAmbiguous = () => {
-    // Search backwards from current position
+    // Search backwards from current position in current sentence
     for (let i = currentTokenIndex - 1; i >= 0; i--) {
       const token = currentSentence.tokens[i];
       const linkCount = getLiITACount(token);
@@ -55,10 +78,31 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
         return;
       }
     }
+
+    // Search backwards in previous sentences
+    for (
+      let sentenceIdx = selectedSentenceIndex - 1;
+      sentenceIdx >= 0;
+      sentenceIdx--
+    ) {
+      const sentence = parsedData.sentences[sentenceIdx];
+      for (
+        let tokenIdx = sentence.tokens.length - 1;
+        tokenIdx >= 0;
+        tokenIdx--
+      ) {
+        const token = sentence.tokens[tokenIdx];
+        const linkCount = getLiITACount(token);
+        if (linkCount === 0 || linkCount > 1) {
+          onTokenSelect(sentenceIdx, tokenIdx);
+          return;
+        }
+      }
+    }
   };
 
   const findNextUnlinkedOrAmbiguous = () => {
-    // Search forwards from current position
+    // Search forwards from current position in current sentence
     for (
       let i = currentTokenIndex + 1;
       i < currentSentence.tokens.length;
@@ -71,11 +115,30 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
         return;
       }
     }
+
+    // Search forwards in next sentences
+    for (
+      let sentenceIdx = selectedSentenceIndex + 1;
+      sentenceIdx < parsedData.sentences.length;
+      sentenceIdx++
+    ) {
+      const sentence = parsedData.sentences[sentenceIdx];
+      for (let tokenIdx = 0; tokenIdx < sentence.tokens.length; tokenIdx++) {
+        const token = sentence.tokens[tokenIdx];
+        const linkCount = getLiITACount(token);
+        if (linkCount === 0 || linkCount > 1) {
+          onTokenSelect(sentenceIdx, tokenIdx);
+          return;
+        }
+      }
+    }
   };
 
-  const isPreviousDisabled = currentTokenIndex === 0;
+  const isPreviousDisabled =
+    currentTokenIndex === 0 && selectedSentenceIndex === 0;
   const isNextDisabled =
-    currentTokenIndex === currentSentence.tokens.length - 1;
+    currentTokenIndex === currentSentence.tokens.length - 1 &&
+    selectedSentenceIndex === parsedData.sentences.length - 1;
 
   return (
     <ButtonGroup
@@ -101,6 +164,20 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
       <Tooltip title="Previous token">
         <Button onClick={findPreviousToken} disabled={isPreviousDisabled}>
           <FastRewind sx={{ fontSize: 32 }} />
+        </Button>
+      </Tooltip>
+
+      <Tooltip title="Focus selection">
+        <Button
+          onClick={onFocusToken}
+          sx={{
+            backgroundColor: 'primary.dark',
+            '&:hover': {
+              backgroundColor: 'primary.main',
+            },
+          }}
+        >
+          <CenterFocusStrong sx={{ fontSize: 32 }} />
         </Button>
       </Tooltip>
 
