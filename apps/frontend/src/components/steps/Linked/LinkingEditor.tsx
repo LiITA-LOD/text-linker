@@ -1,10 +1,7 @@
-import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   IconButton,
   Autocomplete,
   TextField,
@@ -18,6 +15,7 @@ import {
   updateTokenLiITA,
 } from '../../../utils/liita';
 import { search, type SearchResult } from '../../../utils/sparql';
+import LinkedEntityCard from './LinkedEntityCard';
 
 const LinkingEditor: React.FC<{
   token: ConlluToken | null;
@@ -174,27 +172,11 @@ const LinkingEditor: React.FC<{
       {items.length > 0 ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {items.map((item, index) => (
-            <Card key={index} variant="outlined" sx={{ position: 'relative' }}>
-              <CardContent sx={{ pr: 6, py: 1.5 }}>
-                <Typography variant="body2">{item}</Typography>
-              </CardContent>
-              <IconButton
-                size="small"
-                onClick={() => handleRemoveItem(index)}
-                sx={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  color: 'error.main',
-                  '&:hover': {
-                    backgroundColor: 'error.light',
-                    color: 'error.contrastText',
-                  },
-                }}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Card>
+            <LinkedEntityCard
+              key={index}
+              uri={item}
+              onRemove={() => handleRemoveItem(index)}
+            />
           ))}
         </Box>
       ) : (

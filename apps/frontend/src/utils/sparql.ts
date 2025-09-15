@@ -1,4 +1,48 @@
-const ENDPOINT_URL = 'https://liita.it/sparql'
+interface SparqlResponse {
+  head: any;
+  results: {
+    distinct: boolean;
+    ordered: boolean;
+    bindings: SparqlBinding[];
+  };
+}
+
+interface SparqlBinding {
+  [key: string]: {
+    type: 'uri' | 'literal';
+    value: string;
+  };
+}
+
+async function client(query: string, endpointUrl = 'https://liita.it/sparql'): Promise<SparqlResponse> {
+  const response = await fetch(endpointUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/sparql-results+json'
+    },
+    body: new URLSearchParams({ query: query })
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const data: SparqlResponse = await response.json()
+
+  return data
+}
+
+export interface SearchResult {
+  uri: string;
+  upos: string;
+  label: string;
+  writtenRepresentations: string[];
+}
+
+function uriToUPOS(uri: string): string {
+  return POS_URI_TO_UPOS[uri] || uri.split('/').pop() || ''
+}
 
 const POS_URI_TO_UPOS: Record<string, string> = {
   'http://lila-erc.eu/ontologies/lila/adjective': 'ADJ',
@@ -15,31 +59,6 @@ const POS_URI_TO_UPOS: Record<string, string> = {
   'http://lila-erc.eu/ontologies/lila/proper_noun': 'PROPN',
   'http://lila-erc.eu/ontologies/lila/subordinating_conjunction': 'SCONJ',
   'http://lila-erc.eu/ontologies/lila/verb': 'VERB',
-}
-
-function uriToUPOS(uri: string): string {
-  return POS_URI_TO_UPOS[uri] || uri.split('/').pop() || ''
-}
-
-interface SparqlResponse {
-  head: any;
-  results: {
-    distinct: boolean;
-    ordered: boolean;
-    bindings: {
-      [key: string]: {
-        type: 'uri' | 'literal';
-        value: string;
-      };
-    }[];
-  };
-}
-
-export interface SearchResult {
-  uri: string;
-  upos: string;
-  label: string;
-  writtenRepresentations: string[];
 }
 
 export async function search(regex: string): Promise<SearchResult[]> {
@@ -62,20 +81,7 @@ LIMIT 100
 `
 
   try {
-    const response = await fetch(ENDPOINT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/sparql-results+json'
-      },
-      body: new URLSearchParams({ query: query })
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const data: SparqlResponse = await response.json()
+    const data = await client(query)
 
     // Parse SPARQL JSON results and return simplified structure
     const results: SearchResult[] = data.results.bindings.map(binding => ({
@@ -88,6 +94,18 @@ LIMIT 100
     return results
   } catch (error) {
     console.error('SPARQL query failed:', error)
+    return []
+  }
+}
+
+export async function getAllPredicates(uri: string): Promise<SparqlBinding[]> {
+  const query = `SELECT * WHERE { <${uri}> ?predicate ?object }`
+
+  try {
+    const data = await client(query)
+    return data.results.bindings
+  } catch (error) {
+    console.error('SPARQL fetch failed:', error)
     return []
   }
 }
