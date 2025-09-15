@@ -11,6 +11,7 @@ import {
 import InputActions from '../InputActions';
 import DetailsModal from './Linked/DetailsModal';
 import LinkingEditor from './Linked/LinkingEditor';
+import ProgressIndicator from './Linked/ProgressIndicator';
 import SentencePills from './Linked/SentencePills';
 
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
@@ -210,36 +211,38 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
             </Box>
           </Box>
 
-          {selectedToken && selectedSentenceIndex !== null && parsedData && (
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: { md: '300px' },
-                maxWidth: { md: '400px' },
-                overflowY: 'auto', // Make details section scrollable too
-                '&::-webkit-scrollbar': {
-                  width: '8px',
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: { md: '300px' },
+              maxWidth: { md: '400px' },
+              overflowY: 'auto', // Make details section scrollable too
+              '&::-webkit-scrollbar': {
+                width: '8px',
+              },
+              '&::-webkit-scrollbar-track': {
+                background: '#f1f1f1',
+                borderRadius: '4px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: '#c1c1c1',
+                borderRadius: '4px',
+                '&:hover': {
+                  background: '#a8a8a8',
                 },
-                '&::-webkit-scrollbar-track': {
-                  background: '#f1f1f1',
-                  borderRadius: '4px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: '#c1c1c1',
-                  borderRadius: '4px',
-                  '&:hover': {
-                    background: '#a8a8a8',
-                  },
-                },
-              }}
-            >
+              },
+            }}
+          >
+            <ProgressIndicator parsedData={parsedData} />
+
+            {selectedToken && selectedSentenceIndex !== null && parsedData && (
               <LinkingEditor
                 token={selectedToken}
                 onTokenUpdate={handleTokenUpdate}
                 onInfoClick={() => setInfoModalOpen(true)}
               />
-            </Box>
-          )}
+            )}
+          </Box>
         </Box>
       )}
 
