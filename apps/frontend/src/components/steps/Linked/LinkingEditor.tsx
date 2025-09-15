@@ -125,7 +125,6 @@ const LinkingEditor: React.FC<{
         value={searchValue}
         onInputChange={(_, newValue) => setSearchValue(newValue)}
         onChange={(_, newValue) => {
-          console.log(newValue)
           if (typeof newValue === 'string') {
             handleAddItem(newValue);
           } else if (newValue) {
