@@ -23,6 +23,7 @@
             pname = "text-linker-frontend";
             version = "0.1.0";
             src = ./.;
+            BACKEND_URL = "http://130.192.100.167:8000"; # FIXME: perhaps not great to have it here
             buildInputs = with pkgs; [
               nodejs
               pnpm
