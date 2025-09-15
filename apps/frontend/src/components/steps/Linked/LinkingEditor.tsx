@@ -1,16 +1,15 @@
-import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
   Typography,
-  Button,
   Card,
   CardContent,
   IconButton,
+  Autocomplete,
   TextField,
 } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
 import {
   getLiITAValue,
@@ -18,6 +17,7 @@ import {
   serializeLiITAValue,
   updateTokenLiITA,
 } from '../../../utils/liita';
+import { search, type SearchResult } from '../../../utils/sparql';
 
 const LinkingEditor: React.FC<{
   token: ConlluToken | null;
@@ -25,7 +25,9 @@ const LinkingEditor: React.FC<{
   onInfoClick?: () => void;
 }> = React.memo(({ token, onTokenUpdate, onInfoClick }) => {
   const [items, setItems] = useState<string[]>([]);
-  const [newItem, setNewItem] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   // Initialize items when token changes
   useEffect(() => {
@@ -35,11 +37,41 @@ const LinkingEditor: React.FC<{
     }
   }, [token]);
 
-  const handleAddItem = () => {
-    if (newItem.trim() && !items.includes(newItem.trim())) {
-      const updatedItems = [...items, newItem.trim()];
+  // Debounced search function
+  const performSearch = useCallback(async (query: string) => {
+    if (!query.trim() || query.length < 2) {
+      setSearchResults([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await search(query);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Debounce search calls
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      performSearch(searchValue);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchValue, performSearch]);
+
+  const handleAddItem = (selectedValue: string) => {
+    if (selectedValue.trim() && !items.includes(selectedValue.trim())) {
+      setSearchValue('');
+      setSearchResults([]);
+      const updatedItems = [...items, selectedValue.trim()];
       setItems(updatedItems);
-      setNewItem('');
       updateToken(updatedItems);
     }
   };
@@ -58,11 +90,6 @@ const LinkingEditor: React.FC<{
     onTokenUpdate(updatedToken);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddItem();
-    }
-  };
 
   // Create token display text
   const getTokenDisplayText = () => {
@@ -93,26 +120,55 @@ const LinkingEditor: React.FC<{
         )}
       </Box>
 
-      {/* Add new item bar */}
-      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-        <TextField
-          size="small"
-          placeholder="Add new link..."
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-          onKeyPress={handleKeyPress}
-          sx={{ flex: 1 }}
-        />
-        <Button
-          size="small"
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleAddItem}
-          disabled={!newItem.trim() || items.includes(newItem.trim())}
-        >
-          Add
-        </Button>
-      </Box>
+      <Autocomplete
+        freeSolo
+        options={searchResults}
+        loading={loading}
+        value={searchValue}
+        onInputChange={(_, newValue) => setSearchValue(newValue)}
+        onChange={(_, newValue) => {
+          console.log(newValue)
+          if (typeof newValue === 'string') {
+            handleAddItem(newValue);
+          } else if (newValue) {
+            handleAddItem(newValue.uri);
+          }
+        }}
+        getOptionKey={(option) => (typeof option === 'string' ? option : option.uri)}
+        getOptionLabel={(option) => (typeof option === 'string' ? option : option.label)}
+        loadingText="Loading..."
+        noOptionsText="No results"
+        filterOptions={(options) => options} // Disable local filtering since we're using remote search
+        renderInput={(params) => (
+          <TextField {...params}
+            size="small"
+            placeholder="Search and add new link..."
+          />
+        )}
+        renderOption={({ key, ...props }, option) => (
+          <Box component="li" {...props} sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ display: 'flex', width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Typography variant="body2" fontWeight="medium">
+                {option.label}
+              </Typography>
+              <Typography variant="caption" color="primary" fontWeight="bold">
+                {option.upos}
+              </Typography>
+            </Box>
+            {(() => {
+              const otherForms = option.writtenRepresentations
+                .filter(form => form !== option.label)
+                .slice(0, 3);
+              return otherForms.length > 0 && (
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', width: '100%', textAlign: 'left', fontStyle: 'italic' }}>
+                  {otherForms.join(', ')}
+                  {option.writtenRepresentations.filter(form => form !== option.label).length > 3 && '...'}
+                </Typography>
+              );
+            })()}
+          </Box>
+        )}
+      />
 
       {/* Links cards */}
       {items.length > 0 ? (

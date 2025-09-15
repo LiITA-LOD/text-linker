@@ -35,7 +35,7 @@ interface SparqlResponse {
   };
 }
 
-interface SearchResult {
+export interface SearchResult {
   uri: string;
   upos: string;
   label: string;
