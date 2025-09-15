@@ -1,5 +1,26 @@
 const ENDPOINT_URL = 'https://liita.it/sparql'
 
+const POS_URI_TO_UPOS: Record<string, string> = {
+  'http://lila-erc.eu/ontologies/lila/adjective': 'ADJ',
+  'http://lila-erc.eu/ontologies/lila/adposition': 'ADP',
+  'http://lila-erc.eu/ontologies/lila/adverb': 'ADV',
+  'http://lila-erc.eu/ontologies/lila/coordinating_conjunction': 'CCONJ',
+  'http://lila-erc.eu/ontologies/lila/determiner': 'DET',
+  'http://lila-erc.eu/ontologies/lila/interjection': 'INTJ',
+  'http://lila-erc.eu/ontologies/lila/noun': 'NOUN',
+  'http://lila-erc.eu/ontologies/lila/numeral': 'NUM',
+  'http://lila-erc.eu/ontologies/lila/other': 'X',
+  'http://lila-erc.eu/ontologies/lila/particle': 'PART',
+  'http://lila-erc.eu/ontologies/lila/pronoun': 'PRON',
+  'http://lila-erc.eu/ontologies/lila/proper_noun': 'PROPN',
+  'http://lila-erc.eu/ontologies/lila/subordinating_conjunction': 'SCONJ',
+  'http://lila-erc.eu/ontologies/lila/verb': 'VERB',
+}
+
+function uriToUPOS(uri: string): string {
+  return POS_URI_TO_UPOS[uri] || uri.split('/').pop() || ''
+}
+
 interface SparqlResponse {
   head: any;
   results: {
@@ -59,7 +80,7 @@ LIMIT 100
     // Parse SPARQL JSON results and return simplified structure
     const results: SearchResult[] = data.results.bindings.map(binding => ({
       uri: binding.uri.value,
-      upos: binding.uposUri.value.split('/').pop() || '', // FIXME: get the label instead of the uri in the query
+      upos: uriToUPOS(binding.uposUri.value),
       label: binding.label.value,
       writtenRepresentations: binding.wrs.value.split('\u0000')
     }))
