@@ -1,5 +1,5 @@
 interface SparqlResponse {
-  head: any;
+  head: unknown;
   results: {
     distinct: boolean;
     ordered: boolean;

@@ -2,15 +2,23 @@ import LinkOffIcon from '@mui/icons-material/LinkOff';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {
   Box,
-  Typography,
   Card,
   CardContent,
-  IconButton,
   CircularProgress,
+  IconButton,
   Link,
+  Typography,
 } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { getAllPredicates } from '../../../utils/sparql';
+
+interface SparqlBinding {
+  [key: string]: {
+    type: 'uri' | 'literal';
+    value: string;
+  };
+}
 
 interface LinkedEntityCardProps {
   uri: string;
@@ -21,17 +29,17 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({
   uri,
   onRemove,
 }) => {
-  const [predicates, setPredicates] = useState<any[]>([]);
+  const [predicates, setPredicates] = useState<SparqlBinding[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   // Helper function to extract the last fragment from a URI
   const extractFragment = (uri: string): string => {
-    return uri.split('#').pop()!.split('/').pop() || uri;
+    return uri.split('#').pop()?.split('/').pop() || uri;
   };
 
   // Helper function to render a value (URI or literal) with appropriate styling
-  const renderValue = (value: any) => {
+  const renderValue = (value: { type: 'uri' | 'literal'; value: string }) => {
     if (value.type === 'uri') {
       return (
         <Link
@@ -73,7 +81,7 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({
   }, [uri]);
 
   // Format predicate data for display
-  const formatPredicateData = (predicates: any[]) => {
+  const formatPredicateData = (predicates: SparqlBinding[]) => {
     if (!predicates || predicates.length === 0) return null;
 
     // Group predicates by type and show all predicates
@@ -91,7 +99,7 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({
         }
         return acc;
       },
-      {} as Record<string, any[]>,
+      {} as Record<string, { type: 'uri' | 'literal'; value: string }[]>,
     );
 
     return groupedPredicates;

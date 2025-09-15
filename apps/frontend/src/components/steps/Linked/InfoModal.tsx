@@ -1,14 +1,14 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
 } from '@mui/material';
-import React from 'react';
-import type { ConlluToken, ConlluSentence } from '../../../utils/conllu';
+import type React from 'react';
+import type { ConlluSentence, ConlluToken } from '../../../utils/conllu';
 import SentenceDetails from './SentenceDetails';
 import TokenDetails from './TokenDetails';
 

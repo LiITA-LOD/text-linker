@@ -1,5 +1,4 @@
-import { Box, Typography, IconButton } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
+import { Box, Typography } from '@mui/material';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { StepProps } from '../../types';
@@ -46,7 +45,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
       selectedTokenIndex !== undefined
     ) {
       const sentence = parsedData.sentences[selectedSentenceIndex];
-      if (sentence && sentence.tokens[selectedTokenIndex]) {
+      if (sentence?.tokens[selectedTokenIndex]) {
         setSelectedToken(sentence.tokens[selectedTokenIndex]);
       }
     }

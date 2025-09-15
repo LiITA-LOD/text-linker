@@ -1,12 +1,12 @@
 import InfoIcon from '@mui/icons-material/Info';
 import {
-  Box,
-  Typography,
-  IconButton,
   Autocomplete,
+  Box,
+  IconButton,
   TextField,
+  Typography,
 } from '@mui/material';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
 import {
   getLiITAValue,
@@ -14,7 +14,7 @@ import {
   serializeLiITAValue,
   updateTokenLiITA,
 } from '../../../utils/liita';
-import { search, type SearchResult } from '../../../utils/sparql';
+import { type SearchResult, search } from '../../../utils/sparql';
 import LinkedEntityCard from './LinkedEntityCard';
 
 const LinkingEditor: React.FC<{
