@@ -6,10 +6,10 @@ import type { ConlluToken } from './conllu';
  */
 export function getLiITAValue(token: ConlluToken | null): string | null {
   if (!token?.misc) return null;
-  
+
   const liitaItem = token.misc.find((misc) => misc.startsWith('LiITA='));
   if (!liitaItem) return null;
-  
+
   return liitaItem.substring(6); // Remove 'LiITA=' prefix
 }
 
@@ -39,12 +39,15 @@ export function serializeLiITAValue(items: string[]): string {
  * Update token's misc field with new LiITA value
  * Creates LiITA entry if it doesn't exist, updates if it does
  */
-export function updateTokenLiITA(token: ConlluToken, newValue: string): ConlluToken {
+export function updateTokenLiITA(
+  token: ConlluToken,
+  newValue: string,
+): ConlluToken {
   const updatedMisc = [...(token.misc || [])];
   const liitaIndex = updatedMisc.findIndex((misc) => misc.startsWith('LiITA='));
-  
+
   const liitaEntry = `LiITA=${newValue}`;
-  
+
   if (liitaIndex >= 0) {
     // Update existing LiITA entry
     updatedMisc[liitaIndex] = liitaEntry;
@@ -52,7 +55,7 @@ export function updateTokenLiITA(token: ConlluToken, newValue: string): ConlluTo
     // Add new LiITA entry
     updatedMisc.push(liitaEntry);
   }
-  
+
   return {
     ...token,
     misc: updatedMisc.length > 0 ? updatedMisc : undefined,
@@ -64,9 +67,9 @@ export function updateTokenLiITA(token: ConlluToken, newValue: string): ConlluTo
  */
 export function removeTokenLiITA(token: ConlluToken): ConlluToken {
   if (!token.misc) return token;
-  
+
   const updatedMisc = token.misc.filter((misc) => !misc.startsWith('LiITA='));
-  
+
   return {
     ...token,
     misc: updatedMisc.length > 0 ? updatedMisc : undefined,

@@ -30,13 +30,13 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
         onClick={handleClick}
         variant="filled"
         color={
-          (isBracket || isMultiword || isPunctuation) ?
-            'secondary'
-            : linksCount < 1 ?
-              "warning"
-              : linksCount > 1 ?
-                "error"
-                : "default"
+          isBracket || isMultiword || isPunctuation
+            ? 'secondary'
+            : linksCount < 1
+              ? 'warning'
+              : linksCount > 1
+                ? 'error'
+                : 'default'
         }
         sx={{
           cursor: 'pointer',
@@ -48,14 +48,14 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
             fontSize: 'inherit',
           },
           '&:hover': {
-            outlineWidth: "2px",
-            outlineStyle: "solid",
-            outlineColor: "white",
+            outlineWidth: '2px',
+            outlineStyle: 'solid',
+            outlineColor: 'white',
           },
           ...(isSelected && {
-            outlineWidth: "2px",
-            outlineStyle: "solid",
-            outlineColor: "white",
+            outlineWidth: '2px',
+            outlineStyle: 'solid',
+            outlineColor: 'white',
           }),
         }}
       />

@@ -40,7 +40,11 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
 
   // Update selectedToken when parsedData changes (e.g., after token updates)
   useEffect(() => {
-    if (parsedData && selectedSentenceIndex !== null && selectedTokenIndex !== undefined) {
+    if (
+      parsedData &&
+      selectedSentenceIndex !== null &&
+      selectedTokenIndex !== undefined
+    ) {
       const sentence = parsedData.sentences[selectedSentenceIndex];
       if (sentence && sentence.tokens[selectedTokenIndex]) {
         setSelectedToken(sentence.tokens[selectedTokenIndex]);
@@ -87,7 +91,11 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
 
   const handleTokenUpdate = useCallback(
     (updatedToken: ConlluToken) => {
-      if (!parsedData || selectedSentenceIndex === null || selectedTokenIndex === undefined) {
+      if (
+        !parsedData ||
+        selectedSentenceIndex === null ||
+        selectedTokenIndex === undefined
+      ) {
         return;
       }
 
@@ -226,8 +234,8 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 },
               }}
             >
-              <LinkingEditor 
-                token={selectedToken} 
+              <LinkingEditor
+                token={selectedToken}
                 onTokenUpdate={handleTokenUpdate}
                 onInfoClick={() => setInfoModalOpen(true)}
               />
@@ -241,7 +249,11 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
         open={infoModalOpen}
         onClose={() => setInfoModalOpen(false)}
         token={selectedToken}
-        sentence={selectedSentenceIndex !== null && parsedData ? parsedData.sentences[selectedSentenceIndex] : null}
+        sentence={
+          selectedSentenceIndex !== null && parsedData
+            ? parsedData.sentences[selectedSentenceIndex]
+            : null
+        }
         sentenceIndex={selectedSentenceIndex}
       />
     </Box>

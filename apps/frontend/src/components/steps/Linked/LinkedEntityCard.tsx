@@ -17,14 +17,17 @@ interface LinkedEntityCardProps {
   onRemove: () => void;
 }
 
-const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({ uri, onRemove }) => {
+const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({
+  uri,
+  onRemove,
+}) => {
   const [predicates, setPredicates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   // Helper function to extract the last fragment from a URI
   const extractFragment = (uri: string): string => {
-    return uri.split("#").pop()!.split("/").pop() || uri;
+    return uri.split('#').pop()!.split('/').pop() || uri;
   };
 
   // Helper function to render a value (URI or literal) with appropriate styling
@@ -40,7 +43,7 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({ uri, onRemove }) =>
             alignItems: 'center',
             gap: 0.5,
             textDecoration: 'none',
-            '&:hover': { textDecoration: 'underline' }
+            '&:hover': { textDecoration: 'underline' },
           }}
         >
           {extractFragment(value.value)}
@@ -74,19 +77,22 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({ uri, onRemove }) =>
     if (!predicates || predicates.length === 0) return null;
 
     // Group predicates by type and show all predicates
-    const groupedPredicates = predicates.reduce((acc, binding) => {
-      const predicate = binding.predicate;
-      const object = binding.object;
+    const groupedPredicates = predicates.reduce(
+      (acc, binding) => {
+        const predicate = binding.predicate;
+        const object = binding.object;
 
-      if (predicate && object) {
-        const predicateName = extractFragment(predicate.value);
-        if (!acc[predicateName]) {
-          acc[predicateName] = [];
+        if (predicate && object) {
+          const predicateName = extractFragment(predicate.value);
+          if (!acc[predicateName]) {
+            acc[predicateName] = [];
+          }
+          acc[predicateName].push(object);
         }
-        acc[predicateName].push(object);
-      }
-      return acc;
-    }, {} as Record<string, any[]>);
+        return acc;
+      },
+      {} as Record<string, any[]>,
+    );
 
     return groupedPredicates;
   };
@@ -109,7 +115,7 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({ uri, onRemove }) =>
             mb: 1,
             fontWeight: 'medium',
             color: 'primary.main',
-            '&:hover': { textDecoration: 'underline' }
+            '&:hover': { textDecoration: 'underline' },
           }}
         >
           {entityName}
@@ -128,22 +134,32 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({ uri, onRemove }) =>
             Failed to load predicates
           </Typography>
         ) : formattedPredicates ? (
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 0.5,
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 0.5,
+            }}
+          >
             {Object.entries(formattedPredicates).map(([predicate, values]) => {
               // Check if the predicate name is actually a URI fragment
-              const predicateBinding = predicates.find(p =>
-                extractFragment(p.predicate?.value || '') === predicate
+              const predicateBinding = predicates.find(
+                (p) => extractFragment(p.predicate?.value || '') === predicate,
               );
-              const isPredicateUri = predicateBinding?.predicate?.type === 'uri';
+              const isPredicateUri =
+                predicateBinding?.predicate?.type === 'uri';
               const predicateUri = predicateBinding?.predicate?.value;
 
               return (
-                <Box key={predicate} sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
+                <Box
+                  key={predicate}
+                  sx={{ display: 'flex', flexDirection: 'column' }}
+                >
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 'bold' }}
+                  >
                     {isPredicateUri && predicateUri ? (
                       <Link
                         href={predicateUri}
@@ -155,7 +171,7 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({ uri, onRemove }) =>
                           gap: 0.5,
                           textDecoration: 'none',
                           color: 'text.secondary',
-                          '&:hover': { textDecoration: 'underline' }
+                          '&:hover': { textDecoration: 'underline' },
                         }}
                       >
                         {predicate}:
@@ -165,14 +181,21 @@ const LinkedEntityCard: React.FC<LinkedEntityCardProps> = ({ uri, onRemove }) =>
                       `${predicate}:`
                     )}
                   </Typography>
-                <Box sx={{ ml: 1, display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-                  {values.map((value, index) => (
-                    <Typography key={index} variant="body2">
-                      {renderValue(value)}
-                    </Typography>
-                  ))}
+                  <Box
+                    sx={{
+                      ml: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 0.25,
+                    }}
+                  >
+                    {values.map((value, index) => (
+                      <Typography key={index} variant="body2">
+                        {renderValue(value)}
+                      </Typography>
+                    ))}
+                  </Box>
                 </Box>
-              </Box>
               );
             })}
           </Box>

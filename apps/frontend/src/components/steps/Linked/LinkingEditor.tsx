@@ -88,7 +88,6 @@ const LinkingEditor: React.FC<{
     onTokenUpdate(updatedToken);
   };
 
-
   // Create token display text
   const getTokenDisplayText = () => {
     if (!token) return 'No token selected';
@@ -103,7 +102,13 @@ const LinkingEditor: React.FC<{
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Typography variant="h6">
           {getTokenDisplayText()} ({items.length} links)
         </Typography>
@@ -131,20 +136,36 @@ const LinkingEditor: React.FC<{
             handleAddItem(newValue.uri);
           }
         }}
-        getOptionKey={(option) => (typeof option === 'string' ? option : option.uri)}
-        getOptionLabel={(option) => (typeof option === 'string' ? option : option.label)}
+        getOptionKey={(option) =>
+          typeof option === 'string' ? option : option.uri
+        }
+        getOptionLabel={(option) =>
+          typeof option === 'string' ? option : option.label
+        }
         loadingText="Loading..."
         noOptionsText="No results"
         filterOptions={(options) => options} // Disable local filtering since we're using remote search
         renderInput={(params) => (
-          <TextField {...params}
+          <TextField
+            {...params}
             size="small"
             placeholder="Search and add new link..."
           />
         )}
         renderOption={({ key, ...props }, option) => (
-          <Box component="li" {...props} sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Box sx={{ display: 'flex', width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Box
+            component="li"
+            {...props}
+            sx={{ display: 'flex', flexDirection: 'column' }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
               <Typography variant="body2" fontWeight="medium">
                 {option.label}
               </Typography>
@@ -154,13 +175,26 @@ const LinkingEditor: React.FC<{
             </Box>
             {(() => {
               const otherForms = option.writtenRepresentations
-                .filter(form => form !== option.label)
+                .filter((form) => form !== option.label)
                 .slice(0, 3);
-              return otherForms.length > 0 && (
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', width: '100%', textAlign: 'left', fontStyle: 'italic' }}>
-                  {otherForms.join(', ')}
-                  {option.writtenRepresentations.filter(form => form !== option.label).length > 3 && '...'}
-                </Typography>
+              return (
+                otherForms.length > 0 && (
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    {otherForms.join(', ')}
+                    {option.writtenRepresentations.filter(
+                      (form) => form !== option.label,
+                    ).length > 3 && '...'}
+                  </Typography>
+                )
               );
             })()}
           </Box>

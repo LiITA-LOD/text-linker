@@ -14,23 +14,26 @@ interface SparqlBinding {
   };
 }
 
-async function client(query: string, endpointUrl = 'https://liita.it/sparql'): Promise<SparqlResponse> {
+async function client(
+  query: string,
+  endpointUrl = 'https://liita.it/sparql',
+): Promise<SparqlResponse> {
   const response = await fetch(endpointUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/sparql-results+json'
+      Accept: 'application/sparql-results+json',
     },
-    body: new URLSearchParams({ query: query })
-  })
+    body: new URLSearchParams({ query: query }),
+  });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const data: SparqlResponse = await response.json()
+  const data: SparqlResponse = await response.json();
 
-  return data
+  return data;
 }
 
 export interface SearchResult {
@@ -41,7 +44,7 @@ export interface SearchResult {
 }
 
 function uriToUPOS(uri: string): string {
-  return POS_URI_TO_UPOS[uri] || uri.split('/').pop() || ''
+  return POS_URI_TO_UPOS[uri] || uri.split('/').pop() || '';
 }
 
 const POS_URI_TO_UPOS: Record<string, string> = {
@@ -59,7 +62,7 @@ const POS_URI_TO_UPOS: Record<string, string> = {
   'http://lila-erc.eu/ontologies/lila/proper_noun': 'PROPN',
   'http://lila-erc.eu/ontologies/lila/subordinating_conjunction': 'SCONJ',
   'http://lila-erc.eu/ontologies/lila/verb': 'VERB',
-}
+};
 
 export async function search(regex: string): Promise<SearchResult[]> {
   const query = `
@@ -78,35 +81,34 @@ WHERE {
 GROUP BY ?uri ?uposUri ?label
 ORDER BY ?wrs
 LIMIT 100
-`
+`;
 
   try {
-    const data = await client(query)
+    const data = await client(query);
 
     // Parse SPARQL JSON results and return simplified structure
-    const results: SearchResult[] = data.results.bindings.map(binding => ({
+    const results: SearchResult[] = data.results.bindings.map((binding) => ({
       uri: binding.uri.value,
       upos: uriToUPOS(binding.uposUri.value),
       label: binding.label.value,
-      writtenRepresentations: binding.wrs.value.split('\u0000')
-    }))
+      writtenRepresentations: binding.wrs.value.split('\u0000'),
+    }));
 
-    return results
+    return results;
   } catch (error) {
-    console.error('SPARQL query failed:', error)
-    return []
+    console.error('SPARQL query failed:', error);
+    return [];
   }
 }
 
 export async function getAllPredicates(uri: string): Promise<SparqlBinding[]> {
-  const query = `SELECT * WHERE { <${uri}> ?predicate ?object }`
+  const query = `SELECT * WHERE { <${uri}> ?predicate ?object }`;
 
   try {
-    const data = await client(query)
-    return data.results.bindings
+    const data = await client(query);
+    return data.results.bindings;
   } catch (error) {
-    console.error('SPARQL fetch failed:', error)
-    return []
+    console.error('SPARQL fetch failed:', error);
+    return [];
   }
 }
-

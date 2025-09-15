@@ -544,12 +544,16 @@ export function parseMisc(miscString: string): string[] | undefined {
   // TAB is \x09, CR is \x0D, LF is \x0A
   const controlChars = /[\x00-\x1F\x7F]/;
   if (controlChars.test(miscString)) {
-    throw new Error(`Invalid MISC format: "${miscString}" (contains control characters)`);
+    throw new Error(
+      `Invalid MISC format: "${miscString}" (contains control characters)`,
+    );
   }
 
   // MISC cannot start or end with a space
   if (miscString.startsWith(' ') || miscString.endsWith(' ')) {
-    throw new Error(`Invalid MISC format: "${miscString}" (starts or ends with space)`);
+    throw new Error(
+      `Invalid MISC format: "${miscString}" (starts or ends with space)`,
+    );
   }
 
   return miscString.split('|');

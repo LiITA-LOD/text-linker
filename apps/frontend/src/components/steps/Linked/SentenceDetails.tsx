@@ -1,7 +1,4 @@
-import {
-  Box,
-  Typography,
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React from 'react';
 import type { ConlluSentence } from '../../../utils/conllu';
 

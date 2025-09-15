@@ -44,9 +44,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({
           {sentence && token && <Divider />}
 
           {/* Token Details */}
-          {token && (
-            <TokenDetails token={token} />
-          )}
+          {token && <TokenDetails token={token} />}
         </Box>
       </DialogContent>
       <DialogActions>
