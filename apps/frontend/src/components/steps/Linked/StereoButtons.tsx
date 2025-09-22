@@ -73,11 +73,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
     for (let i = currentTokenIndex - 1; i >= 0; i--) {
       const token = currentSentence.tokens[i];
 
-      // Skip "other" category tokens (same logic as TokenPill)
-      const isMultiword = token.id.includes('-');
-      const isPunctuation = /^[.,!?;:]$/.test(token.form);
-      const isBracket = /^[()[\]{}""'']$/.test(token.form);
-      const isOther = isBracket || isMultiword || isPunctuation;
+      const isOther = token.id.includes('-') || token.upos == "PUNCT";
 
       if (!isOther) {
         const linkCount = getLinkedURIsCount(token);
@@ -102,11 +98,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
       ) {
         const token = sentence.tokens[tokenIdx];
 
-        // Skip "other" category tokens (same logic as TokenPill)
-        const isMultiword = token.id.includes('-');
-        const isPunctuation = /^[.,!?;:]$/.test(token.form);
-        const isBracket = /^[()[\]{}""'']$/.test(token.form);
-        const isOther = isBracket || isMultiword || isPunctuation;
+        const isOther = token.id.includes('-') || token.upos == "PUNCT";
 
         if (!isOther) {
           const linkCount = getLinkedURIsCount(token);
@@ -128,11 +120,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
     ) {
       const token = currentSentence.tokens[i];
 
-      // Skip "other" category tokens (same logic as TokenPill)
-      const isMultiword = token.id.includes('-');
-      const isPunctuation = /^[.,!?;:]$/.test(token.form);
-      const isBracket = /^[()[\]{}""'']$/.test(token.form);
-      const isOther = isBracket || isMultiword || isPunctuation;
+      const isOther = token.id.includes('-') || token.upos == "PUNCT";
 
       if (!isOther) {
         const linkCount = getLinkedURIsCount(token);
@@ -153,11 +141,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
       for (let tokenIdx = 0; tokenIdx < sentence.tokens.length; tokenIdx++) {
         const token = sentence.tokens[tokenIdx];
 
-        // Skip "other" category tokens (same logic as TokenPill)
-        const isMultiword = token.id.includes('-');
-        const isPunctuation = /^[.,!?;:]$/.test(token.form);
-        const isBracket = /^[()[\]{}""'']$/.test(token.form);
-        const isOther = isBracket || isMultiword || isPunctuation;
+        const isOther = token.id.includes('-') || token.upos == "PUNCT";
 
         if (!isOther) {
           const linkCount = getLinkedURIsCount(token);

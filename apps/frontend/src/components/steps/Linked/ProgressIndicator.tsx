@@ -24,11 +24,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     // Count links for all tokens across all sentences
     parsedData.sentences.forEach((sentence) => {
       sentence.tokens.forEach((token) => {
-        // Check if token is "other" category (same logic as TokenPill)
-        const isMultiword = token.id.includes('-');
-        const isPunctuation = /^[.,!?;:]$/.test(token.form);
-        const isBracket = /^[()[\]{}""'']$/.test(token.form);
-        const isOther = isBracket || isMultiword || isPunctuation;
+        const isOther = token.id.includes('-') || token.upos == "PUNCT";
 
         if (isOther) {
           other++;

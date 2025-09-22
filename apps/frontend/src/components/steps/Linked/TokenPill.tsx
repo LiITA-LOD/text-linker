@@ -19,10 +19,7 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
       onTokenClick(sentenceIndex, tokenIndex);
     };
 
-    const isMultiword = token.id.includes('-');
-    const isPunctuation = /^[.,!?;:]$/.test(token.form);
-    const isBracket = /^[()[\]{}""'']$/.test(token.form);
-    const isOther = isBracket || isMultiword || isPunctuation;
+    const isOther = token.id.includes('-') || token.upos == "PUNCT";
     const linksCount = getLinkedURIsCount(token);
 
     return (
