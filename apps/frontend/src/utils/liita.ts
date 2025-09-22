@@ -1,6 +1,6 @@
 import type { ConlluToken } from './conllu';
 
-const LINKEDURIS_MISC_KEY = 'LiITA';
+const LINKEDURIS_MISC_KEY = 'LiITA'; // TODO: rename to LiITALinkedURIs here and in backend
 
 /**
  * Extract linked URIs value from token's misc field
