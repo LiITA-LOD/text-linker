@@ -1,9 +1,4 @@
-import {
-  Autocomplete,
-  Box,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Autocomplete, Box, TextField, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
 import {

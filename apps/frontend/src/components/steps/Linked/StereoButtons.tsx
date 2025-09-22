@@ -1,12 +1,12 @@
-import { Button, ButtonGroup, Tooltip } from '@mui/material';
 import {
-  SkipPrevious,
-  SkipNext,
-  FastRewind,
-  FastForward,
   CenterFocusStrong,
+  FastForward,
+  FastRewind,
+  SkipNext,
+  SkipPrevious,
 } from '@mui/icons-material';
-import React from 'react';
+import { Button, ButtonGroup, Tooltip } from '@mui/material';
+import type React from 'react';
 import type { ConlluDocument } from '../../../utils/conllu';
 import { getLinkedURIsCount } from '../../../utils/liita';
 
@@ -72,13 +72,13 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
     // Search backwards from current position in current sentence
     for (let i = currentTokenIndex - 1; i >= 0; i--) {
       const token = currentSentence.tokens[i];
-      
+
       // Skip "other" category tokens (same logic as TokenPill)
       const isMultiword = token.id.includes('-');
       const isPunctuation = /^[.,!?;:]$/.test(token.form);
       const isBracket = /^[()[\]{}""'']$/.test(token.form);
       const isOther = isBracket || isMultiword || isPunctuation;
-      
+
       if (!isOther) {
         const linkCount = getLinkedURIsCount(token);
         if (linkCount === 0 || linkCount > 1) {
@@ -101,13 +101,13 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
         tokenIdx--
       ) {
         const token = sentence.tokens[tokenIdx];
-        
+
         // Skip "other" category tokens (same logic as TokenPill)
         const isMultiword = token.id.includes('-');
         const isPunctuation = /^[.,!?;:]$/.test(token.form);
         const isBracket = /^[()[\]{}""'']$/.test(token.form);
         const isOther = isBracket || isMultiword || isPunctuation;
-        
+
         if (!isOther) {
           const linkCount = getLinkedURIsCount(token);
           if (linkCount === 0 || linkCount > 1) {
@@ -127,13 +127,13 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
       i++
     ) {
       const token = currentSentence.tokens[i];
-      
+
       // Skip "other" category tokens (same logic as TokenPill)
       const isMultiword = token.id.includes('-');
       const isPunctuation = /^[.,!?;:]$/.test(token.form);
       const isBracket = /^[()[\]{}""'']$/.test(token.form);
       const isOther = isBracket || isMultiword || isPunctuation;
-      
+
       if (!isOther) {
         const linkCount = getLinkedURIsCount(token);
         if (linkCount === 0 || linkCount > 1) {
@@ -152,13 +152,13 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
       const sentence = parsedData.sentences[sentenceIdx];
       for (let tokenIdx = 0; tokenIdx < sentence.tokens.length; tokenIdx++) {
         const token = sentence.tokens[tokenIdx];
-        
+
         // Skip "other" category tokens (same logic as TokenPill)
         const isMultiword = token.id.includes('-');
         const isPunctuation = /^[.,!?;:]$/.test(token.form);
         const isBracket = /^[()[\]{}""'']$/.test(token.form);
         const isOther = isBracket || isMultiword || isPunctuation;
-        
+
         if (!isOther) {
           const linkCount = getLinkedURIsCount(token);
           if (linkCount === 0 || linkCount > 1) {

@@ -1,5 +1,6 @@
 import { BarChart } from '@mui/x-charts/BarChart';
-import React, { useMemo } from 'react';
+import type React from 'react';
+import { useMemo } from 'react';
 import type { ConlluDocument } from '../../../utils/conllu';
 import { getLinkedURIsCount } from '../../../utils/liita';
 
@@ -47,7 +48,11 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     return { zeroLinks, oneLink, moreThanOneLink, other };
   }, [parsedData]);
 
-  const total = linkStats.zeroLinks + linkStats.oneLink + linkStats.moreThanOneLink + linkStats.other;
+  const total =
+    linkStats.zeroLinks +
+    linkStats.oneLink +
+    linkStats.moreThanOneLink +
+    linkStats.other;
 
   // Check if there are any tokens to display
   if (total === 0) {
@@ -98,11 +103,13 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       hideLegend={true}
       margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
       yAxis={[{ position: 'none', data: ['Linking progress'] }]}
-      xAxis={[{
-        position: 'none',
-        min: 0,
-        max: total
-      }]}
+      xAxis={[
+        {
+          position: 'none',
+          min: 0,
+          max: total,
+        },
+      ]}
     />
   );
 };

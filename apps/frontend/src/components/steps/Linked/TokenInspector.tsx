@@ -1,6 +1,6 @@
 import InfoIcon from '@mui/icons-material/Info';
 import { Box, IconButton, Typography } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
 import { getLinkedURIsValue, parseLinkedURIsValue } from '../../../utils/liita';
 
@@ -9,7 +9,10 @@ interface TokenInspectorProps {
   onInfoClick?: () => void;
 }
 
-const TokenInspector: React.FC<TokenInspectorProps> = ({ token, onInfoClick }) => {
+const TokenInspector: React.FC<TokenInspectorProps> = ({
+  token,
+  onInfoClick,
+}) => {
   // Create token display text
   const getTokenDisplayText = () => {
     if (!token) return 'No token selected';

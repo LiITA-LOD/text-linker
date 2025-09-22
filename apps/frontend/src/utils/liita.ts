@@ -9,7 +9,9 @@ const LINKEDURIS_MISC_KEY = 'LiITA'; // TODO: rename to LiITALinkedURIs here and
 export function getLinkedURIsValue(token: ConlluToken | null): string | null {
   if (!token?.misc) return null;
 
-  const liitaItem = token.misc.find((misc) => misc.startsWith(`${LINKEDURIS_MISC_KEY}=`));
+  const liitaItem = token.misc.find((misc) =>
+    misc.startsWith(`${LINKEDURIS_MISC_KEY}=`),
+  );
   if (!liitaItem) return null;
 
   return liitaItem.substring(LINKEDURIS_MISC_KEY.length + 1); // Remove prefix
@@ -46,7 +48,9 @@ export function updateTokenLinkedURIs(
   newValue: string,
 ): ConlluToken {
   const updatedMisc = [...(token.misc || [])];
-  const liitaIndex = updatedMisc.findIndex((misc) => misc.startsWith(`${LINKEDURIS_MISC_KEY}=`));
+  const liitaIndex = updatedMisc.findIndex((misc) =>
+    misc.startsWith(`${LINKEDURIS_MISC_KEY}=`),
+  );
 
   const liitaEntry = `${LINKEDURIS_MISC_KEY}=${newValue}`;
 
@@ -70,7 +74,9 @@ export function updateTokenLinkedURIs(
 export function removeTokenLinkedURIs(token: ConlluToken): ConlluToken {
   if (!token.misc) return token;
 
-  const updatedMisc = token.misc.filter((misc) => !misc.startsWith(`${LINKEDURIS_MISC_KEY}=`));
+  const updatedMisc = token.misc.filter(
+    (misc) => !misc.startsWith(`${LINKEDURIS_MISC_KEY}=`),
+  );
 
   return {
     ...token,

@@ -32,7 +32,7 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
         variant="filled"
         color={
           isOther
-            ? "default"
+            ? 'default'
             : linksCount < 1
               ? 'warning'
               : linksCount > 1

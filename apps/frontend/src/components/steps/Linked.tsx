@@ -21,17 +21,22 @@ interface SectionHeadingProps {
   isFirst?: boolean;
 }
 
-const SectionHeading: React.FC<SectionHeadingProps> = ({ children, isFirst = false }) => (
-  <h6 style={{
-    margin: isFirst ? '0 0 8px 0' : '16px 0 8px 0',
-    fontSize: '0.75rem',
-    fontWeight: '500',
-    color: '#666',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    borderBottom: '1px solid #666',
-    paddingBottom: '2px',
-  }}>
+const SectionHeading: React.FC<SectionHeadingProps> = ({
+  children,
+  isFirst = false,
+}) => (
+  <h6
+    style={{
+      margin: isFirst ? '0 0 8px 0' : '16px 0 8px 0',
+      fontSize: '0.75rem',
+      fontWeight: '500',
+      color: '#666',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+      borderBottom: '1px solid #666',
+      paddingBottom: '2px',
+    }}
+  >
     {children}
   </h6>
 );
@@ -293,7 +298,9 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
             <SectionHeading isFirst>Linking Progress</SectionHeading>
             <ProgressIndicator parsedData={parsedData} />
 
-            {selectedTokenIndex !== undefined && <SectionHeading>Navigation Controls</SectionHeading>}
+            {selectedTokenIndex !== undefined && (
+              <SectionHeading>Navigation Controls</SectionHeading>
+            )}
             <StereoButtons
               parsedData={parsedData}
               selectedSentenceIndex={selectedSentenceIndex}
