@@ -16,6 +16,26 @@ import SentencePills from './Linked/SentencePills';
 import StereoButtons from './Linked/StereoButtons';
 import TokenInspector from './Linked/TokenInspector';
 
+interface SectionHeadingProps {
+  children: React.ReactNode;
+  isFirst?: boolean;
+}
+
+const SectionHeading: React.FC<SectionHeadingProps> = ({ children, isFirst = false }) => (
+  <h6 style={{
+    margin: isFirst ? '0 0 8px 0' : '16px 0 8px 0',
+    fontSize: '0.75rem',
+    fontWeight: '500',
+    color: '#666',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    borderBottom: '1px solid #666',
+    paddingBottom: '2px',
+  }}>
+    {children}
+  </h6>
+);
+
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
   const [selectedTokenIndex, setSelectedTokenIndex] = useState<
@@ -270,8 +290,10 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
               },
             }}
           >
+            <SectionHeading isFirst>Linking Progress</SectionHeading>
             <ProgressIndicator parsedData={parsedData} />
 
+            {selectedTokenIndex !== undefined && <SectionHeading>Navigation Controls</SectionHeading>}
             <StereoButtons
               parsedData={parsedData}
               selectedSentenceIndex={selectedSentenceIndex}
@@ -282,10 +304,12 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
 
             {selectedToken && selectedSentenceIndex !== null && parsedData && (
               <>
+                <SectionHeading>Selected Token</SectionHeading>
                 <TokenInspector
                   token={selectedToken}
                   onInfoClick={() => setInfoModalOpen(true)}
                 />
+                <SectionHeading>Link Editor</SectionHeading>
                 <LinkingEditor
                   token={selectedToken}
                   onTokenUpdate={handleTokenUpdate}
