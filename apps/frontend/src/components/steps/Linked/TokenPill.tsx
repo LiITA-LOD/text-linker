@@ -22,6 +22,7 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
     const isMultiword = token.id.includes('-');
     const isPunctuation = /^[.,!?;:]$/.test(token.form);
     const isBracket = /^[()[\]{}""'']$/.test(token.form);
+    const isOther = isBracket || isMultiword || isPunctuation;
     const linksCount = getLinkedURIsCount(token);
 
     return (
@@ -30,13 +31,13 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
         onClick={handleClick}
         variant="filled"
         color={
-          isBracket || isMultiword || isPunctuation
-            ? 'secondary'
+          isOther
+            ? "default"
             : linksCount < 1
               ? 'warning'
               : linksCount > 1
                 ? 'error'
-                : 'default'
+                : 'success'
         }
         sx={{
           cursor: 'pointer',
