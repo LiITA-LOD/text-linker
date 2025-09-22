@@ -1,8 +1,6 @@
-import InfoIcon from '@mui/icons-material/Info';
 import {
   Autocomplete,
   Box,
-  IconButton,
   TextField,
   Typography,
 } from '@mui/material';
@@ -20,8 +18,7 @@ import LinkedEntityCard from './LinkedEntityCard';
 const LinkingEditor: React.FC<{
   token: ConlluToken | null;
   onTokenUpdate?: (updatedToken: ConlluToken) => void;
-  onInfoClick?: () => void;
-}> = React.memo(({ token, onTokenUpdate, onInfoClick }) => {
+}> = React.memo(({ token, onTokenUpdate }) => {
   const [items, setItems] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -88,41 +85,8 @@ const LinkingEditor: React.FC<{
     onTokenUpdate(updatedToken);
   };
 
-  // Create token display text
-  const getTokenDisplayText = () => {
-    if (!token) return 'No token selected';
-
-    const form = token.form || '_';
-    const lemma = `(${token.lemma || '_'})`;
-    const pos = `[${token.upos || '_'}]`;
-
-    return `${form} ${lemma} ${pos}`;
-  };
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {/* Header */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Typography variant="h6">
-          {getTokenDisplayText()} ({items.length} links)
-        </Typography>
-        {onInfoClick && (
-          <IconButton
-            size="small"
-            onClick={onInfoClick}
-            sx={{ color: 'text.secondary' }}
-          >
-            <InfoIcon fontSize="small" />
-          </IconButton>
-        )}
-      </Box>
-
       <Autocomplete
         freeSolo
         options={searchResults}
