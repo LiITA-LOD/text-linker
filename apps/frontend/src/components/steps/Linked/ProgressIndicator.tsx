@@ -1,7 +1,7 @@
 import { BarChart } from '@mui/x-charts/BarChart';
 import React, { useMemo } from 'react';
 import type { ConlluDocument } from '../../../utils/conllu';
-import { getLiITACount } from '../../../utils/liita';
+import { getLinkedURIsCount } from '../../../utils/liita';
 
 interface ProgressIndicatorProps {
   parsedData: ConlluDocument | null;
@@ -22,7 +22,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     // Count links for all tokens across all sentences
     parsedData.sentences.forEach((sentence) => {
       sentence.tokens.forEach((token) => {
-        const linkCount = getLiITACount(token);
+        const linkCount = getLinkedURIsCount(token);
         if (linkCount === 0) {
           zeroLinks++;
         } else if (linkCount === 1) {

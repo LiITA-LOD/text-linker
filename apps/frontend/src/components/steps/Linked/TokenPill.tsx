@@ -1,7 +1,7 @@
 import { Chip } from '@mui/material';
 import React from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
-import { getLiITACount } from '../../../utils/liita';
+import { getLinkedURIsCount } from '../../../utils/liita';
 
 interface TokenPillProps {
   token: ConlluToken;
@@ -22,7 +22,7 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
     const isMultiword = token.id.includes('-');
     const isPunctuation = /^[.,!?;:]$/.test(token.form);
     const isBracket = /^[()[\]{}""'']$/.test(token.form);
-    const linksCount = getLiITACount(token);
+    const linksCount = getLinkedURIsCount(token);
 
     return (
       <Chip

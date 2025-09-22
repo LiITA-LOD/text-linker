@@ -8,7 +8,7 @@ import {
 } from '@mui/icons-material';
 import React from 'react';
 import type { ConlluDocument } from '../../../utils/conllu';
-import { getLiITACount } from '../../../utils/liita';
+import { getLinkedURIsCount } from '../../../utils/liita';
 
 interface StereoButtonsProps {
   parsedData: ConlluDocument | null;
@@ -72,7 +72,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
     // Search backwards from current position in current sentence
     for (let i = currentTokenIndex - 1; i >= 0; i--) {
       const token = currentSentence.tokens[i];
-      const linkCount = getLiITACount(token);
+      const linkCount = getLinkedURIsCount(token);
       if (linkCount === 0 || linkCount > 1) {
         onTokenSelect(selectedSentenceIndex, i);
         return;
@@ -92,7 +92,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
         tokenIdx--
       ) {
         const token = sentence.tokens[tokenIdx];
-        const linkCount = getLiITACount(token);
+        const linkCount = getLinkedURIsCount(token);
         if (linkCount === 0 || linkCount > 1) {
           onTokenSelect(sentenceIdx, tokenIdx);
           return;
@@ -109,7 +109,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
       i++
     ) {
       const token = currentSentence.tokens[i];
-      const linkCount = getLiITACount(token);
+      const linkCount = getLinkedURIsCount(token);
       if (linkCount === 0 || linkCount > 1) {
         onTokenSelect(selectedSentenceIndex, i);
         return;
@@ -125,7 +125,7 @@ const StereoButtons: React.FC<StereoButtonsProps> = ({
       const sentence = parsedData.sentences[sentenceIdx];
       for (let tokenIdx = 0; tokenIdx < sentence.tokens.length; tokenIdx++) {
         const token = sentence.tokens[tokenIdx];
-        const linkCount = getLiITACount(token);
+        const linkCount = getLinkedURIsCount(token);
         if (linkCount === 0 || linkCount > 1) {
           onTokenSelect(sentenceIdx, tokenIdx);
           return;

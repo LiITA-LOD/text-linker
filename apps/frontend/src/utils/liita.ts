@@ -1,23 +1,25 @@
 import type { ConlluToken } from './conllu';
 
+const LINKEDURIS_MISC_KEY = 'LiITA';
+
 /**
- * Extract LiITA value from token's misc field
+ * Extract linked URIs value from token's misc field
  * Returns the comma-separated string value, or null if not found
  */
-export function getLiITAValue(token: ConlluToken | null): string | null {
+export function getLinkedURIsValue(token: ConlluToken | null): string | null {
   if (!token?.misc) return null;
 
-  const liitaItem = token.misc.find((misc) => misc.startsWith('LiITA='));
+  const liitaItem = token.misc.find((misc) => misc.startsWith(`${LINKEDURIS_MISC_KEY}=`));
   if (!liitaItem) return null;
 
-  return liitaItem.substring(6); // Remove 'LiITA=' prefix
+  return liitaItem.substring(LINKEDURIS_MISC_KEY.length + 1); // Remove prefix
 }
 
 /**
- * Parse LiITA value into array of strings
+ * Parse linked URIs value into array of strings
  * Returns empty array if value is null or empty
  */
-export function parseLiITAValue(value: string | null): string[] {
+export function parseLinkedURIsValue(value: string | null): string[] {
   if (!value) return [];
   try {
     const parsed = JSON.parse(value);
@@ -29,30 +31,30 @@ export function parseLiITAValue(value: string | null): string[] {
 }
 
 /**
- * Serialize array of strings back to LiITA value format
+ * Serialize array of strings back to linked URIs value format
  */
-export function serializeLiITAValue(items: string[]): string {
+export function serializeLinkedURIsValue(items: string[]): string {
   return JSON.stringify(items);
 }
 
 /**
- * Update token's misc field with new LiITA value
- * Creates LiITA entry if it doesn't exist, updates if it does
+ * Update token's misc field with new linked URIs value
+ * Creates linked URIs entry if it doesn't exist, updates if it does
  */
-export function updateTokenLiITA(
+export function updateTokenLinkedURIs(
   token: ConlluToken,
   newValue: string,
 ): ConlluToken {
   const updatedMisc = [...(token.misc || [])];
-  const liitaIndex = updatedMisc.findIndex((misc) => misc.startsWith('LiITA='));
+  const liitaIndex = updatedMisc.findIndex((misc) => misc.startsWith(`${LINKEDURIS_MISC_KEY}=`));
 
-  const liitaEntry = `LiITA=${newValue}`;
+  const liitaEntry = `${LINKEDURIS_MISC_KEY}=${newValue}`;
 
   if (liitaIndex >= 0) {
-    // Update existing LiITA entry
+    // Update existing linked URIs entry
     updatedMisc[liitaIndex] = liitaEntry;
   } else {
-    // Add new LiITA entry
+    // Add new linked URIs entry
     updatedMisc.push(liitaEntry);
   }
 
@@ -63,12 +65,12 @@ export function updateTokenLiITA(
 }
 
 /**
- * Remove LiITA entry from token's misc field
+ * Remove linked URIs entry from token's misc field
  */
-export function removeTokenLiITA(token: ConlluToken): ConlluToken {
+export function removeTokenLinkedURIs(token: ConlluToken): ConlluToken {
   if (!token.misc) return token;
 
-  const updatedMisc = token.misc.filter((misc) => !misc.startsWith('LiITA='));
+  const updatedMisc = token.misc.filter((misc) => !misc.startsWith(`${LINKEDURIS_MISC_KEY}=`));
 
   return {
     ...token,
@@ -77,9 +79,9 @@ export function removeTokenLiITA(token: ConlluToken): ConlluToken {
 }
 
 /**
- * Get count of LiITA items for color coding
+ * Get count of linked URIs items for color coding
  */
-export function getLiITACount(token: ConlluToken | null): number {
-  const value = getLiITAValue(token);
-  return parseLiITAValue(value).length;
+export function getLinkedURIsCount(token: ConlluToken | null): number {
+  const value = getLinkedURIsValue(token);
+  return parseLinkedURIsValue(value).length;
 }

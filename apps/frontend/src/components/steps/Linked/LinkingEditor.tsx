@@ -9,10 +9,10 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
 import {
-  getLiITAValue,
-  parseLiITAValue,
-  serializeLiITAValue,
-  updateTokenLiITA,
+  getLinkedURIsValue,
+  parseLinkedURIsValue,
+  serializeLinkedURIsValue,
+  updateTokenLinkedURIs,
 } from '../../../utils/liita';
 import { type SearchResult, search } from '../../../utils/sparql';
 import LinkedEntityCard from './LinkedEntityCard';
@@ -30,8 +30,8 @@ const LinkingEditor: React.FC<{
   // Initialize items when token changes
   useEffect(() => {
     if (token) {
-      const liitaValue = getLiITAValue(token);
-      setItems(parseLiITAValue(liitaValue));
+      const liitaValue = getLinkedURIsValue(token);
+      setItems(parseLinkedURIsValue(liitaValue));
     }
   }, [token]);
 
@@ -83,8 +83,8 @@ const LinkingEditor: React.FC<{
   const updateToken = (updatedItems: string[]) => {
     if (!token || !onTokenUpdate) return;
 
-    const serializedValue = serializeLiITAValue(updatedItems);
-    const updatedToken = updateTokenLiITA(token, serializedValue);
+    const serializedValue = serializeLinkedURIsValue(updatedItems);
+    const updatedToken = updateTokenLinkedURIs(token, serializedValue);
     onTokenUpdate(updatedToken);
   };
 
