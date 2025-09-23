@@ -1,4 +1,5 @@
 import { Chip } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import type { ConlluToken } from '../../../utils/conllu';
 import { getLinkedURIsCount } from '../../../utils/liita';
@@ -13,6 +14,7 @@ interface TokenPillProps {
 
 const TokenPill: React.FC<TokenPillProps> = React.memo(
   ({ token, tokenIndex, sentenceIndex, isSelected, onTokenClick }) => {
+    const theme = useTheme();
     console.debug(`TokenPill render: S${sentenceIndex} T${tokenIndex}`);
 
     const handleClick = () => {
@@ -48,12 +50,23 @@ const TokenPill: React.FC<TokenPillProps> = React.memo(
           '&:hover': {
             outlineWidth: '2px',
             outlineStyle: 'solid',
-            outlineColor: 'white',
+            outlineColor: theme.palette.primary.main,
           },
           ...(isSelected && {
             outlineWidth: '2px',
             outlineStyle: 'solid',
-            outlineColor: 'white',
+            outlineColor: theme.palette.primary.main,
+            animation: 'dash 600ms ease-out infinite',
+            '@keyframes dash': {
+              '0%': {
+                outlineOffset: '0px',
+                outlineWidth: '4px',
+              },
+              '100%': {
+                outlineOffset: '3px',
+                outlineWidth: '1px',
+              },
+            },
           }),
         }}
       />

@@ -237,7 +237,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
               ref={sentencesContainerRef}
               sx={{
                 flex: 1,
-                pr: 1, // Add some padding for scrollbar
+                p: 1, // Add some padding for scrollbar and selection outline
                 overflowY: 'scroll',
                 '&::-webkit-scrollbar': {
                   width: '8px',
