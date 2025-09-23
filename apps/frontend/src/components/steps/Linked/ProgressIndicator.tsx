@@ -1,4 +1,5 @@
 import { BarChart } from '@mui/x-charts/BarChart';
+import { useTheme } from '@mui/material/styles';
 import type React from 'react';
 import { useMemo } from 'react';
 import type { ConlluDocument } from '../../../utils/conllu';
@@ -11,6 +12,8 @@ interface ProgressIndicatorProps {
 const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   parsedData,
 }) => {
+  const theme = useTheme();
+
   const linkStats = useMemo(() => {
     if (!parsedData) {
       return { zeroLinks: 0, oneLink: 0, moreThanOneLink: 0, other: 0 };
@@ -72,25 +75,25 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
         {
           dataKey: 'unlinked',
           label: 'Unlinked',
-          color: '#ff9800',
+          color: theme.palette.warning.main,
           stack: 'default',
         },
         {
           dataKey: 'linked',
           label: 'Linked',
-          color: '#4caf50',
+          color: theme.palette.success.main,
           stack: 'default',
         },
         {
           dataKey: 'ambiguous',
           label: 'Ambiguous',
-          color: '#f44336',
+          color: theme.palette.error.main,
           stack: 'default',
         },
         {
           dataKey: 'other',
           label: 'Other',
-          color: 'rgba(255, 255, 255, 0.16)',
+          color: theme.palette.action.disabled,
           stack: 'default',
         },
       ]}

@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { StepProps } from '../../types';
@@ -30,10 +31,10 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
       margin: isFirst ? '0 0 8px 0' : '16px 0 8px 0',
       fontSize: '0.75rem',
       fontWeight: '500',
-      color: '#666',
+      color: 'var(--mui-palette-text-secondary)',
       textTransform: 'uppercase',
       letterSpacing: '0.5px',
-      borderBottom: '1px solid #666',
+      borderBottom: '1px solid var(--mui-palette-divider)',
       paddingBottom: '2px',
     }}
   >
@@ -42,6 +43,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
 );
 
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
+  const theme = useTheme();
   const [parsedData, setParsedData] = useState<ConlluDocument | null>(null);
   const [selectedTokenIndex, setSelectedTokenIndex] = useState<
     number | undefined
@@ -236,14 +238,14 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                   width: '8px',
                 },
                 '&::-webkit-scrollbar-track': {
-                  background: '#f1f1f1',
+                  background: theme.palette.action.hover,
                   borderRadius: '4px',
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  background: '#c1c1c1',
+                  background: theme.palette.action.disabled,
                   borderRadius: '4px',
                   '&:hover': {
-                    background: '#a8a8a8',
+                    background: theme.palette.text.disabled,
                   },
                 },
               }}
@@ -283,14 +285,14 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 width: '8px',
               },
               '&::-webkit-scrollbar-track': {
-                background: '#f1f1f1',
+                background: theme.palette.action.hover,
                 borderRadius: '4px',
               },
               '&::-webkit-scrollbar-thumb': {
-                background: '#c1c1c1',
+                background: theme.palette.action.disabled,
                 borderRadius: '4px',
                 '&:hover': {
-                  background: '#a8a8a8',
+                  background: theme.palette.text.disabled,
                 },
               },
             }}

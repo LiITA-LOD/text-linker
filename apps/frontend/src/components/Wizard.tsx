@@ -16,6 +16,7 @@ import {
   Stepper,
   Typography,
 } from '@mui/material';
+import { alpha, useTheme } from '@mui/material/styles';
 import type React from 'react';
 import { useState } from 'react';
 import type {
@@ -49,6 +50,7 @@ const steps: Step[] = [
 ];
 
 const Wizard: React.FC = () => {
+  const theme = useTheme();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
@@ -340,7 +342,7 @@ const Wizard: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backgroundColor: alpha(theme.palette.background.default, 0.8),
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
@@ -358,9 +360,10 @@ const Wizard: React.FC = () => {
               alignItems: 'center',
               gap: 2,
               minWidth: 300,
-              backgroundColor: 'rgba(30, 41, 59, 0.95)',
+              backgroundColor: 'background.paper',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(148, 163, 184, 0.1)',
+              border: '1px solid',
+              borderColor: 'divider',
             }}
           >
             <CircularProgress size={40} sx={{ color: 'primary.main' }} />

@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { alpha, useTheme } from '@mui/material/styles';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -38,6 +39,7 @@ const InputActions: React.FC<InputActionsProps> = ({
   defaultFileName = 'output',
   showTextField = true,
 }) => {
+  const theme = useTheme();
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -292,28 +294,10 @@ const InputActions: React.FC<InputActionsProps> = ({
             fullWidth
             variant="outlined"
             sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'rgba(15, 23, 42, 0.3)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(148, 163, 184, 0.2)',
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  border: '1px solid rgba(148, 163, 184, 0.3)',
-                },
-                '&.Mui-focused': {
-                  border: '2px solid #6366f1',
-                  boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.1)',
-                },
-              },
               '& .MuiInputBase-input': {
-                color: '#f8fafc',
                 fontFamily: 'monospace',
                 fontSize: '0.875rem',
                 lineHeight: 1.5,
-                '&::placeholder': {
-                  color: 'rgba(203, 213, 225, 0.6)',
-                  opacity: 1,
-                },
               },
             }}
           />
@@ -329,7 +313,7 @@ const InputActions: React.FC<InputActionsProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                backgroundColor: alpha(theme.palette.background.default, 0.8),
                 borderRadius: 1,
                 zIndex: 1,
               }}
@@ -355,19 +339,21 @@ const InputActions: React.FC<InputActionsProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'rgba(99, 102, 241, 0.15)',
+              backgroundColor: alpha(theme.palette.primary.main, 0.15),
               backdropFilter: 'blur(4px)',
-              border: '3px dashed #6366f1',
+              border: '3px dashed',
+              borderColor: theme.palette.primary.main,
               zIndex: 9999,
               pointerEvents: 'none',
             }}
           >
             <Box
               sx={{
-                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                backgroundColor: alpha(theme.palette.background.paper, 0.9),
                 borderRadius: 2,
                 padding: 3,
-                border: '2px solid #6366f1',
+                border: '2px solid',
+                borderColor: theme.palette.primary.main,
                 textAlign: 'center',
                 pointerEvents: 'none',
               }}
