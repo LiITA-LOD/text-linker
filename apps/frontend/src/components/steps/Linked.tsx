@@ -25,22 +25,27 @@ interface SectionHeadingProps {
 const SectionHeading: React.FC<SectionHeadingProps> = ({
   children,
   isFirst = false,
-}) => (
-  <h6
-    style={{
-      margin: isFirst ? '0 0 8px 0' : '16px 0 8px 0',
-      fontSize: '0.75rem',
-      fontWeight: '500',
-      color: 'var(--mui-palette-text-secondary)',
-      textTransform: 'uppercase',
-      letterSpacing: '0.5px',
-      borderBottom: '1px solid var(--mui-palette-divider)',
-      paddingBottom: '2px',
-    }}
-  >
-    {children}
-  </h6>
-);
+}) => {
+  const theme = useTheme();
+
+  return (
+    <h6
+      style={{
+        margin: isFirst ? '0 0 8px 0' : '16px 0 8px 0',
+        fontSize: '0.75rem',
+        fontWeight: '500',
+        color: theme.palette.text.secondary,
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        borderBottom: '1px solid',
+        borderBottomColor: theme.palette.divider,
+        paddingBottom: '2px',
+      }}
+    >
+      {children}
+    </h6>
+  );
+};
 
 const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   const theme = useTheme();
