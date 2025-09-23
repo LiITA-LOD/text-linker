@@ -7,13 +7,23 @@ import {
   Typography,
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { darkTheme } from "./themes";
+import { darkTheme, lightTheme } from "./themes";
 import type React from 'react';
+import { useState } from 'react';
 import Wizard from './components/Wizard';
+import ThemeSwitcher from './components/ThemeSwitcher';
 
 const App: React.FC = () => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <CssBaseline />
       <Box
         sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
@@ -31,6 +41,7 @@ const App: React.FC = () => {
                 Linguistic Data Annotation Wizard
               </Typography>
             </Box>
+            <ThemeSwitcher mode={isDarkMode ? 'dark' : 'light'} onToggleTheme={toggleTheme} />
           </Toolbar>
         </AppBar>
 
