@@ -49,7 +49,7 @@ const Conllu: React.FC<StepProps> = ({ data, mergeWizardData }) => {
       </Box>
 
       <InputActions
-        acceptFileTypes=".conllu"
+        fileTypes={[{ accept: { 'text/plain': ['.conllu'] } }]}
         defaultFileName="input-conllu"
         dragPlaceholder="Drop your CoNLL-U file here..."
         onDataChange={handleDataChange}

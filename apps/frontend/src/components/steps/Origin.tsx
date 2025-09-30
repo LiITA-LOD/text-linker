@@ -44,7 +44,7 @@ const Origin: React.FC<StepProps> = ({ data, mergeWizardData }) => {
       </Box>
 
       <InputActions
-        acceptFileTypes=".txt"
+        fileTypes={[{ accept: { 'text/plain': ['.txt'] } }]}
         defaultFileName="input-text"
         dragPlaceholder="Drop your file here..."
         onDataChange={handleDataChange}

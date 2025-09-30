@@ -44,7 +44,7 @@ const Turtle: React.FC<StepProps> = ({ data, mergeWizardData }) => {
       </Box>
 
       <InputActions
-        acceptFileTypes=".ttl"
+        fileTypes={[{ accept: { 'text/turtle': ['.ttl'] } }]}
         defaultFileName="linguistic-annotation"
         dragPlaceholder="Drop your TTL file here..."
         onDataChange={handleDataChange}

@@ -203,7 +203,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
       </Box>
 
       <InputActions
-        acceptFileTypes=".conllu"
+        fileTypes={[{ accept: { 'text/plain': ['.conllu'] } }]}
         defaultFileName="input-linking"
         dragPlaceholder="Drop your linking file here..."
         onDataChange={handleDataChange}

@@ -19,7 +19,7 @@ import { createPortal } from 'react-dom';
 interface InputActionsProps {
   onDataChange: (value: string) => void;
   value: string; // Current value of the textarea
-  acceptFileTypes: string; // File input accept attribute
+  fileTypes: FilePickerAcceptType[];
   placeholder: string;
   dragPlaceholder: string;
   rows?: number;
@@ -32,7 +32,7 @@ interface InputActionsProps {
 const InputActions: React.FC<InputActionsProps> = ({
   onDataChange,
   value,
-  acceptFileTypes,
+  fileTypes,
   placeholder,
   rows = 8,
   showOutputButtons = false,
@@ -43,6 +43,10 @@ const InputActions: React.FC<InputActionsProps> = ({
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const acceptString = fileTypes.flatMap(({ accept }) => Object.values(accept ?? [])).flat().join(',')
+  const primaryExtension = Object.values(fileTypes[0].accept ?? {})[0][0] ?? ".txt";
+  const primaryMimeType = Object.keys(fileTypes[0].accept ?? {})[0] ?? 'text/plain';
 
   const readFileAsText = useCallback((file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -158,15 +162,8 @@ const InputActions: React.FC<InputActionsProps> = ({
     if ('showSaveFilePicker' in window) {
       try {
         const handle = await window.showSaveFilePicker({
-          suggestedName: `${defaultFileName}.txt`,
-          types: [
-            {
-              description: 'Text files',
-              accept: {
-                'text/plain': ['.txt'],
-              },
-            },
-          ],
+          suggestedName: `${defaultFileName}${primaryExtension}`,
+          types: fileTypes,
         });
 
         const writable = await handle.createWritable();
@@ -192,13 +189,13 @@ const InputActions: React.FC<InputActionsProps> = ({
 
   const fallbackDownload = (): void => {
     // Create a blob with the content
-    const blob = new Blob([value], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([value], { type: `${primaryMimeType};charset=utf-8` });
 
     // Create a download link
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${defaultFileName}.txt`;
+    link.download = `${defaultFileName}${primaryExtension}`;
 
     // Trigger download
     document.body.appendChild(link);
@@ -276,7 +273,7 @@ const InputActions: React.FC<InputActionsProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept={acceptFileTypes}
+          accept={acceptString}
           onChange={handleFileSelect}
           style={{ display: 'none' }}
         />
