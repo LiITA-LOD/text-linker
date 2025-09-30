@@ -40,7 +40,7 @@ class PrelinkerService:
             """
             rows = session.execute(text(query)).fetchall()
             for kind, id, wr, pos in rows:
-                name = "hypo" if kind == "hypolemma" else "lemma"
+                name = "hypolemma" if kind == "h" else "l"
                 uri = f"http://liita.it/data/id/{name}/{id}"
                 self.bank[(wr, pos)].append(uri)
 
