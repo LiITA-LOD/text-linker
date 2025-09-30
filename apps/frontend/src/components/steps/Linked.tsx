@@ -324,10 +324,28 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                   onInfoClick={() => setInfoModalOpen(true)}
                 />
                 <SectionHeading>Link Editor</SectionHeading>
-                <LinkingEditor
-                  token={selectedToken}
-                  onTokenUpdate={handleTokenUpdate}
-                />
+                {!selectedToken.id.includes('-') && selectedToken.upos != "PUNCT" ? (
+                  <LinkingEditor
+                    token={selectedToken}
+                    onTokenUpdate={handleTokenUpdate}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      py: 3,
+                      border: '2px dashed',
+                      borderColor: 'grey.300',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      This token cannot be linked.
+                    </Typography>
+                  </Box>
+                )}
               </>
             )}
           </Box>
