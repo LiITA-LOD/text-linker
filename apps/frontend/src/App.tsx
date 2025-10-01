@@ -12,6 +12,7 @@ import type React from 'react';
 import { useState } from 'react';
 import Wizard from './components/Wizard';
 import ThemeSwitcher from './components/ThemeSwitcher';
+import NavigationLinks from './components/NavigationLinks';
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -21,6 +22,10 @@ const App: React.FC = () => {
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
+
+  const navigationLinks = [
+    { url: 'https://liita.it', label: 'Home' },
+  ];
 
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -34,12 +39,7 @@ const App: React.FC = () => {
               <Typography variant="h1" component="h1" sx={{ mb: 0.5 }}>
                 LiITA Text Linker
               </Typography>
-              <Typography
-                variant="body1"
-                sx={{ opacity: 0.8, fontWeight: 400 }}
-              >
-                Linguistic Data Annotation Wizard
-              </Typography>
+              <NavigationLinks links={navigationLinks} />
             </Box>
             <ThemeSwitcher mode={isDarkMode ? 'dark' : 'light'} onToggleTheme={toggleTheme} />
           </Toolbar>
