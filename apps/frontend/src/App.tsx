@@ -32,7 +32,7 @@ const App: React.FC = () => {
           <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h1" component="h1" sx={{ mb: 0.5 }}>
-                LiITA TextLinker
+                LiITA Text Linker
               </Typography>
               <Typography
                 variant="body1"

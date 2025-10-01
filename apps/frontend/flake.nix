@@ -20,7 +20,7 @@
         };
         packages = {
           default = pkgs.stdenv.mkDerivation (finalAttrs: {
-            pname = "text-linker-frontend";
+            pname = "liita-textlinker-frontend";
             version = "0.1.0";
             src = ./.;
             BACKEND_URL = "https://www.liita.it/textlinker/backend/"; # FIXME: perhaps not great to have it here
