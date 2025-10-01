@@ -24,7 +24,7 @@ const App: React.FC = () => {
   };
 
   const navigationLinks = [
-    { url: 'https://liita.it', label: 'Home' },
+    { url: 'https://liita.it', label: 'Back to Home' },
   ];
 
   return (
