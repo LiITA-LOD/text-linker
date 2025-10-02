@@ -13,6 +13,7 @@ import { useState } from 'react';
 import Wizard from './components/Wizard';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import NavigationLinks from './components/NavigationLinks';
+import FloatingLogo from './components/FloatingLogo';
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -35,6 +36,7 @@ const App: React.FC = () => {
       >
         <AppBar position="static" elevation={0}>
           <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
+            <FloatingLogo />
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h1" component="h1" sx={{ mb: 0.5 }}>
                 LiITA Text Linker
