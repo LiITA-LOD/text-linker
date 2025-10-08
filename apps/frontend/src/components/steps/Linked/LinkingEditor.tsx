@@ -1,7 +1,10 @@
-import { Autocomplete, Box, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, TextField, Typography } from '@mui/material';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import React, { useCallback, useEffect, useState } from 'react';
-import type { ConlluToken } from '../../../utils/conllu';
+import type { ConlluToken, ConlluDocument } from '../../../utils/conllu';
 import {
+  applyLinksToTokens,
+  findSimilarTokens,
   getLinkedURIsValue,
   parseLinkedURIsValue,
   serializeLinkedURIsValue,
@@ -12,8 +15,16 @@ import LinkedEntityCard from './LinkedEntityCard';
 
 const LinkingEditor: React.FC<{
   token: ConlluToken | null;
+  parsedData?: ConlluDocument;
+  sentenceIndex?: number;
+  tokenIndex?: number;
   onTokenUpdate?: (updatedToken: ConlluToken) => void;
-}> = React.memo(({ token, onTokenUpdate }) => {
+  onMassTokenUpdate?: (tokenUpdates: Array<{
+    sentenceIndex: number;
+    tokenIndex: number;
+    updatedToken: ConlluToken;
+  }>) => void;
+}> = React.memo(({ token, parsedData, sentenceIndex, tokenIndex, onTokenUpdate, onMassTokenUpdate }) => {
   const [items, setItems] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -80,8 +91,51 @@ const LinkingEditor: React.FC<{
     onTokenUpdate(updatedToken);
   };
 
+  const handleCopyToSimilar = useCallback(() => {
+    if (!token || !parsedData || !onMassTokenUpdate ||
+      sentenceIndex === undefined || tokenIndex === undefined) {
+      return;
+    }
+
+    // Find similar tokens (always by form + POS)
+    const similarTokens = findSimilarTokens(
+      token,
+      parsedData,
+      sentenceIndex,
+      tokenIndex
+    );
+
+    if (similarTokens.length === 0) {
+      alert('No similar tokens found (same form + POS).');
+      return;
+    }
+
+    // Show confirmation dialog
+    const linkText = items.length === 0 ? 'no links (unlink all)' : `${items.length} links`;
+    const confirmed = window.confirm(
+      `Copy ${linkText} to ${similarTokens.length} similar tokens?`
+    );
+
+    if (confirmed) {
+      // Apply the same links to all similar tokens
+      const tokenUpdates = applyLinksToTokens(similarTokens, items);
+      onMassTokenUpdate(tokenUpdates);
+    }
+  }, [token, parsedData, onMassTokenUpdate, items, sentenceIndex, tokenIndex]);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={handleCopyToSimilar}
+        startIcon={<AutoFixHighIcon />}
+        fullWidth
+        title="Copy links to all tokens with the same form and part of speech"
+      >
+        Copy links to similar tokens
+      </Button>
+
       <Autocomplete
         freeSolo
         options={searchResults}

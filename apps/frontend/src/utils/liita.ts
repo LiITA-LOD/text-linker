@@ -1,4 +1,4 @@
-import type { ConlluToken } from './conllu';
+import type { ConlluToken, ConlluDocument } from './conllu';
 
 const LINKEDURIS_MISC_KEY = 'LiITALinkedURIs'; // TODO: rename to LiITALinkedURIs here and in backend
 
@@ -90,4 +90,46 @@ export function removeTokenLinkedURIs(token: ConlluToken): ConlluToken {
 export function getLinkedURIsCount(token: ConlluToken | null): number {
   const value = getLinkedURIsValue(token);
   return parseLinkedURIsValue(value).length;
+}
+
+/**
+ * Find tokens similar to the given token (same form + POS)
+ */
+export function findSimilarTokens(
+  referenceToken: ConlluToken,
+  document: ConlluDocument,
+  referenceSentenceIndex: number,
+  referenceTokenIndex: number
+): Array<{ sentenceIndex: number; tokenIndex: number; token: ConlluToken }> {
+  const similarTokens: Array<{ sentenceIndex: number; tokenIndex: number; token: ConlluToken }> = [];
+
+  document.sentences.forEach((sentence, sentenceIndex) => {
+    sentence.tokens.forEach((token, tokenIndex) => {
+      // Skip the reference token itself
+      if (sentenceIndex === referenceSentenceIndex && tokenIndex === referenceTokenIndex) {
+        return;
+      }
+
+      // Match by form + POS
+      if (token.form === referenceToken.form && token.upos === referenceToken.upos) {
+        similarTokens.push({ sentenceIndex, tokenIndex, token });
+      }
+    });
+  });
+
+  return similarTokens;
+}
+
+/**
+ * Apply the same links to multiple tokens
+ */
+export function applyLinksToTokens(
+  tokens: Array<{ sentenceIndex: number; tokenIndex: number; token: ConlluToken }>,
+  links: string[]
+): Array<{ sentenceIndex: number; tokenIndex: number; updatedToken: ConlluToken }> {
+  return tokens.map(({ sentenceIndex, tokenIndex, token }) => ({
+    sentenceIndex,
+    tokenIndex,
+    updatedToken: updateTokenLinkedURIs(token, serializeLinkedURIsValue(links))
+  }));
 }

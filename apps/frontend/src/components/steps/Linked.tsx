@@ -161,6 +161,35 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     [parsedData, selectedSentenceIndex, selectedTokenIndex, mergeWizardData],
   );
 
+  const handleMassTokenUpdate = useCallback(
+    (tokenUpdates: Array<{
+      sentenceIndex: number;
+      tokenIndex: number;
+      updatedToken: ConlluToken;
+    }>) => {
+      if (!parsedData) return;
+
+      // Create a deep copy and apply all updates
+      const updatedParsedData = {
+        ...parsedData,
+        sentences: parsedData.sentences.map((sentence, sentenceIdx) => ({
+          ...sentence,
+          tokens: sentence.tokens.map((token, tokenIdx) => {
+            const update = tokenUpdates.find(
+              u => u.sentenceIndex === sentenceIdx && u.tokenIndex === tokenIdx
+            );
+            return update ? update.updatedToken : token;
+          })
+        }))
+      };
+
+      setParsedData(updatedParsedData);
+      const serializedData = unparse(updatedParsedData);
+      mergeWizardData('linked', serializedData);
+    },
+    [parsedData, mergeWizardData]
+  );
+
   const handleFocusToken = useCallback(() => {
     if (
       !sentencesContainerRef.current ||
@@ -327,7 +356,11 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 {!selectedToken.id.includes('-') && selectedToken.upos != "PUNCT" ? (
                   <LinkingEditor
                     token={selectedToken}
+                    parsedData={parsedData}
+                    sentenceIndex={selectedSentenceIndex}
+                    tokenIndex={selectedTokenIndex}
                     onTokenUpdate={handleTokenUpdate}
+                    onMassTokenUpdate={handleMassTokenUpdate}
                   />
                 ) : (
                   <Box
