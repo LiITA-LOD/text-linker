@@ -1,6 +1,7 @@
-import type { ConlluToken, ConlluDocument } from './conllu';
+import type { ConlluDocument, ConlluToken } from './conllu';
 
 const LINKEDURIS_MISC_KEY = 'LiITALinkedURIs'; // TODO: rename to LiITALinkedURIs here and in backend
+const SUGGESTION_MISC_KEY = 'LiITASuggestion';
 
 /**
  * Extract linked URIs value from token's misc field
@@ -99,19 +100,29 @@ export function findSimilarTokens(
   referenceToken: ConlluToken,
   document: ConlluDocument,
   referenceSentenceIndex: number,
-  referenceTokenIndex: number
+  referenceTokenIndex: number,
 ): Array<{ sentenceIndex: number; tokenIndex: number; token: ConlluToken }> {
-  const similarTokens: Array<{ sentenceIndex: number; tokenIndex: number; token: ConlluToken }> = [];
+  const similarTokens: Array<{
+    sentenceIndex: number;
+    tokenIndex: number;
+    token: ConlluToken;
+  }> = [];
 
   document.sentences.forEach((sentence, sentenceIndex) => {
     sentence.tokens.forEach((token, tokenIndex) => {
       // Skip the reference token itself
-      if (sentenceIndex === referenceSentenceIndex && tokenIndex === referenceTokenIndex) {
+      if (
+        sentenceIndex === referenceSentenceIndex &&
+        tokenIndex === referenceTokenIndex
+      ) {
         return;
       }
 
       // Match by form + POS
-      if (token.form === referenceToken.form && token.upos === referenceToken.upos) {
+      if (
+        token.form === referenceToken.form &&
+        token.upos === referenceToken.upos
+      ) {
         similarTokens.push({ sentenceIndex, tokenIndex, token });
       }
     });
@@ -124,12 +135,119 @@ export function findSimilarTokens(
  * Apply the same links to multiple tokens
  */
 export function applyLinksToTokens(
-  tokens: Array<{ sentenceIndex: number; tokenIndex: number; token: ConlluToken }>,
-  links: string[]
-): Array<{ sentenceIndex: number; tokenIndex: number; updatedToken: ConlluToken }> {
+  tokens: Array<{
+    sentenceIndex: number;
+    tokenIndex: number;
+    token: ConlluToken;
+  }>,
+  links: string[],
+): Array<{
+  sentenceIndex: number;
+  tokenIndex: number;
+  updatedToken: ConlluToken;
+}> {
   return tokens.map(({ sentenceIndex, tokenIndex, token }) => ({
     sentenceIndex,
     tokenIndex,
-    updatedToken: updateTokenLinkedURIs(token, serializeLinkedURIsValue(links))
+    updatedToken: updateTokenLinkedURIs(token, serializeLinkedURIsValue(links)),
   }));
+}
+
+// ===== SUGGESTION UTILITIES =====
+
+export interface EntitySuggestion {
+  label: string;
+  upostag: string;
+}
+
+/**
+ * Extract suggestion value from token's misc field
+ * Returns the serialized JSON string value, or null if not found
+ */
+export function getSuggestionValue(token: ConlluToken | null): string | null {
+  if (!token?.misc) return null;
+
+  const suggestionItem = token.misc.find((misc) =>
+    misc.startsWith(`${SUGGESTION_MISC_KEY}=`),
+  );
+  if (!suggestionItem) return null;
+
+  return suggestionItem.substring(SUGGESTION_MISC_KEY.length + 1); // Remove prefix
+}
+
+/**
+ * Parse suggestion value into array of EntitySuggestion objects
+ * Returns empty array if value is null or empty
+ */
+export function parseSuggestionValue(value: string | null): EntitySuggestion[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    // If JSON parsing fails, return empty array
+    return [];
+  }
+}
+
+/**
+ * Serialize array of EntitySuggestion objects back to suggestion value format
+ */
+export function serializeSuggestionValue(
+  suggestions: EntitySuggestion[],
+): string {
+  return JSON.stringify(suggestions);
+}
+
+/**
+ * Update token's misc field with new suggestion value
+ * Creates suggestion entry if it doesn't exist, updates if it does
+ */
+export function updateTokenSuggestions(
+  token: ConlluToken,
+  newValue: string,
+): ConlluToken {
+  const updatedMisc = [...(token.misc || [])];
+  const suggestionIndex = updatedMisc.findIndex((misc) =>
+    misc.startsWith(`${SUGGESTION_MISC_KEY}=`),
+  );
+
+  const suggestionEntry = `${SUGGESTION_MISC_KEY}=${newValue}`;
+
+  if (suggestionIndex >= 0) {
+    // Update existing suggestion entry
+    updatedMisc[suggestionIndex] = suggestionEntry;
+  } else {
+    // Add new suggestion entry
+    updatedMisc.push(suggestionEntry);
+  }
+
+  return {
+    ...token,
+    misc: updatedMisc.length > 0 ? updatedMisc : undefined,
+  };
+}
+
+/**
+ * Remove suggestion entry from token's misc field
+ */
+export function removeTokenSuggestions(token: ConlluToken): ConlluToken {
+  if (!token.misc) return token;
+
+  const updatedMisc = token.misc.filter(
+    (misc) => !misc.startsWith(`${SUGGESTION_MISC_KEY}=`),
+  );
+
+  return {
+    ...token,
+    misc: updatedMisc.length > 0 ? updatedMisc : undefined,
+  };
+}
+
+/**
+ * Get count of suggestion items for color coding
+ */
+export function getSuggestionCount(token: ConlluToken | null): number {
+  const value = getSuggestionValue(token);
+  return parseSuggestionValue(value).length;
 }
