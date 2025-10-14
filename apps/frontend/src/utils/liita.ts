@@ -245,6 +245,114 @@ export function removeTokenSuggestions(token: ConlluToken): ConlluToken {
 }
 
 /**
+ * Extract all suggestions from a parsed ConlluDocument
+ * Returns an array of objects with token info and suggestions
+ */
+export function extractAllSuggestions(parsedData: ConlluDocument): Array<{
+  sentenceIndex: number;
+  tokenIndex: number;
+  tokenId: string;
+  tokenForm: string;
+  tokenUpos: string;
+  suggestions: EntitySuggestion[];
+}> {
+  const allSuggestions: Array<{
+    sentenceIndex: number;
+    tokenIndex: number;
+    tokenId: string;
+    tokenForm: string;
+    tokenUpos: string;
+    suggestions: EntitySuggestion[];
+  }> = [];
+
+  parsedData.sentences.forEach((sentence, sentenceIndex) => {
+    sentence.tokens.forEach((token, tokenIndex) => {
+      const suggestionValue = getSuggestionValue(token);
+      const suggestions = parseSuggestionValue(suggestionValue);
+
+      if (suggestions.length > 0) {
+        allSuggestions.push({
+          sentenceIndex,
+          tokenIndex,
+          tokenId: token.id,
+          tokenForm: token.form,
+          tokenUpos: token.upos,
+          suggestions,
+        });
+      }
+    });
+  });
+
+  return allSuggestions;
+}
+
+/**
+ * Generate CSV content from suggestions data
+ */
+export function generateSuggestionsCSV(suggestionsData: Array<{
+  sentenceIndex: number;
+  tokenIndex: number;
+  tokenId: string;
+  tokenForm: string;
+  tokenUpos: string;
+  suggestions: EntitySuggestion[];
+}>): string {
+  const headers = [
+    'sentence_index',
+    'token_index',
+    'token_form',
+    'token_upos',
+    'suggestion_label',
+    'suggestion_upos'
+  ];
+
+  const rows: string[] = [headers.join(',')];
+
+  suggestionsData.forEach(({ sentenceIndex, tokenIndex, tokenForm, tokenUpos, suggestions }) => {
+    suggestions.forEach((suggestion) => {
+      const row = [
+        sentenceIndex.toString(),
+        tokenIndex.toString(),
+        `"${tokenForm}"`,
+        `"${tokenUpos}"`,
+        `"${suggestion.label}"`,
+        `"${suggestion.upostag}"`
+      ];
+      rows.push(row.join(','));
+    });
+  });
+
+  return rows.join('\n');
+}
+
+/**
+ * Download CSV file with suggestions data
+ */
+export function downloadSuggestionsCSV(parsedData: ConlluDocument, filename: string = 'suggestions.csv'): void {
+  const suggestionsData = extractAllSuggestions(parsedData);
+
+  if (suggestionsData.length === 0) {
+    alert('No suggestions found to download.');
+    return;
+  }
+
+  const csvContent = generateSuggestionsCSV(suggestionsData);
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+}
+
+/**
  * Get count of suggestion items for color coding
  */
 export function getSuggestionCount(token: ConlluToken | null): number {

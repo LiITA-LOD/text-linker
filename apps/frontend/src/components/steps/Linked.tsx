@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -9,6 +9,7 @@ import {
   parse,
   serialize as unparse,
 } from '../../utils/conllu';
+import { downloadSuggestionsCSV } from '../../utils/liita';
 import InputActions from '../InputActions';
 import DetailsModal from './Linked/DetailsModal';
 import LinkingEditor from './Linked/LinkingEditor';
@@ -219,6 +220,14 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     }
   }, [selectedSentenceIndex, selectedTokenIndex, parsedData]);
 
+  const handleDownloadSuggestions = useCallback(() => {
+    if (!parsedData) {
+      alert('No data available to download.');
+      return;
+    }
+    downloadSuggestionsCSV(parsedData, 'suggestions.csv');
+  }, [parsedData]);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box>
@@ -242,6 +251,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
         showTextField={false}
         value={serializedData}
       />
+
 
       {/* Token Pills Display */}
       {parsedData && parsedData.sentences.length > 0 && (
@@ -333,6 +343,35 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
           >
             <SectionHeading isFirst>Linking Progress</SectionHeading>
             <ProgressIndicator parsedData={parsedData} />
+
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                If you added any, you can{' '}
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={handleDownloadSuggestions}
+                  sx={{
+                    textTransform: 'none',
+                    minWidth: 'auto',
+                    p: 0,
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'primary.main',
+                    textDecoration: 'underline',
+                    verticalAlign: 'baseline',
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                      textDecoration: 'underline',
+                      color: 'primary.dark',
+                    },
+                  }}
+                >
+                  download all suggestions
+                </Button>
+                {' '}as CSV.
+              </Typography>
+            </Box>
 
             {selectedTokenIndex !== undefined && (
               <SectionHeading>Navigation Controls</SectionHeading>
