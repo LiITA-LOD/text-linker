@@ -16,6 +16,7 @@ import LinkingEditor from './Linked/LinkingEditor';
 import ProgressIndicator from './Linked/ProgressIndicator';
 import SentencePills from './Linked/SentencePills';
 import StereoButtons from './Linked/StereoButtons';
+import TokenEditModal from './Linked/TokenEditModal';
 import TokenInspector from './Linked/TokenInspector';
 
 interface SectionHeadingProps {
@@ -59,6 +60,7 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     number | null
   >(null);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const sentencesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -163,11 +165,13 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
   );
 
   const handleMassTokenUpdate = useCallback(
-    (tokenUpdates: Array<{
-      sentenceIndex: number;
-      tokenIndex: number;
-      updatedToken: ConlluToken;
-    }>) => {
+    (
+      tokenUpdates: Array<{
+        sentenceIndex: number;
+        tokenIndex: number;
+        updatedToken: ConlluToken;
+      }>,
+    ) => {
       if (!parsedData) return;
 
       // Create a deep copy and apply all updates
@@ -177,18 +181,19 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
           ...sentence,
           tokens: sentence.tokens.map((token, tokenIdx) => {
             const update = tokenUpdates.find(
-              u => u.sentenceIndex === sentenceIdx && u.tokenIndex === tokenIdx
+              (u) =>
+                u.sentenceIndex === sentenceIdx && u.tokenIndex === tokenIdx,
             );
             return update ? update.updatedToken : token;
-          })
-        }))
+          }),
+        })),
       };
 
       setParsedData(updatedParsedData);
       const serializedData = unparse(updatedParsedData);
       mergeWizardData('linked', serializedData);
     },
-    [parsedData, mergeWizardData]
+    [parsedData, mergeWizardData],
   );
 
   const handleFocusToken = useCallback(() => {
@@ -251,7 +256,6 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
         showTextField={false}
         value={serializedData}
       />
-
 
       {/* Token Pills Display */}
       {parsedData && parsedData.sentences.length > 0 && (
@@ -368,8 +372,8 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                   }}
                 >
                   download all suggestions
-                </Button>
-                {' '}as CSV.
+                </Button>{' '}
+                as CSV.
               </Typography>
             </Box>
 
@@ -390,9 +394,11 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
                 <TokenInspector
                   token={selectedToken}
                   onInfoClick={() => setInfoModalOpen(true)}
+                  onEditClick={() => setEditModalOpen(true)}
                 />
                 <SectionHeading>Link Editor</SectionHeading>
-                {!selectedToken.id.includes('-') && selectedToken.upos != "PUNCT" ? (
+                {!selectedToken.id.includes('-') &&
+                selectedToken.upos !== 'PUNCT' ? (
                   <LinkingEditor
                     token={selectedToken}
                     parsedData={parsedData}
@@ -435,6 +441,14 @@ const Linked: React.FC<StepProps> = ({ data, mergeWizardData }) => {
             : null
         }
         sentenceIndex={selectedSentenceIndex}
+      />
+
+      {/* Edit Modal */}
+      <TokenEditModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        token={selectedToken}
+        onSave={handleTokenUpdate}
       />
     </Box>
   );
