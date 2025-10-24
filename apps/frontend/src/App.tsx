@@ -26,6 +26,7 @@ const App: React.FC = () => {
 
   const navigationLinks = [
     { url: 'https://liita.it', label: 'Back to Home' },
+    { url: 'https://liita-lod.github.io/turtle-builder/', label: 'Turtle Builder' },
   ];
 
   return (
