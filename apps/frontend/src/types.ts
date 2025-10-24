@@ -1,4 +1,4 @@
-export type StepKey = 'origin' | 'conllu' | 'linked' | 'turtle';
+export type StepKey = 'origin' | 'conllu' | 'linked';
 
 export type FormData = Record<StepKey, string | null>;
 

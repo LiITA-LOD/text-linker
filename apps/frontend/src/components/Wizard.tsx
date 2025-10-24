@@ -30,7 +30,6 @@ import { StepState } from '../types';
 import Conllu from './steps/Conllu';
 import Linked from './steps/Linked';
 import Origin from './steps/Origin';
-import Turtle from './steps/Turtle';
 
 const getBackendUrl = (): string => {
   const metaTag = document.querySelector('meta[name="backend-url"]');
@@ -46,7 +45,6 @@ const steps: Step[] = [
   { id: 1, title: 'Original', component: Origin },
   { id: 2, title: 'CoNLL-U', component: Conllu },
   { id: 3, title: 'Linked', component: Linked },
-  { id: 4, title: 'Turtle', component: Turtle },
 ];
 
 const Wizard: React.FC = () => {
@@ -57,7 +55,6 @@ const Wizard: React.FC = () => {
     origin: '',
     conllu: '',
     linked: '',
-    turtle: '',
   });
 
   // New step state tracking system
