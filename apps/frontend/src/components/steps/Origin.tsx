@@ -36,10 +36,11 @@ const Origin: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box>
         <Typography variant="h4" component="h3" sx={{ mb: 1 }}>
-          Step 1: Input Text
+          Step 1: Original (raw text)
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Enter the text you want to annotate with linguistic data.
+          Enter the raw text you want to link.
+          Continuing to next step will tokenize it.
         </Typography>
       </Box>
 

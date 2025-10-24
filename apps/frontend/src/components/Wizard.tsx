@@ -42,9 +42,9 @@ const getBackendUrl = (): string => {
 };
 
 const steps: Step[] = [
-  { id: 1, title: 'Original', component: Origin },
-  { id: 2, title: 'CoNLL-U', component: Conllu },
-  { id: 3, title: 'Linked', component: Linked },
+  { id: 1, title: 'Original (raw text)', component: Origin },
+  { id: 2, title: 'Tokenized (CoNLL-U)', component: Conllu },
+  { id: 3, title: 'Linked (CoNLL-U)', component: Linked },
 ];
 
 const Wizard: React.FC = () => {
@@ -417,7 +417,7 @@ const Wizard: React.FC = () => {
               (currentStep === 1 && !formData.origin.trim())
             }
           >
-            {currentStep === steps.length ? 'Finish' : 'Next'}
+            Next
           </Button>
         </Box>
       </Paper>

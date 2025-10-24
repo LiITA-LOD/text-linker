@@ -40,11 +40,11 @@ const Conllu: React.FC<StepProps> = ({ data, mergeWizardData }) => {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box>
         <Typography variant="h4" component="h3" sx={{ mb: 1 }}>
-          Step 2: Input CoNLL-U
+          Step 2: Tokenized (CoNLL-U)
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Enter the CoNLL-U format data for morphological and syntactic
-          annotation.
+          Enter the tokenized text you want to link.
+          Continuing to next step will prelink it.
         </Typography>
       </Box>
 
