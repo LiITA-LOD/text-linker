@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./conllu": "./src/utils/conllu.ts"
+  },
   "scripts": {
     "dev": "rsbuild dev --open",
     "build": "rsbuild build",
