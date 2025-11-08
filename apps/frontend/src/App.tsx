@@ -24,11 +24,6 @@ const App: React.FC = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  const navigationLinks = [
-    { url: 'https://liita.it', label: 'Back to Home' },
-    { url: 'https://liita-lod.github.io/turtle-builder/', label: 'Turtle Builder' },
-  ];
-
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <CssBaseline />
@@ -42,7 +37,7 @@ const App: React.FC = () => {
               <Typography variant="h1" component="h1" sx={{ mb: 0.5 }}>
                 LiITA Text Linker
               </Typography>
-              <NavigationLinks links={navigationLinks} />
+              <NavigationLinks />
             </Box>
             <ThemeSwitcher mode={isDarkMode ? 'dark' : 'light'} onToggleTheme={toggleTheme} />
           </Toolbar>
