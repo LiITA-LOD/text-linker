@@ -27,7 +27,7 @@ Otherwise, you will need to install the requirements listed in each component's 
 ## Getting started
 
 > [!IMPORTANT]
-> Each component will need a `.env` to be configured in its folder. Please refer to the documentation of each component for more information. Consider `docker-compose.yaml` as living documentation on how to coordinate the components in case you're confused.
+> Each component will need a `.env` to be configured in its folder. Please refer to the documentation of each component for more information. Consider `docker-compose.yaml` as living documentation on how to configure the environment variables for the components in case you're confused.
 
 If you're using `nix` you can simply run `mprocs` and a local development environment will be running in a few moments.
 
