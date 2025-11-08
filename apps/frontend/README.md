@@ -19,6 +19,8 @@ pnpm install
 
 ## Get started
 
+Copy `.env.example` to `.env` and configure the environment variables as needed.
+
 Start the dev server, and the app will be available at [http://localhost:3000](http://localhost:3000).
 
 ```bash
