@@ -55,6 +55,10 @@ class PrelinkerService:
                     key = (token.get("lemma"), "PROPN")
                     if self.bank.get(key) is None:  # if no match, try lowercase
                         key = (token.get("lemma").lower(), "PROPN")
+                    if self.bank.get(key) is None:  # if no match, try NOUN
+                        key = (token.get("lemma"), "NOUN")
+                    if self.bank.get(key) is None:  # if no match, try NOUN lowercase
+                        key = (token.get("lemma").lower(), "NOUN")
                 else:
                     key = (token.get("lemma"), token.get("upos"))
                 links = "LiITALinkedURIs=" + json.dumps(self.bank.get(key, []))
