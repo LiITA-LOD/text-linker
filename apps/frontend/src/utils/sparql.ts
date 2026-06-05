@@ -18,15 +18,23 @@ async function client(
   query: string,
   endpointUrl = 'https://liita.it/sparql',
 ): Promise<SparqlResponse> {
+  //const response = await fetch(endpointUrl, {
+  //  method: 'POST',
+  //  headers: {
+  //    'Content-Type': 'application/x-www-form-urlencoded',
+  //    Accept: 'application/sparql-results+json',
+  //  },
+  //  body: new URLSearchParams({ query: query }),
+  //});
+  
   const response = await fetch(endpointUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/sparql-results+json',
-    },
-    body: new URLSearchParams({ query: query }),
-  });
-
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/sparql-update',
+            Accept: 'application/sparql-results+json',
+        },
+        body:  query ,
+    });
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
