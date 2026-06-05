@@ -27,6 +27,7 @@ async function client(
   //  body: new URLSearchParams({ query: query }),
   //});
   
+
   const response = await fetch(endpointUrl, {
         method: 'POST',
         headers: {
@@ -35,6 +36,7 @@ async function client(
         },
         body:  query ,
     });
+
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
